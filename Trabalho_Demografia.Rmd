@@ -1,0 +1,25 @@
+---
+titulo: "Trabalho "
+subtitulo: "An R package"
+aluno: 
+- "Carolina Musso"
+- "Laura Teixeira"
+ 
+orientador: "Guilherme Souza Rodrigues"
+coorientador: ""
+semestre: 1
+ano: "1/2023"
+referencias: referencias.bib
+pre-texto: "Trabalho Demografia"
+output: 
+  bookdown::pdf_document2:
+    template: template.tex
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Introdução
+
+
