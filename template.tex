@@ -7,7 +7,7 @@
 
 
 
-%\usepackage[brazilian]{babel}
+\usepackage[brazilian]{babel}
 \usepackage[utf8]{inputenc}
 \usepackage{amsmath, amsfonts, amssymb}
 \numberwithin{equation}{subsection} %subsection
@@ -50,9 +50,12 @@
 \newtheorem{exem}{Exemplo}
 
 \newcommand{\titulo}{$titulo$ \\ $subtitulo$}
-\newcommand{\autor}{$aluno$}
+\newcommand{\autora}{$aluno1$}
+\newcommand{\autorb}{$aluno2$}
+\newcommand{\autorc}{$aluno3$}
+\newcommand{\autord}{$aluno4$}
 \newcommand{\orientador}{ Prof(a). $orientador$ }
-\newcommand{\coorientador}{ Prof(a). $coorientador$ }
+
 
 
 
@@ -92,20 +95,23 @@
 
 \setcounter{page}{0}
 \null
+\Large
 \textbf{\titulo}
 \vspace{2.5cm}
 
-
+\small
 \vspace{0.2cm}
-\textbf{\autor}
-\end{center}
-\vspace{1.5cm}
+\textbf{\autora}\\
+\textbf{\autorb}\\
+\textbf{\autorc}\\
+\textbf{\autord}\\
 
-\begin{flushright}
-\begin{minipage}{7.5cm}
-\parbox[t]{7.5cm}{$pre-texto$}
-\end{minipage}
-\end{flushright}
+\vspace{1.5cm}
+\small
+Professor(a): \orientador \\
+\end{center}
+
+
 
 \vspace{5cm}
 
@@ -116,35 +122,7 @@
 \end{titlepage}
 
 
-%%% FOLHA DE ROSTO -----
 
-\thispagestyle{empty}
-
-\begin{center}
-\textbf{\autor} \\
-\vspace{5cm}
-\textbf{\titulo} \\
-\vspace{3cm}
-\small
-Orientador(a): \orientador \\
-%Coorientador(a): \coorientador
-\end{center}
-
-
-\vspace*{3cm}
-
-\begin{flushright}
-\begin{minipage}{7.5cm}
- \parbox[t]{7.5cm}{$pre-texto$}
-\end{minipage}
-\end{flushright}
-
-\vspace{5cm}
-
-\begin{center}
-{\bf{Brasília} \\ }
-\bf{$ano$}
-\end{center}
 \newpage
 
 \pagenumbering{arabic}

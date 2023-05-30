@@ -1,16 +1,13 @@
 ---
-titulo: "Trabalho "
-subtitulo: "An R package"
-aluno: 
-- "Carolina Musso"
-- "Laura Teixeira"
- 
-orientador: "Guilherme Souza Rodrigues"
-coorientador: ""
-semestre: 1
+titulo: "Trabalho Demografia"
+subtitulo: "Santa Catarina"
+aluno1:  "Carolina Musso 18/0047850"
+aluno2: "Laura Teixeira"
+aluno3: "Jéssica"
+aluno4: "Leonardo"
+orientador: "Ana Maria Nogales"
 ano: "1/2023"
 referencias: referencias.bib
-pre-texto: "Trabalho Demografia"
 output: 
   bookdown::pdf_document2:
     template: template.tex
@@ -22,4 +19,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 # Introdução
 
+\cite{neuralnet}
+\citeonline{roxy}
 
+\newpage
