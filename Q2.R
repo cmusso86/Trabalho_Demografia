@@ -41,15 +41,28 @@ pop_grupos<- populacao %>%
   group_by(Ano, Sexo, faixa) %>% 
   summarise(Pop=sum(Pop)) %>% 
   pivot_wider(id_cols=c(Sexo, faixa), 
-              names_from = Ano, values_from = Pop) %>% 
-  adorn_totals()
+              names_from = Ano, values_from = Pop) 
 
 
 # chequei só tem SC mesmo
 
 nascimentos_trat <- nascimentos %>% 
-  select(IDADEMAE, DTNASC, SEXO) %>% 
-  mutate(Ano=str_sub(DTNASC, 5, 8))
+  select(IDADEMAE, DTNASC, SEXO, DTNASCMAE) %>% 
+  mutate(#DTNASC=dmy(DTNASC),
+         #DTNASCMAE=dmy(DTNASCMAE),
+         #idade_mae=as.numeric(DTNASC-DTNASCMAE)/365, 
+         IDADEMAE=as.numeric(as.character(IDADEMAE))) %>% 
+  mutate(Ano=str_sub(DTNASC, 5, 8),
+         faixa=cut(IDADEMAE, breaks=c(-1, 1, 5, 10, 15, 20,
+                                          25, 30, 35, 40, 45, 50, 
+                                          55, 60, 65, 70, 75, 80, 
+                                          85,90,  200), 
+                   labels=c("<1", "1-4", "5-9", "10-14", "15-19",
+                                   "20-24", "25-29", "30-34", "35-39", 
+                                   "40-44", "45-49", "50-54", "55-59",
+                                   "60-64", "65-69", "70-74", "75-79", 
+                                   "80-84", "85-89", ">90"), right=F))
+  
 
 #   Taxa Bruta de Natalidade
 
@@ -57,7 +70,8 @@ nascimentos_tot <- nascimentos_trat %>%
   group_by(Ano) %>% 
   count(name="nasc")
 
-pop_grupos %>% 
+TBN <-pop_grupos %>% 
+  adorn_totals() %>% 
   filter(Sexo=="Total")%>% 
   select("2010", "2019", "2021") %>% 
   pivot_longer(everything(), names_to = "Ano",
@@ -65,9 +79,53 @@ pop_grupos %>%
   left_join(nascimentos_tot) %>% 
   mutate(TBN = nasc/Pop*1000)
 
+TBN
+
 # Taxa Fecundidade Geral (TFG) e Taxas específicas de fecundidade - nfx (Grafique esses valores)
 
+pop_fem_fertil <- pop_grupos %>% 
+  filter(Sexo=="F", 
+         faixa %in% c("15-19", "20-24", "25-29",
+                      "30-34", "35-39", "40-44",
+                      "45-49")) 
 
+TFG <- pop_fem_fertil %>% 
+  adorn_totals() %>% 
+  filter(Sexo=="Total") %>% 
+  select("2010", "2019", "2021") %>% 
+  pivot_longer(everything(), names_to = "Ano",
+               values_to = "Pop_fem") %>% 
+  left_join(nascimentos_tot) %>% 
+  mutate(TFG = nasc/Pop_fem*1000)
+
+TFG
+
+
+
+pop_fem_fertil_faixa <- pop_fem_fertil %>% 
+  pivot_longer(c("2010", "2019", "2021"),
+               names_to = "Ano", values_to = "Pop") 
+ 
+nfx <- nascimentos_trat %>% 
+  group_by(Ano, faixa) %>% 
+  count(name = "nasc") %>% 
+  right_join(pop_fem_fertil_faixa) %>% 
+  mutate(nfx = nasc/Pop) %>% 
+  select(Ano, faixa, nfx) %>% 
+  pivot_wider(id_cols = faixa, 
+              names_from = Ano, 
+              values_from = nfx) 
+
+TFT <- nfx %>% 
+  pivot_longer(c("2010", "2019", "2021"),
+               names_to = "Ano", values_to = "nfx") %>% 
+  mutate(nfx_5=5*nfx) %>% 
+  select(-nfx) %>% 
+  pivot_wider(id_cols = faixa, 
+              names_from = Ano, 
+              values_from = nfx_5) %>% 
+  adorn_totals(name="TFT") %>% 
+  filter(faixa=="TFT")
 
 
 # Taxa de Fecundidade Total (TFT) ou Índice Sintético de Fecundidade
