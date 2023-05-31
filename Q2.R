@@ -17,6 +17,8 @@ arquivos_nasc <- str_c("Bases/",
 nascimentos <-  map_dfr(arquivos_nasc,~ read.dbc(.x)) %>% 
   mutate_all(~as.character(.))
 
+obitos <- readRDS("Bases/dados_SIM.rds")
+
 
 populacao <- read_excel("Bases/populacao_Sc.xls")
 
@@ -167,10 +169,36 @@ TBR
 # Taxa Líquida de Reprodução (é necessária a informação da função L da Tábua de Vida)
 
 
+obitos_trat <- obitos %>% 
+  select(DTNASC, SEXO, IDADE, DTOBITO) %>% 
+  mutate_all(~as.character(.)) %>% 
+  mutate(DTOBITO=dmy(DTOBITO),
+         )
 
-# b) Compare os seus resultados com os valores obtidos  pelo IBGE (projeções), e para o Brasil, pelo estudo GBD, pelas Nações Unidas (UN Population) e aqueles publicados no site do Datasus para 2010 (RIPSA - Indicadores e dados básicos - http://tabnet.datasus.gov.br/cgi/idb2012/matriz.htm ). Como  os indicadores de reprodução não aparecem nessas listas, a partir das TFT, calcule esses indicadores para comparação.
+# b) Compare os seus resultados com os valores obtidos  pelo IBGE (projeções), e para o Brasil, pelo estudo GBD, 
+# pelas Nações Unidas (UN Population) e aqueles publicados no site do Datasus para 2010 (RIPSA - Indicadores e dados básicos - http://tabnet.datasus.gov.br/cgi/idb2012/matriz.htm ). 
+# Como  os indicadores de reprodução não aparecem nessas listas, a partir das TFT, calcule esses indicadores para comparação.
+
 # 
+# TBN
+# - A taxa Bruta de natalidade segundo a 2010 (RIPSA - Indicadores e dados básicos 
+#- http://tabnet.datasus.gov.br/cgi/idb2012/matriz.htm )foi de 13.7 para 2010. 
+# # 
+# TEF 
+# 
+# - segundo RIPSA a taxa específica de fecundidade para 2010
+# 	0,05088	0,07962	0,08163	0,06592	0,03475	0,00865	0,00055
+# 
+# 	
+# TFT 
+# 
+# - segundo RIPSA a taxa  de fecundidade total para 2010 foi de 1,61
+# - segundo UN https://data.un.org/en/iso/br.html TFT foi de 1.9 para 2010, 1.8 para 2015, 1.7 para 2021
+# segundo GDB foi de 1.4 para 2019 https://www.healthdata.org/brazil-santa-catarina
+
 # c) Comente esses resultados (inclusive os gráficos das nfx), fazendo referência a artigos já publicados sobre o assunto.
+
+ibge_indicadores <- read_excel("Bases/indicadores_IBGE_SC.xlsx)
 # 
 # d) Para os dados do SINASC para 2021, analise a associação entre (apresente ao menos uma medida de associação):
 #   
