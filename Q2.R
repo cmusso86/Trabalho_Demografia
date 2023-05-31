@@ -14,13 +14,16 @@ pacman::p_load_gh("danicat/read.dbc")
 arquivos_nasc <- str_c("Bases/", 
                   list.files(path="Bases/", pattern="^DNS"))
 
-nascimentos <-  map_dfr(arquivos_nasc,~ read.dbc(.x))
+nascimentos <-  map_dfr(arquivos_nasc,~ read.dbc(.x)) %>% 
+  mutate_all(~as.character(.))
+
+obitos <- readRDS("Bases/dados_SIM.rds")
 
 
 populacao <- read_excel("Bases/populacao_Sc.xls")
 
 
-
+ibge_indicadores <- read_excel("Bases/indicadores_IBGE_SC.xlsx")
 # Taxa Bruta de Natalidade
 
 pop_grupos<- populacao %>% 
@@ -48,11 +51,10 @@ pop_grupos<- populacao %>%
 
 nascimentos_trat <- nascimentos %>% 
   select(IDADEMAE, DTNASC, SEXO, DTNASCMAE) %>% 
-  mutate(#DTNASC=dmy(DTNASC),
-         #DTNASCMAE=dmy(DTNASCMAE),
-         #idade_mae=as.numeric(DTNASC-DTNASCMAE)/365, 
-         IDADEMAE=as.numeric(as.character(IDADEMAE))) %>% 
-  mutate(Ano=str_sub(DTNASC, 5, 8),
+  mutate(DTNASC=dmy(DTNASC),
+         DTNASCMAE=dmy(DTNASCMAE),
+         IDADEMAE=as.numeric(IDADEMAE)) %>% 
+  mutate(Ano=as.character(year(DTNASC)),
          faixa=cut(IDADEMAE, breaks=c(-1, 1, 5, 10, 15, 20,
                                           25, 30, 35, 40, 45, 50, 
                                           55, 60, 65, 70, 75, 80, 
@@ -116,6 +118,11 @@ nfx <- nascimentos_trat %>%
               names_from = Ano, 
               values_from = nfx) 
 
+
+
+
+# Taxa de Fecundidade Total (TFT) ou Índice Sintético de Fecundidade
+
 TFT <- nfx %>% 
   pivot_longer(c("2010", "2019", "2021"),
                names_to = "Ano", values_to = "nfx") %>% 
@@ -125,16 +132,122 @@ TFT <- nfx %>%
               names_from = Ano, 
               values_from = nfx_5) %>% 
   adorn_totals(name="TFT") %>% 
-  filter(faixa=="TFT")
+  filter(faixa=="TFT") %>% 
+  pivot_longer(-faixa, names_to =  "Ano", values_to = "TFT") %>% 
+  select(-faixa)
 
+TFT
 
-# Taxa de Fecundidade Total (TFT) ou Índice Sintético de Fecundidade
 # Taxas específicas de fecundidade feminina (apenas os nascimentos femininos)
+
+nffx <- nascimentos_trat %>% 
+  filter(SEXO==2) %>% 
+  group_by(Ano, faixa) %>% 
+  count(name = "nasc") %>% 
+  right_join(pop_fem_fertil_faixa) %>% 
+  mutate(nffx = nasc/Pop) %>% 
+  select(Ano, faixa, nffx) %>% 
+  pivot_wider(id_cols = faixa, 
+              names_from = Ano, 
+              values_from = nffx) 
+
+
 # Taxa Bruta de Reprodução
+
+TBR <- nffx %>% 
+  pivot_longer(c("2010", "2019", "2021"),
+               names_to = "Ano", values_to = "nffx") %>% 
+  mutate(nffx_5=5*nffx) %>% 
+  select(-nffx) %>% 
+  pivot_wider(id_cols = faixa, 
+              names_from = Ano, 
+              values_from = nffx_5) %>% 
+  adorn_totals(name="TBR") %>% 
+  filter(faixa=="TBR")
+
+TBR
+
+
 # Taxa Líquida de Reprodução (é necessária a informação da função L da Tábua de Vida)
-# b) Compare os seus resultados com os valores obtidos  pelo IBGE (projeções), e para o Brasil, pelo estudo GBD, pelas Nações Unidas (UN Population) e aqueles publicados no site do Datasus para 2010 (RIPSA - Indicadores e dados básicos - http://tabnet.datasus.gov.br/cgi/idb2012/matriz.htm ). Como  os indicadores de reprodução não aparecem nessas listas, a partir das TFT, calcule esses indicadores para comparação.
+
+
+obitos_trat <- obitos %>% 
+  select(DTNASC, SEXO, IDADE, DTOBITO) %>% 
+  mutate_all(~as.character(.)) %>% 
+  mutate(DTOBITO=dmy(DTOBITO),
+         )
+
+# b) Compare os seus resultados com os valores obtidos  pelo IBGE (projeções), e para o Brasil, pelo estudo GBD, 
+# pelas Nações Unidas (UN Population) e aqueles publicados no site do Datasus para 2010 (RIPSA - Indicadores e dados básicos - http://tabnet.datasus.gov.br/cgi/idb2012/matriz.htm ). 
+# Como  os indicadores de reprodução não aparecem nessas listas, a partir das TFT, calcule esses indicadores para comparação.
+
+
+ibge_indicadores_menor<- ibge_indicadores %>% 
+  filter(Ano %in% c( 2010, 2019, 2021))
+
+
 # 
+# TBN
+
+TBN_ibge <- ibge_indicadores_menor %>% 
+  select(Ano, TBN) %>% 
+  mutate(Ano=as.character(Ano)) %>% 
+  rename(TBN_ibge=TBN) %>% 
+  left_join(TBN) %>% 
+  select(-Pop, -nasc)
+
+# - A taxa Bruta de natalidade segundo a 2010 (RIPSA - Indicadores e dados básicos 
+#- http://tabnet.datasus.gov.br/cgi/idb2012/matriz.htm )foi de 13.7 para 2010. 
+# # 
+# TEF 
+#
+
+
+nfx_IBGE <- ibge_indicadores_menor %>% 
+  select(Ano, "15-19":"45-49" ) %>% 
+  pivot_longer(-Ano, names_to = "faixa", values_to = "nfx") %>% 
+  pivot_wider(id_cols = faixa, names_from = Ano, values_from = nfx) %>% 
+  rename(IBGE_2019=`2019`,
+         IBGE_2010=`2010`,
+         IBGE_2021=`2021`) %>% 
+  left_join(nfx)
+
+# - segundo RIPSA a taxa específica de fecundidade para 2010
+# 	0,05088	0,07962	0,08163	0,06592	0,03475	0,00865	0,00055
+# 
+# 	
+# TFT 
+
+
+TFT_ibge <- ibge_indicadores_menor %>% 
+  select(Ano, TFT) %>% 
+  mutate(Ano=as.character(Ano)) %>% 
+  rename(TFT_ibge=TFT) %>% 
+  left_join(TFT) 
+
+TFT_ibge
+# - segundo RIPSA a taxa  de fecundidade total para 2010 foi de 1,61
+# - segundo UN https://data.un.org/en/iso/br.html TFT foi de 1.9 para 2010, 1.8 para 2015, 1.7 para 2021
+# segundo GDB foi de 1.4 para 2019 https://www.healthdata.org/brazil-santa-catarina
+
+
+#TBR 
+# rpsa_2010
+
+TBR_ripsa_2010 <- 1.61/2.05 # dado do site
+TBR_UN_2010 <- 1.9/2.05
+TBR_UN_2021 <- 1.7/2.05
+TBR_GDB_2021 <- 1.4/2.05
+
 # c) Comente esses resultados (inclusive os gráficos das nfx), fazendo referência a artigos já publicados sobre o assunto.
+
+nfx %>% 
+  pivot_longer(-faixa, names_to = "Ano", values_to = "nfx") %>% 
+  mutate(faixa=as.numeric(str_sub(faixa, 1, 2))) %>% 
+  ggplot(aes(x=faixa, color=Ano))+
+  geom_path(aes(y=nfx),)+
+  geom_point(aes(y=nfx))
+  theme_classic()
 # 
 # d) Para os dados do SINASC para 2021, analise a associação entre (apresente ao menos uma medida de associação):
 #   
