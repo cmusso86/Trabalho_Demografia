@@ -14,7 +14,8 @@ pacman::p_load_gh("danicat/read.dbc")
 arquivos_nasc <- str_c("Bases/", 
                   list.files(path="Bases/", pattern="^DNS"))
 
-nascimentos <-  map_dfr(arquivos_nasc,~ read.dbc(.x))
+nascimentos <-  map_dfr(arquivos_nasc,~ read.dbc(.x)) %>% 
+  mutate_all(~as.character(.))
 
 
 populacao <- read_excel("Bases/populacao_Sc.xls")
@@ -48,11 +49,10 @@ pop_grupos<- populacao %>%
 
 nascimentos_trat <- nascimentos %>% 
   select(IDADEMAE, DTNASC, SEXO, DTNASCMAE) %>% 
-  mutate(#DTNASC=dmy(DTNASC),
-         #DTNASCMAE=dmy(DTNASCMAE),
-         #idade_mae=as.numeric(DTNASC-DTNASCMAE)/365, 
-         IDADEMAE=as.numeric(as.character(IDADEMAE))) %>% 
-  mutate(Ano=str_sub(DTNASC, 5, 8),
+  mutate(DTNASC=dmy(DTNASC),
+         DTNASCMAE=dmy(DTNASCMAE),
+         IDADEMAE=as.numeric(IDADEMAE)) %>% 
+  mutate(Ano=as.character(year(DTNASC)),
          faixa=cut(IDADEMAE, breaks=c(-1, 1, 5, 10, 15, 20,
                                           25, 30, 35, 40, 45, 50, 
                                           55, 60, 65, 70, 75, 80, 
@@ -116,6 +116,11 @@ nfx <- nascimentos_trat %>%
               names_from = Ano, 
               values_from = nfx) 
 
+
+
+
+# Taxa de Fecundidade Total (TFT) ou Índice Sintético de Fecundidade
+
 TFT <- nfx %>% 
   pivot_longer(c("2010", "2019", "2021"),
                names_to = "Ano", values_to = "nfx") %>% 
@@ -127,11 +132,42 @@ TFT <- nfx %>%
   adorn_totals(name="TFT") %>% 
   filter(faixa=="TFT")
 
+TFT
 
-# Taxa de Fecundidade Total (TFT) ou Índice Sintético de Fecundidade
 # Taxas específicas de fecundidade feminina (apenas os nascimentos femininos)
+
+nffx <- nascimentos_trat %>% 
+  filter(SEXO==2) %>% 
+  group_by(Ano, faixa) %>% 
+  count(name = "nasc") %>% 
+  right_join(pop_fem_fertil_faixa) %>% 
+  mutate(nffx = nasc/Pop) %>% 
+  select(Ano, faixa, nffx) %>% 
+  pivot_wider(id_cols = faixa, 
+              names_from = Ano, 
+              values_from = nffx) 
+
+
 # Taxa Bruta de Reprodução
+
+TBR <- nffx %>% 
+  pivot_longer(c("2010", "2019", "2021"),
+               names_to = "Ano", values_to = "nffx") %>% 
+  mutate(nffx_5=5*nffx) %>% 
+  select(-nffx) %>% 
+  pivot_wider(id_cols = faixa, 
+              names_from = Ano, 
+              values_from = nffx_5) %>% 
+  adorn_totals(name="TBR") %>% 
+  filter(faixa=="TBR")
+
+TBR
+
+
 # Taxa Líquida de Reprodução (é necessária a informação da função L da Tábua de Vida)
+
+
+
 # b) Compare os seus resultados com os valores obtidos  pelo IBGE (projeções), e para o Brasil, pelo estudo GBD, pelas Nações Unidas (UN Population) e aqueles publicados no site do Datasus para 2010 (RIPSA - Indicadores e dados básicos - http://tabnet.datasus.gov.br/cgi/idb2012/matriz.htm ). Como  os indicadores de reprodução não aparecem nessas listas, a partir das TFT, calcule esses indicadores para comparação.
 # 
 # c) Comente esses resultados (inclusive os gráficos das nfx), fazendo referência a artigos já publicados sobre o assunto.
