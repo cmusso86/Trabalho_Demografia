@@ -137,3 +137,66 @@ ggsave('./img/TEM.png', width = 188, height = 113, units = 'mm')
 
 # Letra b -------
 
+# Calcule a TMI, utilizando o número médio de óbitos ocorridos entre 2019 e 2021 
+# e o número de nascimentos de 2020. Calcule os indicadores: taxa de mortalidade 
+# neonatal, neonatal precoce, neonatal tardia, posneonatal. Agregando a informação 
+# sobre óbitos fetais para os mesmos anos, calcule a taxa de mortalidade perinatal.
+
+nasc_2020 <- 97916 # vem dos arquivos do SINASC
+mortalidade$idade_dias <- mortalidade$idade*365
+
+## TMI (óbitos em menores de 1 ano)
+
+# nº medio de obitos de menores de 1 ano
+
+obitos_1_ano <- mortalidade %>% filter(ano_obt %in% c("2019","2020","2021")) %>%
+  filter(idade_dias<365) %>% group_by(ano_obt) %>%
+  summarise(obitos=n())
+
+media_obt_1_ano <- mean(obitos_1_ano$obitos)
+
+q10 <- media_obt_1_ano/nasc_2020*1000
+
+## Mortalidade Neonatal (Risco de um recém-nascido morrer antes de 28 dias de vida)
+
+obitos_neonatal <- mortalidade %>% filter(ano_obt %in% c("2019","2020","2021")) %>%
+  filter(idade_dias<28) %>% group_by(ano_obt) %>%
+  summarise(obitos=n())
+
+media_obt_neonatal <- mean(obitos_neonatal$obitos)
+
+Mneonatal <- media_obt_neonatal/nasc_2020*1000
+
+
+## Mortalidade Posneonatal (Risco de um recém-nascido morrer entre 28 e 364 dias de vida)
+
+obitos_posneonatal <- mortalidade %>% filter(ano_obt %in% c("2019","2020","2021")) %>%
+  filter(idade_dias>=28 & idade_dias<365) %>% group_by(ano_obt) %>%
+  summarise(obitos=n())
+
+media_obt_posneonatal <- mean(obitos_posneonatal$obitos)
+
+Mposneonatal <- media_obt_posneonatal/nasc_2020*1000
+
+## Mortalidade Precoce (Risco de um recém-nascido morrer antes de 7 dias de vida)
+
+obitos_precoce <- mortalidade %>% filter(ano_obt %in% c("2019","2020","2021")) %>%
+  filter(idade_dias<7) %>% group_by(ano_obt) %>%
+  summarise(obitos=n())
+
+media_obt_precoce <- mean(obitos_precoce$obitos)
+
+Mprecoce <- media_obt_precoce/nasc_2020*1000
+
+## Mortalidade Tardia (Risco de um recém-nascido morrer entre 7 e 27 dias de vida)
+
+obitos_tardia <- mortalidade %>% filter(ano_obt %in% c("2019","2020","2021")) %>%
+  filter(idade_dias>=7 & idade_dias<27) %>% group_by(ano_obt) %>%
+  summarise(obitos=n())
+
+media_obt_tardia <- mean(obitos_tardia$obitos)
+
+Mtardia <- media_obt_tardia/nasc_2020*1000
+
+
+## Taxa de Mortalidade Perinatal
