@@ -200,3 +200,8 @@ Mtardia <- media_obt_tardia/nasc_2020*1000
 
 
 ## Taxa de Mortalidade Perinatal
+
+obitos_fetais <- data.frame("Ano"= 2019:2021,"Obt_fetal" = c(810,765,771)) #consultado no TabNet SIM
+media_obt_fetal <- mean(obitos_fetais$Obt_fetal)
+
+TMPerinatal <- (media_obt_precoce+media_obt_fetal)/(nasc_2020+media_obt_fetal)*1000
