@@ -1,5 +1,5 @@
 # Carrega bibliotecas
-pacman::p_load(tidyverse, LexisPlotR, readxl, janitor, lubridate, reshape2, cowplot)
+pacman::p_load(tidyverse, LexisPlotR, readxl, janitor, lubridate, reshape2, cowplot, kableExtra)
 pacman::p_load_gh("danicat/read.dbc")
 
 # Dados -------
@@ -205,3 +205,121 @@ obitos_fetais <- data.frame("Ano"= 2019:2021,"Obt_fetal" = c(810,765,771)) #cons
 media_obt_fetal <- mean(obitos_fetais$Obt_fetal)
 
 TMPerinatal <- (media_obt_precoce+media_obt_fetal)/(nasc_2020+media_obt_fetal)*1000
+
+# Letra c -------
+
+# Compare os seus resultados com os valores obtidos pelo estudo GBD, pela Nações Unidas
+# (UN Population) e aqueles publicados no site do Datasus (RIPSA - Indicadores e
+# dados básicos - http://tabnet.datasus.gov.br/cgi/idb2012/matriz.htm ).
+# Para a TMI, compare com os valores obtidos na questão 1. Comente sobre os aspectos
+# metodológicos dessas duas formas de cálculo.
+
+# Letra d -------
+
+# Compare a estrutura de mortalidade por causas entre 2010 e 2021. Utilize 20 primeiras
+# grupos de causas segundo Grupos CID-10 (ver Tabnet - Datasus),  segundo sexo para
+# os anos selecionado. Comente os resultados. Destacar a mortalidade por Covid-19 (CID B34.2). 
+
+obts_causas <- mortalidade %>% filter(ano_obt %in% c("2010","2021")) %>%
+  select(CAUSABAS,ano_obt,sexo) %>%
+  filter(sexo %in% c("M","F"))
+
+obts_causas_top_20 <- obts_causas %>% group_by(ano_obt,sexo,CAUSABAS) %>%
+  summarise(causas_count = n()) %>% ungroup() %>%
+  group_by(ano_obt,sexo) %>%
+  arrange(desc(causas_count),.by_group = TRUE) %>%
+  slice_head(n=20)
+
+# conferindo oq é cada código da CID
+
+CID <- data.frame("CAUSABAS"=unique(obts_causas_top_20$CAUSABAS),
+                  "significado"=c("Infarto agudo do miocárdio não especificado",
+                                  "Acidente vascular cerebral, não especificado como hemorrágico ou isquêmico",
+                                  "Diabetes mellitus não especificado - sem complicações",
+                                  "Pneumonia não especificada",
+                                  "Neoplasia maligna da mama, não especificada",
+                                  "Hipertensão essencial (primária)",
+                                  "Doença pulmonar obstrutiva crônica não especificada",
+                                  "Neoplasia maligna dos brônquios ou pulmões, não especificado",
+                                  "Outras causas mal definidas e as não especificadas de mortalidade",
+                                  "Insuficiência cardíaca congestiva",
+                                  "Insuficiência cardíaca não especificada",
+                                  "Outras doenças cerebrovasculares especificadas",
+                                  "Doença cardíaca hipertensiva com insuficiência cardíaca (congestiva)",
+                                  "Doença de Alzheimer não especificada",
+                                  "Septicemia não especificada",
+                                  "Doença pulmonar obstrutiva crônica com infecção respiratória aguda do trato respiratório inferior",
+                                  "Morte sem assistência",
+                                  "Neoplasia maligna do estômago, não especificado",
+                                  "Infecção do trato urinário de localização não especificada",
+                                  "Hemorragia intracerebral não especificada",
+                                  "Neoplasia maligna da próstata",
+                                  "Neoplasia maligna do esôfago, não especificado",
+                                  "Lesão autoprovocada intencionalmente por enforcamento, estrangulamento e sufocação",
+                                  "Outras formas de cirrose hepática e as não especificadas",
+                                  "Cirrose hepática alcoólica",
+                                  "Pessoa traumatizada em um acidente de trânsito com um veículo a motor não especificado",
+                                  "Infecção por coronavírus de localização não especificada",
+                                  "Pneumonia bacteriana não especificada",
+                                  "Sequelas de acidente vascular cerebral não especificado como hemorrágico ou isquêmico"))
+
+obts_causas_top_20 <- left_join(obts_causas_top_20, CID, by="CAUSABAS") 
+
+# tabela para os anos de 2010 e 2021 FEMININO
+
+df_mulheres <- obts_causas_top_20 %>% filter(sexo=="F")
+
+tbl_mulheres <- data.frame("significado"= df_mulheres$significado[1:20],
+                           "2010" = df_mulheres$causas_count[1:20],
+                           check.names = F) %>%
+            left_join(.,df_mulheres[21:40,c("causas_count","significado")],
+            by="significado")
+
+names(tbl_mulheres)[3] <- "2021"
+
+tbl_mulheres <- rbind(tbl_mulheres, data.frame(significado=df_mulheres$significado[21],"2010"="-",
+                                               "2021"=df_mulheres$causas_count[21],check.names = F))
+
+tbl_mulheres <- rbind(tbl_mulheres, data.frame(significado=df_mulheres$significado[37],"2010"="-",
+                                               "2021"=df_mulheres$causas_count[37],check.names = F))
+
+tbl_mulheres$`2021`[is.na(tbl_mulheres$`2021`)] <- "-"
+names(tbl_mulheres)[1] <- "Causa básica da DO"
+
+tbl_mulheres %>%
+  kableExtra::kbl(.,align=c('l','r','r'),booktabs = T,
+  caption = 'Estrutura de mortalidade por causas de 2010 e 2021 para o sexo feminino') %>% 
+  kableExtra::kable_classic(full_width=FALSE,latex_options = "HOLD_position")
+
+# tabela para os anos de 2010 e 2021 MASCULINO
+
+df_homens <- obts_causas_top_20 %>% filter(sexo=="M")
+
+tbl_homens <- data.frame("significado"= df_homens$significado[1:20],
+                           "2010" = df_homens$causas_count[1:20],
+                           check.names = F) %>%
+  left_join(.,df_homens[21:40,c("causas_count","significado")],
+            by="significado")
+
+names(tbl_homens)[3] <- "2021"
+
+#causas de 2021 que nao estavam em 2010
+tbl_homens <- rbind(tbl_homens, data.frame(significado=df_homens$significado[21],"2010"="-",
+                                               "2021"=df_homens$causas_count[21],check.names = F))
+
+tbl_homens <- rbind(tbl_homens, data.frame(significado=df_homens$significado[33:34],"2010"="-",
+                                               "2021"=df_homens$causas_count[33:34],check.names = F))
+
+tbl_homens <- rbind(tbl_homens, data.frame(significado=df_homens$significado[38:39],"2010"="-",
+                                           "2021"=df_homens$causas_count[38:39],check.names = F))
+
+tbl_homens$`2021`[is.na(tbl_homens$`2021`)] <- "-"
+names(tbl_homens)[1] <- "Causa básica da DO"
+
+tbl_homens %>%
+  kableExtra::kbl(.,align=c('l','r','r'),booktabs = T,
+                  caption = 'Estrutura de mortalidade por causas de 2010 e 2021 para o sexo masculino') %>% 
+  kableExtra::kable_classic(full_width=FALSE,latex_options = "HOLD_position")
+
+# Letra e -------
+
