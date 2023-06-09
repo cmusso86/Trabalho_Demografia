@@ -216,7 +216,9 @@ nfx %>%
 
 
 
-### Taxa de Fecundidade Total (TFT) {-}
+### Taxa de Fecundidade Total ({-}
+
+
 
 
 ### Taxas específicas de fecundidade feminina {-}
@@ -227,16 +229,18 @@ nfx %>%
 
 ### Taxa Líquida de Reprodução {-}
 
-
 **b) Compare os seus resultados com os valores obtidos  pelo IBGE (projeções), e para o Brasil, pelo estudo GBD, pelas Nações Unidas (UN Population) e aqueles publicados no site do Datasus para 2010 (RIPSA - Indicadores e dados básicos - http://tabnet.datasus.gov.br/cgi/idb2012/matriz.htm ). Como  os indicadores de reprodução não aparecem nessas listas, a partir das TFT, calcule esses indicadores para comparação.**
 
 **c) Comente esses resultados (inclusive os gráficos das nfx), fazendo referência a artigos já publicados sobre o assunto.**
 
+
 **d) Para os dados do SINASC para 2021, análise a associação entre (apresente ao menos uma medida de associação):**
 
- idade e escolaridade da mãe 
+idade e escolaridade da mãe 
+
 tipo de parto e escolaridade da mãe
 Apresente graficamente os dados e obtenha medidas para essa associação.
 
-\newpage
+
+
 
