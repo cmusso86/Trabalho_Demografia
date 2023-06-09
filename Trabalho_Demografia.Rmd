@@ -37,21 +37,23 @@ O tema desse trabalho é a dinâmica demográfica, com a análise de dois compon
 
 - Se familiarizar com os bancos de dados de nascidos vivos e óbitos do Ministério da Saúde.
 
-# Questão 1: Diagrama de Lexis
+# Desenvolvimento
 
-a) Construir o Diagrama de Lexis para os dados de nascidos vivos de 2000 a 2021 da UF escolhida (SINASC) e de óbitos menores de 5 anos (idades simples) para o mesmo período segundo ano de nascimento.
+## Questão 1: Diagrama de Lexis {-}
 
-b) Supondo população fechada (inexistência de migração), calcule a probabilidade de um recém-nascido na UF ou território de escolha sobreviver à idade exata 5 para as coortes de 2000 a 2016.
+**a) Construir o Diagrama de Lexis para os dados de nascidos vivos de 2000 a 2021 da UF escolhida (SINASC) e de óbitos menores de 5 anos (idades simples) para o mesmo período segundo ano de nascimento.**
 
-c) Considerando o mesmo pressuposto, calcule a probabilidade de sobreviver ao primeiro aniversário dos recém-nascidos no período de 2000 a 2020.
+**b) Supondo população fechada (inexistência de migração), calcule a probabilidade de um recém-nascido na UF ou território de escolha sobreviver à idade exata 5 para as coortes de 2000 a 2016.**
 
-d) Comente sobre os valores encontrados. Não esquecer a qualidade da informação trabalhada.
+**c) Considerando o mesmo pressuposto, calcule a probabilidade de sobreviver ao primeiro aniversário dos recém-nascidos no período de 2000 a 2020.**
+
+**d) Comente sobre os valores encontrados. Não esquecer a qualidade da informação trabalhada.**
 
 \newpage
 
-# Questão 2: Natalidade/Fecundidade 
+## Questão 2: Natalidade/Fecundidade {-}
 
-## a) Com base nos dados do SINASC para os de 2010, 2019 e  2021 e na população por sexo e idade estimada (projetada), construa os seguintes indicadores para a Unidade da Federação: {-}
+**a) Com base nos dados do SINASC para os de 2010, 2019 e  2021 e na população por sexo e idade estimada (projetada), construa os seguintes indicadores para a Unidade da Federação:**
 
 
 
@@ -214,17 +216,25 @@ nfx %>%
 
 
 
-### Taxa de Fecundidade Total (TFT) 
-Taxas específicas de fecundidade feminina (apenas os nascimentos femininos)
-Taxa Bruta de Reprodução
-Taxa Líquida de Reprodução (é necessária a informação da função L da Tábua de Vida)
-b) Compare os seus resultados com os valores obtidos  pelo IBGE (projeções), e para o Brasil, pelo estudo GBD, pelas Nações Unidas (UN Population) e aqueles publicados no site do Datasus para 2010 (RIPSA - Indicadores e dados básicos - http://tabnet.datasus.gov.br/cgi/idb2012/matriz.htm ). Como  os indicadores de reprodução não aparecem nessas listas, a partir das TFT, calcule esses indicadores para comparação.
+### Taxa de Fecundidade Total (TFT) {-}
 
-c) Comente esses resultados (inclusive os gráficos das nfx), fazendo referência a artigos já publicados sobre o assunto.
 
-d) Para os dados do SINASC para 2021, analise a associação entre (apresente ao menos uma medida de associação):
+### Taxas específicas de fecundidade feminina {-}
 
-idade e escolaridade da mãe 
+
+### Taxa Bruta de Reprodução {-}
+
+
+### Taxa Líquida de Reprodução {-}
+
+
+**b) Compare os seus resultados com os valores obtidos  pelo IBGE (projeções), e para o Brasil, pelo estudo GBD, pelas Nações Unidas (UN Population) e aqueles publicados no site do Datasus para 2010 (RIPSA - Indicadores e dados básicos - http://tabnet.datasus.gov.br/cgi/idb2012/matriz.htm ). Como  os indicadores de reprodução não aparecem nessas listas, a partir das TFT, calcule esses indicadores para comparação.**
+
+**c) Comente esses resultados (inclusive os gráficos das nfx), fazendo referência a artigos já publicados sobre o assunto.**
+
+**d) Para os dados do SINASC para 2021, análise a associação entre (apresente ao menos uma medida de associação):**
+
+ idade e escolaridade da mãe 
 tipo de parto e escolaridade da mãe
 Apresente graficamente os dados e obtenha medidas para essa associação.
 
