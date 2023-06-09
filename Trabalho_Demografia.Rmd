@@ -14,7 +14,9 @@ output:
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = FALSE, 
+                      warning = FALSE, 
+                      message = FALSE)
 ```
 
 # Introdução
@@ -27,10 +29,11 @@ O tema desse trabalho é a dinâmica demográfica, com a análise de dois compon
 
 # Objetivos
 
+- Aplicar os conceitos e técnicas para análise de componentes de natalidade,  fecundidade e mortalidade a dados reais do estado de Santa Catarina. 
 
-- Aplicar os conceitos e técnicas para a análise das componentes natalidade/fecundidade e mortalidade a dados reais do estado de Santa Catarina.
+- Aplicar os conceitos e técnicas para a análise das componentes natalidade e fecundidade e mortalidade a dados reais do estado de Santa Catarina.
 
-Avaliar a qualidade da informação dos Sistemas de Informação sobre Nascidos Vivos e Mortalidade do Ministério da Saúde para análise da fecundidade e mortalidade de Santa Catarina.
+- Avaliar a qualidade da informação dos Sistemas de Informação sobre Nascidos Vivos e Mortalidade do Ministério da Saúde para análise da fecundidade e mortalidade de Santa Catarina.
 
 - Se familiarizar com os bancos de dados de nascidos vivos e óbitos do Ministério da Saúde.
 
@@ -44,14 +47,174 @@ c) Considerando o mesmo pressuposto, calcule a probabilidade de sobreviver ao pr
 
 d) Comente sobre os valores encontrados. Não esquecer a qualidade da informação trabalhada.
 
+\newpage
 
 # Questão 2: Natalidade/Fecundidade 
 
-a) Com base nos dados do SINASC para os de 2010, 2019 e  2021 e na população por sexo e idade estimada (projetada), construa os seguintes indicadores para a Unidade da Federação:
+## a) Com base nos dados do SINASC para os de 2010, 2019 e  2021 e na população por sexo e idade estimada (projetada), construa os seguintes indicadores para a Unidade da Federação: {-}
 
-Taxa Bruta de Natalidade
-Taxa Fecundidade Geral (TFG) e Taxas específicas de fecundidade - nfx (Grafique esses valores)
-Taxa de Fecundidade Total (TFT) ou Índice Sintético de Fecundidade
+
+
+### Taxa Bruta de Natalidade (TBN) {-}
+
+```{r}
+pacman::p_load(tidyverse, LexisPlotR, readxl, janitor, kableExtra, scales)
+pacman::p_load_gh("danicat/read.dbc")
+
+# Dados -------
+
+arquivos_nasc <- str_c("Bases/", 
+                  list.files(path="Bases/", pattern="^DNS"))
+
+nascimentos <-  map_dfr(arquivos_nasc,~ read.dbc(.x)) %>% 
+  mutate_all(~as.character(.))
+
+obitos <- readRDS("Bases/dados_SIM.rds")
+
+
+populacao <- read_excel("Bases/populacao_Sc.xls")
+
+
+ibge_indicadores <- read_excel("Bases/indicadores_IBGE_SC.xlsx")
+
+# Processamento dados -----
+
+
+pop_grupos<- populacao %>% 
+  select(IDADE, Sexo, "2010","2019", "2021" ) %>% 
+  mutate(IDADE=str_replace(IDADE, "\\+", "")) %>% 
+  mutate(IDADE=as.numeric(IDADE)) %>% 
+  mutate(faixa=cut(IDADE, breaks=c(-1, 1, 5, 10, 15, 20,
+                                   25, 30, 35, 40, 45, 50, 
+                                   55, 60, 65, 70, 75, 80, 
+                                   85,90,  200), 
+                   labels=c("<1", "1-4", "5-9", "10-14", "15-19",
+                            "20-24", "25-29", "30-34", "35-39", 
+                            "40-44", "45-49", "50-54", "55-59",
+                            "60-64", "65-69", "70-74", "75-79", 
+                            "80-84", "85-89", ">90"), right=F)) %>% 
+  pivot_longer(cols=c("2010", "2019", "2021"), names_to = "Ano", 
+               values_to = "Pop") %>% 
+  group_by(Ano, Sexo, faixa) %>% 
+  summarise(Pop=sum(Pop)) %>% 
+  pivot_wider(id_cols=c(Sexo, faixa), 
+              names_from = Ano, values_from = Pop) 
+
+
+# chequei só tem SC mesmo
+
+nascimentos_trat <- nascimentos %>% 
+  select(IDADEMAE, DTNASC, SEXO, DTNASCMAE) %>% 
+  mutate(DTNASC=dmy(DTNASC),
+         DTNASCMAE=dmy(DTNASCMAE),
+         IDADEMAE=as.numeric(IDADEMAE)) %>% 
+  mutate(Ano=as.character(year(DTNASC)),
+         faixa=cut(IDADEMAE, breaks=c(-1, 1, 5, 10, 15, 20,
+                                          25, 30, 35, 40, 45, 50, 
+                                          55, 60, 65, 70, 75, 80, 
+                                          85,90,  200), 
+                   labels=c("<1", "1-4", "5-9", "10-14", "15-19",
+                                   "20-24", "25-29", "30-34", "35-39", 
+                                   "40-44", "45-49", "50-54", "55-59",
+                                   "60-64", "65-69", "70-74", "75-79", 
+                                   "80-84", "85-89", ">90"), right=F))
+  
+nascimentos_tot <- nascimentos_trat %>% 
+  group_by(Ano) %>% 
+  count(name="nasc")
+
+TBN <-pop_grupos %>% 
+  adorn_totals() %>% 
+  filter(Sexo=="Total")%>% 
+  select("2010", "2019", "2021") %>% 
+  pivot_longer(everything(), names_to = "Ano",
+               values_to = "Pop") %>% 
+  left_join(nascimentos_tot) %>% 
+  mutate(TBN = (nasc/Pop)*1000)
+
+
+```
+
+A TBN é uma medida da intensidade dos nacimentos em uma população. É uma das medidas mais simples de serem realizadas no que se refere a medida de nascimentos de uma população, uma vez que para seu cálculo são necessários apensas os valores de população residente e de nascimentos ocorridos em um período. É uma medida que pode ser muito influenciada pela estrutura etária de uma população bem como a razão de sexo. 
+
+Pela tabela abaixo, podemos observar que a TBN do estado se manteve em torno de 13 nascimentos para cada mil habitantes, sendo que a taxa mais baixa foi observada em 2021. 
+
+```{r}
+
+caption1 <- "Taxa Bruta de Natalidade no estado de Santa Catarina, Brasil, nos anos de 2010, 2019 e 2021."
+
+TBN %>% 
+  mutate_if(is.numeric, ~comma(., decimal.mark = ",", big.mark = ".")) %>% 
+  kable(format="latex",caption = caption1, booktabs = TRUE, linesep="", align=c("c", "r", "r", "r"), col.names=c("Ano", "População\nresidente", "Nascidos\nVivos", "TBN\n(mil hab.)"))  %>%
+   kable_styling(latex_options="hold_position", position="center")
+```
+
+### Taxa Fecundidade Geral (TFG) {-}
+
+A TFG ligeriamente mais refinada que o indicador anterior por acrescenta uma informação que a medida anterior não possúia, que é a relaÇão de nascimentos por mulheres em período. Entretanto, ainda há muita influência da estrutura etária, uma vez que a fecundidade feminina não é constante durante seu período fértil. 
+Ta tabela abaixo podemos observar os resultados para os anos selecionados. Nesse caso o valor mais baixo foi observado em 2010 e o mais alto em 2019, e em 2021 o valor voltou a descrescer. 
+
+```{r}
+pop_fem_fertil <- pop_grupos %>% 
+  filter(Sexo=="F", 
+         faixa %in% c("15-19", "20-24", "25-29",
+                      "30-34", "35-39", "40-44",
+                      "45-49")) 
+
+TFG <- pop_fem_fertil %>% 
+  adorn_totals() %>% 
+  filter(Sexo=="Total") %>% 
+  select("2010", "2019", "2021") %>% 
+  pivot_longer(everything(), names_to = "Ano",
+               values_to = "Pop_fem") %>% 
+  left_join(nascimentos_tot) %>% 
+  mutate(TFG = nasc/Pop_fem*1000)
+
+caption2 <- "Taxa de Fecundidade Geral por mil habitantes no estado de Santa Catarina, Brasil, nos anos de 2010, 2019 e 2021."
+
+TFG %>% 
+  mutate_if(is.numeric, ~comma(., decimal.mark = ",", big.mark = ".")) %>% 
+  kable(format="latex",caption = caption2, booktabs = TRUE, linesep="", align=c("c", "r", "r", "r"), col.names=c("Ano", "População Feminina \nresidente", "Nascidos\nVivos", "TGF\n(mil hab.)"))  %>%
+   kable_styling(latex_options="hold_position", position="center")
+```
+
+
+### Taxas específicas de fecundidade - nfx {-}
+
+
+A medida de taxa específica acrescenta ainda a estratificação por faixa-etária. Nesse sentido, é uma medida que permite a comparação etre populações e ao longo do tempo. 
+
+Abaixo podemos observar que para todos os anos, a idade mais prolífica foi entre 25-29 anos. Entretanto, observamos que para o ano de 2010 a fecundidade era mais equilibrada entre 20-24 e 25-29 anos, enquanto que para o ano de 
+```{r}
+pop_fem_fertil_faixa <- pop_fem_fertil %>% 
+  pivot_longer(c("2010", "2019", "2021"),
+               names_to = "Ano", values_to = "Pop") 
+ 
+nfx <- nascimentos_trat %>% 
+  group_by(Ano, faixa) %>% 
+  count(name = "nasc") %>% 
+  right_join(pop_fem_fertil_faixa) %>% 
+  mutate(nfx = nasc/Pop*1000) %>% 
+  select(Ano, faixa, nfx) %>% 
+  pivot_wider(id_cols = faixa, 
+              names_from = Ano, 
+              values_from = nfx) 
+
+
+caption3 <- "Taxa de Fecundidade Específica por mil habitante no estado de Santa Catarina, Brasil, nos anos de 2010, 2019 e 2021."
+
+nfx %>% 
+  mutate_if(is.numeric, ~comma(., decimal.mark = ",", big.mark = ".", accuracy = .1)) %>%
+  mutate(faixa=str_c(faixa,  " anos")) %>% 
+  kable(format="latex",caption = caption2, booktabs = TRUE, linesep="", align=c("l", "r", "r", "r"), col.names=c("Faixa-Etária", "2010", "2019", "2021"))  %>%
+   kable_styling(latex_options="hold_position", position="center") %>% 
+  add_header_above(c(" ", "nfx (mil hab.)"=3))
+
+```
+
+
+
+### Taxa de Fecundidade Total (TFT) 
 Taxas específicas de fecundidade feminina (apenas os nascimentos femininos)
 Taxa Bruta de Reprodução
 Taxa Líquida de Reprodução (é necessária a informação da função L da Tábua de Vida)
@@ -66,3 +229,4 @@ tipo de parto e escolaridade da mãe
 Apresente graficamente os dados e obtenha medidas para essa associação.
 
 \newpage
+
