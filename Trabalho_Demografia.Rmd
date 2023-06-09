@@ -19,7 +19,50 @@ knitr::opts_chunk$set(echo = TRUE)
 
 # Introdução
 
-\cite{neuralnet}
-\citeonline{roxy}
+O estado brasileiro de Santa Catarina tem como capital a ilha de Floranópolis e está localizado no centro da região sul do país. O estado faz fronteira ao norte com o Paraná e ao sul pelo Rio Grande do Sul. É banhado ao leste pelo Oceano Atlântico e e ao oeste faz fronteira com a Argentina. Sua área abrange 95.736,165 km² (https://www.ibge.gov.br/cidades-e-estados) e possui uma população de mais de 6 milhões de habitantes , sendo o décimo estado mais populoso do Brasil (https://ftp.ibge.gov.br/Estimativas_de_Populacao/Estimativas_2021/estimativa_dou_2021.pdf). O estado possui 295 municípios, sendo Joinville, Florianópolis, Blumenau, Criciúma e Chapecó as principais cidades.
+
+Santa Catarina possui índices sociais muito elevados em comparação com o restante do Brasil. É o estado com a maior expectativa de vida, empatando com o Distrito Federal. Além disso, possui a menor taxa de mortalidade infantil e é o estado com menor desigualdade econômica e analfabetismo no país. Em termos econômicos, Santa Catarina possui o sexto maior Produto Interno Bruto (PIB) do Brasil e o quarto maior PIB per capita, ficando atrás apenas do Distrito Federal, São Paulo e Mato Grosso. Sua economia é diversificada e tem uma forte ênfase na industrialização. O estado é um importante polo de exportação e consumo, sendo um dos maiores contribuintes para o crescimento da economia brasileira, representando 4% do PIB nacional (https://agenciadenoticias.ibge.gov.br/agencia-sala-de-imprensa/2013-agencia-de-noticias/releases/17999-contas-regionais-2015-queda-no-pib-atinge-todas-as-unidades-da-federacao-pela-primeira-vez-na-serie).
+
+O tema desse trabalho é a dinâmica demográfica, com a análise de dois componentes: a natalidade/fecundidade e a mortalidade do estado de Santa Catarina. 
+
+# Objetivos
+
+
+- Aplicar os conceitos e técnicas para a análise das componentes natalidade/fecundidade e mortalidade a dados reais do estado de Santa Catarina.
+
+Avaliar a qualidade da informação dos Sistemas de Informação sobre Nascidos Vivos e Mortalidade do Ministério da Saúde para análise da fecundidade e mortalidade de Santa Catarina.
+
+- Se familiarizar com os bancos de dados de nascidos vivos e óbitos do Ministério da Saúde.
+
+# Questão 1: Diagrama de Lexis
+
+a) Construir o Diagrama de Lexis para os dados de nascidos vivos de 2000 a 2021 da UF escolhida (SINASC) e de óbitos menores de 5 anos (idades simples) para o mesmo período segundo ano de nascimento.
+
+b) Supondo população fechada (inexistência de migração), calcule a probabilidade de um recém-nascido na UF ou território de escolha sobreviver à idade exata 5 para as coortes de 2000 a 2016.
+
+c) Considerando o mesmo pressuposto, calcule a probabilidade de sobreviver ao primeiro aniversário dos recém-nascidos no período de 2000 a 2020.
+
+d) Comente sobre os valores encontrados. Não esquecer a qualidade da informação trabalhada.
+
+
+# Questão 2: Natalidade/Fecundidade 
+
+a) Com base nos dados do SINASC para os de 2010, 2019 e  2021 e na população por sexo e idade estimada (projetada), construa os seguintes indicadores para a Unidade da Federação:
+
+Taxa Bruta de Natalidade
+Taxa Fecundidade Geral (TFG) e Taxas específicas de fecundidade - nfx (Grafique esses valores)
+Taxa de Fecundidade Total (TFT) ou Índice Sintético de Fecundidade
+Taxas específicas de fecundidade feminina (apenas os nascimentos femininos)
+Taxa Bruta de Reprodução
+Taxa Líquida de Reprodução (é necessária a informação da função L da Tábua de Vida)
+b) Compare os seus resultados com os valores obtidos  pelo IBGE (projeções), e para o Brasil, pelo estudo GBD, pelas Nações Unidas (UN Population) e aqueles publicados no site do Datasus para 2010 (RIPSA - Indicadores e dados básicos - http://tabnet.datasus.gov.br/cgi/idb2012/matriz.htm ). Como  os indicadores de reprodução não aparecem nessas listas, a partir das TFT, calcule esses indicadores para comparação.
+
+c) Comente esses resultados (inclusive os gráficos das nfx), fazendo referência a artigos já publicados sobre o assunto.
+
+d) Para os dados do SINASC para 2021, analise a associação entre (apresente ao menos uma medida de associação):
+
+idade e escolaridade da mãe 
+tipo de parto e escolaridade da mãe
+Apresente graficamente os dados e obtenha medidas para essa associação.
 
 \newpage
