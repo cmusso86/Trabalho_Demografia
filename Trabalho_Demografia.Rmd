@@ -194,7 +194,7 @@ TFG %>%
 
 A medida de taxa específica acrescenta ainda a estratificação por faixa-etária. Nesse sentido, é uma medida que permite a comparação etre populações e ao longo do tempo. 
 
-Abaixo podemos observar que para todos os anos, a idade mais prolífica foi entre 25-29 anos. Entretanto, observamos que para o ano de 2010 a fecundidade era mais equilibrada entre 20-24 e 25-29 anos, enquanto que para o ano de 
+Abaixo podemos observar que para todos os anos, a idade mais prolífica foi entre 25-29 anos. Entretanto, observamos que para o ano de 2010 a fecundidade era mais equilibrada entre 20-24 e 25-29 anos, enquanto que para o ano de 2019 e 2022 houve elativamente taxas maiores em idades de 25-29 > 30 anos. 
 ```{r}
 pop_fem_fertil_faixa <- pop_fem_fertil %>% 
   pivot_longer(c("2010", "2019", "2021"),
@@ -216,7 +216,7 @@ caption3 <- "Taxa de Fecundidade Específica por mil habitante no estado de Sant
 nfx %>% 
   mutate_if(is.numeric, ~comma(., decimal.mark = ",", big.mark = ".", accuracy = .1)) %>%
   mutate(faixa=str_c(faixa,  " anos")) %>% 
-  kable(format="latex",caption = caption2, booktabs = TRUE, linesep="", align=c("l", "r", "r", "r"), col.names=c("Faixa-Etária", "2010", "2019", "2021"))  %>%
+  kable(format="latex",caption = caption3, booktabs = TRUE, linesep="", align=c("l", "r", "r", "r"), col.names=c("Faixa-Etária", "2010", "2019", "2021"))  %>%
    kable_styling(latex_options="hold_position", position="center") %>% 
   add_header_above(c(" ", "nfx (mil hab.)"=3))
 
@@ -224,15 +224,80 @@ nfx %>%
 
 
 
-### Taxa de Fecundidade Total ({-}
+### Taxa de Fecundidade Total {-}
 
+```{r}
+TFT <- nfx %>% 
+  pivot_longer(c("2010", "2019", "2021"),
+               names_to = "Ano", values_to = "nfx") %>% 
+  mutate(nfx_5=5*nfx/1000) %>% 
+  select(-nfx) %>% 
+  pivot_wider(id_cols = faixa, 
+              names_from = Ano, 
+              values_from = nfx_5) %>% 
+  adorn_totals(name="TFT") %>% 
+  filter(faixa=="TFT") %>% 
+  pivot_longer(-faixa, names_to =  "Ano", values_to = "TFT") %>% 
+  select(-faixa)
 
+caption4 <- "Taxa de Fecundidade total no estado de Santa Catarina, Brasil, nos anos de 2010, 2019 e 2021."
+
+TFT %>% 
+  mutate_if(is.numeric, ~comma(., decimal.mark = ",", big.mark = ".", accuracy = .01)) %>%
+  kable(format="latex",caption = caption4, booktabs = TRUE, linesep="", align=c("l", "r"), col.names=c("Ano", "TFT"))  %>%
+   kable_styling(latex_options="hold_position", position="center") 
+```
 
 
 ### Taxas específicas de fecundidade feminina {-}
 
+```{r}
+nffx <- nascimentos_trat %>% 
+  filter(SEXO==2) %>% 
+  group_by(Ano, faixa) %>% 
+  count(name = "nasc") %>% 
+  right_join(pop_fem_fertil_faixa) %>% 
+  mutate(nffx = nasc/Pop*1000) %>% 
+  select(Ano, faixa, nffx) %>% 
+  pivot_wider(id_cols = faixa, 
+              names_from = Ano, 
+              values_from = nffx) 
+
+
+caption5 <- "Taxas Específica de Fecundidade Feminina por mil habitante no estado de Santa Catarina, Brasil, nos anos de 2010, 2019 e 2021."
+
+nffx %>% 
+  mutate_if(is.numeric, ~comma(., decimal.mark = ",", big.mark = ".", accuracy = .1)) %>%
+  mutate(faixa=str_c(faixa,  " anos")) %>% 
+  kable(format="latex",caption = caption5, booktabs = TRUE, linesep="", align=c("l", "r", "r", "r"), col.names=c("Faixa-Etária", "2010", "2019", "2021"))  %>%
+   kable_styling(latex_options="hold_position", position="center") %>% 
+  add_header_above(c(" ", "nffx (mil hab.)"=3))
+```
+
 
 ### Taxa Bruta de Reprodução {-}
+
+```{r}
+TBR <- nffx %>% 
+  pivot_longer(c("2010", "2019", "2021"),
+               names_to = "Ano", values_to = "nffx") %>% 
+  mutate(nffx_5=5*nffx/1000) %>% 
+  select(-nffx) %>% 
+  pivot_wider(id_cols = faixa, 
+              names_from = Ano, 
+              values_from = nffx_5) %>% 
+  adorn_totals(name="TBR") %>% 
+  filter(faixa=="TBR") %>% 
+  select(-faixa) %>% 
+  pivot_longer(everything(), names_to = "Ano", values_to = "TBR")
+
+caption6 <- "Taxa de Bruta de Reprodução no estado de Santa Catarina, Brasil, nos anos de 2010, 2019 e 2021."
+
+TBR  %>% 
+  mutate_if(is.numeric, ~comma(., decimal.mark = ",", big.mark = ".", accuracy = .01)) %>%
+  kable(format="latex",caption = caption6, booktabs = TRUE, linesep="", align=c("l", "r"), col.names=c("Ano", "TBR"))  %>%
+   kable_styling(latex_options="hold_position", position="center") 
+```
 
 
 ### Taxa Líquida de Reprodução {-}
