@@ -194,7 +194,7 @@ TFG %>%
 
 A medida de taxa específica acrescenta ainda a estratificação por faixa-etária. Nesse sentido, é uma medida que permite a comparação etre populações e ao longo do tempo. 
 
-Abaixo podemos observar que para todos os anos, a idade mais prolífica foi entre 25-29 anos. Entretanto, observamos que para o ano de 2010 a fecundidade era mais equilibrada entre 20-24 e 25-29 anos, enquanto que para o ano de 2019 e 2022 houve elativamente taxas maiores em idades de 25-29 > 30 anos. 
+Abaixo podemos observar que para todos os anos, a idade mais prolífica foi entre 25-29 anos. Entretanto, observamos que para o ano de 2010 a fecundidade era mais equilibrada entre 20-24 e 25-29 anos, enquanto que para o ano de 2019 e 2022 houve relativamente taxas maiores em idades de 25-29 > 30 anos. 
 
 
 ```{r}
@@ -241,6 +241,8 @@ nfx %>%
 
 ### Taxa de Fecundidade Total {-}
 
+A taxa de fecundidade total pode trazer informação sobre o potencial de crescimento de uma população. Em geral, valores acima de 2,1 indicam uma reposição positiva da população, com tendência de crescimento a longo prazo. Notamos que, pelo padrão abaixo, apesar de ter havido um aumento na reprodução nos últimos anos, esse valor se mantém abaixo do limiar considerado para reposição da população existente.
+
 ```{r}
 TFT <- nfx %>% 
   pivot_longer(c("2010", "2019", "2021"),
@@ -265,6 +267,10 @@ TFT %>%
 
 
 ### Taxas específicas de fecundidade feminina {-}
+
+As taxas específicas de fecundidade feminina já acrescentam a informação de reposição da população com indivíduos que, por sua vez, també, tâm a capacidade de se reproduzir. A estratificação por faixa-etária permite a comparação entre populações e ao longo do tempo, e também o cálculo do indicador que será apresentado no próximo tópico. 
+
+
 
 ```{r}
 nffx <- nascimentos_trat %>% 
@@ -292,6 +298,8 @@ nffx %>%
 
 ### Taxa Bruta de Reprodução {-}
 
+A taxa bruta de repodução poderia ser equivalente a taxa de fecundidade total, mas dessa vez considerando apenas a populaÇão feminina.
+
 ```{r}
 TBR <- nffx %>% 
   pivot_longer(c("2010", "2019", "2021"),
@@ -317,6 +325,7 @@ TBR  %>%
 
 ### Taxa Líquida de Reprodução {-}
 
+Finalmente, a taxa líquida de reprodução leva em consideração o risco de mortalidade em cada faixa-etária. 
 
 
 **b) Compare os seus resultados com os valores obtidos  pelo IBGE (projeções), e para o Brasil, pelo estudo GBD, pelas Nações Unidas (UN Population) e aqueles publicados no site do Datasus para 2010 (RIPSA - Indicadores e dados básicos - http://tabnet.datasus.gov.br/cgi/idb2012/matriz.htm ). Como  os indicadores de reprodução não aparecem nessas listas, a partir das TFT, calcule esses indicadores para comparação.**
