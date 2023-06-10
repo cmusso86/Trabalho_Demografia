@@ -133,7 +133,7 @@ plot2021 <- nMx %>% filter(Ano=="2021") %>%
 
 
 cowplot::plot_grid(plot2010,plot2019,plot2021)
-ggsave('./img/TEM.png', width = 188, height = 113, units = 'mm')
+ggsave('./img/TEM.png', width = 188, height = 113, units = 'mm',bg="white")
 
 # Letra b -------
 
@@ -323,3 +323,136 @@ tbl_homens %>%
 
 # Letra e -------
 
+# Construa Tábuas de Vida para cada sexo para a UF escolhida para 2021, a partir das
+# taxas específicas de mortalidade obtidas no item a:
+
+# Utilize a TMI obtida no item b ou do estudo Global Burden of Disease - GBD.
+# Lembre que deve-se obter a TMI para cada sexo em separado.
+
+# Estime os fatores de separação, para cada sexo, para as idades 0-1 e 1-4 com base nos microdados do SIM.
+
+l0 <- 100000
+
+# Tábua sexo FEMININO
+# calculando a TMI feminina
+
+nasc_2021_feminino <- 46911 #dados do SINASC
+nasc_2021_masculino <- 49577
+# nº medio de obitos de menores de 1 ano
+obitos_1_ano_mulher <- mortalidade %>% filter(ano_obt %in% c("2021")) %>%
+  filter(sexo=="F") %>%
+  filter(idade_dias<365) %>% group_by(ano_obt) %>%
+  summarise(obitos=n())
+
+media_obt_1_ano_F <- mean(obitos_1_ano_mulher$obitos)
+
+q10F <- media_obt_1_ano_F/nasc_2021_feminino*1000
+
+# Estimando os fatores de separacao
+
+calcula_fator_separacao <- function(x,n,dados){
+  obitos_periodo <- dados %>% filter(idade>=x & idade<=(x+n))
+  tempo_vida_no_intervalo <- (obitos_periodo$idade - x)
+  nkx <- mean(tempo_vida_no_intervalo)
+  
+  return(nkx)
+}
+
+
+mort_feminino <- mortalidade %>% filter(sexo=="F")
+x <- c(0,1,seq(5,90,5)) 
+n <- c(1,4,rep(5,17),35) # o ultimo n=35 é para aceitar idades até 90+35=125
+
+ks_femininos <- purrr::map2(x,n, ~ calcula_fator_separacao(.x,.y,mort_feminino)) %>%
+  unlist()
+
+nMx_feminino <- nMx %>% filter(Ano==2021 & sexo=="Feminino")
+nMx_feminino <- nMx_feminino$nMx
+
+nqxF <- n*nMx_feminino/(1+(n-ks_femininos)*nMx_feminino)
+nqxF[1] <- q10F/1000
+nqxF[20] <- 1
+
+lx <- c(l0)
+ndx <- lx * nqxF[1]
+
+for (i in 2:20){
+  lx[i] <- lx[i-1]-ndx[i-1]
+  ndx[i] <- lx[i] * nqxF[i]
+}
+
+nLxF <- lx*n + ndx*ks_femininos
+nLxF[20] <- ndx[20]*ks_femininos[20] 
+TxF <- rev(cumsum(rev(nLxF)))
+
+tabua_feminino <- data.frame("x"=x,"n"=c(n[-20],"+"),
+                             "nMx"=round(nMx_feminino,4),
+                             "nkx"=round(ks_femininos,3),
+                             "nqx"=round(nqxF,4),
+                             "lx"=lx,
+                             "ndx"=round(ndx,3),
+                             "nLx"=nLxF,
+                             "Tx"=TxF,
+                             "ex"=round(TxF/lx,3),
+                             check.names = F)
+
+tabua_feminino %>%
+  kableExtra::kbl(.,align=rep('r',10),booktabs = T,
+                  caption = 'Tábua de vida para o sexo feminino em 2021 - Santa Catarina') %>% 
+  kableExtra::kable_classic(full_width=FALSE,latex_options = "HOLD_position")
+
+# Tábua sexo MASCULINO
+# calculando a TMI masculina
+
+# nº medio de obitos de menores de 1 ano
+obitos_1_ano_homem <- mortalidade %>% filter(ano_obt %in% c("2021")) %>%
+  filter(sexo=="M") %>%
+  filter(idade_dias<365) %>% group_by(ano_obt) %>%
+  summarise(obitos=n())
+
+media_obt_1_ano_M <- mean(obitos_1_ano_homem$obitos)
+
+q10M <- media_obt_1_ano_M/nasc_2021_masculino*1000
+
+# Estimando os fatores de separacao
+mort_masc <- mortalidade %>% filter(sexo=="M")
+x <- c(0,1,seq(5,90,5)) 
+n <- c(1,4,rep(5,17),35) # o ultimo n=35 é para aceitar idades até 90+35=125
+
+ks_masc <- purrr::map2(x,n, ~ calcula_fator_separacao(.x,.y,mort_masc)) %>%
+  unlist()
+
+nMx_masc <- nMx %>% filter(Ano==2021 & sexo=="Masculino")
+nMx_masc <- nMx_masc$nMx
+
+nqxM <- n*nMx_masc/(1+(n-ks_masc)*nMx_masc)
+nqxM[1] <- q10M/1000
+nqxM[20] <- 1
+
+lx_masc <- c(l0)
+ndx_masc <- lx_masc * nqxM[1]
+
+for (i in 2:20){
+  lx_masc[i] <- lx_masc[i-1]-ndx_masc[i-1]
+  ndx_masc[i] <- lx_masc[i] * nqxM[i]
+}
+
+nLxM <- lx_masc*n + ndx_masc*ks_masc
+nLxM[20] <- ndx_masc[20]*ks_masc[20] 
+TxM <- rev(cumsum(rev(nLxM)))
+
+tabua_masculino <- data.frame("x"=x,"n"=c(n[-20],"+"),
+                             "nMx"=round(nMx_masc,4),
+                             "nkx"=round(ks_masc,3),
+                             "nqx"=round(nqxM,4),
+                             "lx"=lx_masc,
+                             "ndx"=round(ndx_masc,3),
+                             "nLx"=nLxM,
+                             "Tx"=TxM,
+                             "ex"=round(TxM/lx_masc,3),
+                             check.names = F)
+
+tabua_masculino %>%
+  kableExtra::kbl(.,align=rep('r',10),booktabs = T,
+                  caption = 'Tábua de vida para o sexo masculino em 2021 - Santa Catarina') %>% 
+  kableExtra::kable_classic(full_width=FALSE,latex_options = "HOLD_position")
