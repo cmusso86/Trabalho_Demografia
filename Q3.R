@@ -456,3 +456,43 @@ tabua_masculino %>%
   kableExtra::kbl(.,align=rep('r',10),booktabs = T,
                   caption = 'Tábua de vida para o sexo masculino em 2021 - Santa Catarina') %>% 
   kableExtra::kable_classic(full_width=FALSE,latex_options = "HOLD_position")
+
+## Com base na TV calculada, grafique as funções lx e nqx para cada sexo e comente os resultados.
+
+# sobrevivencia lx
+
+df_lx <- data.frame("faixa"=unique(nMx$faixa),"Sexo"=c(rep("Masculino",20),rep("Feminino",20)),
+                    "lx"=c(tabua_masculino$lx,tabua_feminino$lx))
+
+df_lx$Sexo <- factor(df_lx$Sexo,levels = c("Masculino","Feminino"))
+
+df_lx %>%
+  ggplot(aes(x=faixa,y=lx,group=Sexo,colour=Sexo))+
+  geom_line(size=1)+
+  scale_colour_manual(name="Sexo",values=c("darkcyan",
+                                           "darkred"))+
+  labs(x="",y="lx")+
+  theme_minimal()+
+  theme(axis.text.x = element_text(angle = 45, vjust = 0.9, hjust=1))+
+  theme(legend.position = 'top', legend.direction = "horizontal")
+ggsave('./img/graf_lx.png', width = 158, height = 93, units = 'mm',bg="white")
+
+# grafico nqx
+
+df_nqx <- data.frame("faixa"=unique(nMx$faixa),"Sexo"=c(rep("Masculino",20),rep("Feminino",20)),
+                    "nqx"=c(tabua_masculino$nqx,tabua_feminino$nqx))
+
+df_nqx$Sexo <- factor(df_nqx$Sexo,levels = c("Masculino","Feminino"))
+
+df_nqx %>%
+  ggplot(aes(x=faixa,y=nqx,group=Sexo,colour=Sexo))+
+  geom_line(size=1)+
+  scale_colour_manual(name="Sexo",values=c("darkcyan",
+                                           "darkred"))+
+  scale_y_log10()+
+  labs(x="",y="nqx")+
+  theme_minimal()+
+  theme(axis.text.x = element_text(angle = 45, vjust = 0.9, hjust=1))+
+  theme(legend.position = 'top', legend.direction = "horizontal")
+ggsave('./img/graf_nqx.png', width = 158, height = 93, units = 'mm',bg="white")
+
