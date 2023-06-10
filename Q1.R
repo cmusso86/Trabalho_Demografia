@@ -57,4 +57,4 @@ diagrama <- lexis_grid(lwd=0.15, year_start = 1995, year_end = 2023, age_start =
 diagrama
 
 
-ggsave("diaglexis_a.png", width = 188, height = 93, units = "mm")
+ggsave("img/diaglexis_a.png", width = 188, height = 93, units = "mm")
