@@ -375,6 +375,101 @@ TLR  %>%
 
 **b) Compare os seus resultados com os valores obtidos  pelo IBGE (projeções), e para o Brasil, pelo estudo GBD, pelas Nações Unidas (UN Population) e aqueles publicados no site do Datasus para 2010 (RIPSA - Indicadores e dados básicos - http://tabnet.datasus.gov.br/cgi/idb2012/matriz.htm ). Como  os indicadores de reprodução não aparecem nessas listas, a partir das TFT, calcule esses indicadores para comparação.**
 
+
+
+```{r}
+# - A taxa Bruta de natalidade segundo a 2010 (RIPSA - Indicadores e dados básicos 
+#- http://tabnet.datasus.gov.br/cgi/idb2012/matriz.htm )foi de 13.7 para 2010. 
+# # 
+# TEF 
+#
+
+TBR_comp <- data_frame(Ind="TBN", "RIPSA_2010"=13.7,"IBGE_2010"=NA, "IBGE_2019"=NA,
+                       "IBGE_2021"=NA,"UN_2010"= NA,"UN_2021"= NA,
+                       GBD_2019=NA, "2010"=13.32, "2019"=13.68,
+                       "2021"=13.15)
+
+ibge_indicadores_menor<- ibge_indicadores %>% 
+  filter(Ano %in% c( 2010, 2019, 2021))
+
+nfx_IBGE <- ibge_indicadores_menor %>% 
+  select(Ano, "15-19":"45-49" ) %>% 
+  pivot_longer(-Ano, names_to = "faixa", values_to = "nfx") %>% 
+  pivot_wider(id_cols =faixa, names_from = Ano, values_from = nfx) %>% 
+  rename(IBGE_2019=`2019`,
+         IBGE_2010=`2010`,
+         IBGE_2021=`2021`) %>% 
+  left_join(nfx) %>% 
+  rename(Ind=faixa) 
+
+TBR_nfx_comp <- TBR_comp %>% 
+  bind_rows(nfx_IBGE)
+
+TBR_nfx_comp[2:8, 2] <- c(0.05088,	0.07962,	0.08163,	0.06592,	0.03475,	0.00865,	0.00055)
+
+# - segundo RIPSA a taxa específica de fecundidade para 2010
+# 	0,05088	0,07962	0,08163	0,06592	0,03475	0,00865	0,00055
+# 
+# 	
+# TFT 
+
+
+TFT_ibge <- ibge_indicadores_menor %>% 
+  select(Ano, TFT) %>% 
+  mutate(Ano=as.character(Ano)) %>% 
+  rename(TFT_ibge=TFT) %>% 
+  left_join(TFT) 
+
+TFT_comp <- data_frame(Ind="TFT", "RIPSA_2010"=NA,"IBGE_2010"=1.60, "IBGE_2019"=1.74,
+                       "IBGE_2021"=1.73,"UN_2010"= NA,"UN_2021"= NA,
+                       GBD_2019=NA, "2010"=1.56, "2019"=1.73,
+                       "2021"=1.71)
+
+TBR_TFT_nfx_comp <- TFT_comp %>% 
+  bind_rows(TBR_nfx_comp)
+
+# - segundo RIPSA a taxa  de fecundidade total para 2010 foi de 1,61
+
+TBR_TFT_nfx_comp[1,2] <- 1.61
+# - segundo UN https://data.un.org/en/iso/br.html TFT foi de 1.9 para 2010, 1.8 para 2015, 1.7 para 2021
+
+TBR_TFT_nfx_comp[1,6]<-1.9
+TBR_TFT_nfx_comp[1,7]<-1.7
+
+# segundo GDB foi de 1.4 para 2019 https://www.healthdata.org/brazil-santa-catarina
+TBR_TFT_nfx_comp[1,8]<-1.4
+
+#TBR 
+# rpsa_2010
+
+TBR_ripsa_2010 <- 1.61/2.05 # dado do site
+TBR_ibge_2010 <- 1.60/2.05
+TBR_ibge_2019 <- 1.74/2.05
+TBR_ibge_2021 <- 1.73/2.05
+TBR_UN_2010 <- 1.9/2.05
+TBR_UN_2021 <- 1.7/2.05
+TBR_GDB_2021 <- 1.4/2.05
+
+TBR_comp <- data_frame(Ind="TBR", "RIPSA_2010"=TBR_ripsa_2010,"IBGE_2010"=TBR_ibge_2010, "IBGE_2019"=TBR_ibge_2019,
+                       "IBGE_2021"=TBR_ibge_2021,"UN_2010"= TBR_UN_2010,"UN_2021"= TBR_UN_2021,
+                       GBD_2019=TBR_GDB_2021, "2010"=0.76, "2019"=0.84,
+                       "2021"=0.83) 
+
+
+TBR_TFT_TBR_nfx_comp <-TBR_TFT_nfx_comp %>% 
+  bind_rows(TBR_comp) %>% 
+  mutate_if(is.numeric, ~comma(., decimal.mark = ",", big.mark = ".",
+                    accuracy = 0.001)) %>% 
+  mutate_all(~replace(. ,NA, "-")) %>% 
+  mutate(Ind=fct_relevel(Ind,"TBN", "TFT", "TBR", "15-19",
+                         "20-24", "25-29", "30-34", "35-39",
+                         "40-44", "45-49")) %>% 
+  arrange(Ind)
+# c) Comente esses resultados (inclusive os gráficos das nfx), fazendo referência a artigos já publicados sobre o assunto.
+
+kable(TBR_TFT_TBR_nfx_comp)
+```
+
 **c) Comente esses resultados (inclusive os gráficos das nfx), fazendo referência a artigos já publicados sobre o assunto.**
 
 
