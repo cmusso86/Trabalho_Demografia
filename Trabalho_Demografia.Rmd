@@ -360,24 +360,33 @@ mortalidade_feminina <- mortalidade %>%
   summarize(obitos=n(),
               kx=mean(tempo_intervalo)) %>% left_join(pop_fem_fertil_faixa) %>% 
   mutate(mort=obitos/Pop*1000) %>% 
-  mutate(lx=c(1000, rep(NA,4))) 
+  mutate(lx=c(1000, rep(NA,4))) %>% 
+  mutate(faixa=as.character(faixa))
 
-morts <-
+morts <-list()
+lo <- list("2010"= c(1000, rep(NA,4)),
+             "2019"= c(1000, rep(NA,4)),
+                       "2021"= c(1000, rep(NA,4)))
 
-for(i in unique(mortalidade_feminina$Ano)){
- 
-morts <- mortalidade_feminina %>% 
-    filter(Ano==i) %>% 
+for(j in unique(mortalidade_feminina$Ano)){
+morts[[j]] <- mortalidade_feminina %>% 
+    filter(Ano==j) %>% 
     pull(mort)
 
-lo <- c(1000, rep(NA,4))
+for (i in 1:(length(morts[[j]])-1)){
+  lo[[j]][i+1] <-  lo[[j]][1]-morts[[j]][i] 
+}
+}
+  
+lx <- data_frame("2010"=lo[["2010"]],
+                 "2019"=lo[["2019"]],
+                 "2021"=lo[["2021"]],
+                 faixa=c("25-29", "30-34", "35-39", 
+                            "40-44", "45-49"))%>% 
+  pivot_longer(-faixa, names_to = "Ano",
+               values_to = "lx") 
 
-for (i in 1:length(morts)){
-  lo[i+1] <- lo[1]-morts[1] 
-}
-  
-}
-  
+left_join(mortalidade_feminina, lx)
 
 
 
