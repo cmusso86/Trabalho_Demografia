@@ -84,6 +84,7 @@ obitos <- readRDS("Bases/dados_SIM.rds")
 
 populacao <- read_excel("Bases/populacao_Sc.xls")
 
+mortalidade <- readRDS("dados_SIM.rds")
 
 ibge_indicadores <- read_excel("Bases/indicadores_IBGE_SC.xlsx")
 
@@ -328,107 +329,47 @@ TBR  %>%
 Finalmente, a taxa líquida de reprodução leva em consideração o risco de mortalidade em cada faixa-etária. 
 ```{r}
 
-mortalidade_feminina <- mortalidade %>% 
-  mutate(ano_obt=str_sub(DTOBITO, 5,8),
-         data_obito = lubridate::dmy(DTOBITO),
-         data_nasc = lubridate::dmy(DTNASC),
-         idade_dias = as.numeric(data_obito-data_nasc) ,
-         idade=idade_dias/365,
-         sexo = case_when(
-  SEXO==1 ~ "M",
-  SEXO==2 ~ "F",
-  SEXO==9 ~ "Ignorado"
-)) %>% 
-  filter(ano_obt %in% c("2010", "2019", "2021"),
-         sexo=="F") %>% 
-  rename(Ano=ano_obt) %>% 
-  mutate(faixa=cut(idade, breaks=c(-1, 1, 5, 10, 15, 20,
-                                   25, 30, 35, 40, 45, 50, 
-                                   55, 60, 65, 70, 75, 80, 
-                                   85,90,  200), 
-                   labels=c("<1", "1-4", "5-9", "10-14", "15-19",
-                            "20-24", "25-29", "30-34", "35-39", 
-                            "40-44", "45-49", "50-54", "55-59",
-                            "60-64", "65-69", "70-74", "75-79", 
-                            "80-84", "85-89", ">90"), right=F)) %>% 
-  filter(faixa %in% c("25-29", "30-34", "35-39", 
-                            "40-44", "45-49")) %>% 
-  mutate(LI=as.numeric(str_sub(faixa, 1,2)),
-         tempo_intervalo=idade-LI) %>% 
-  #select(faixa, LI, idade,  tempo_intervalo) %>% 
-  group_by(Ano, faixa) %>% 
-  summarize(obitos=n(),
-              kx=mean(tempo_intervalo)) %>% left_join(pop_fem_fertil_faixa) %>% 
-  mutate(mort=obitos/Pop*1000) %>% 
-  mutate(lx=c(1000, rep(NA,4))) %>% 
-  mutate(faixa=as.character(faixa))
 
-morts <-list()
-lo <- list("2010"= c(1000, rep(NA,4)),
-             "2019"= c(1000, rep(NA,4)),
-                       "2021"= c(1000, rep(NA,4)))
 
-for(j in unique(mortalidade_feminina$Ano)){
-morts[[j]] <- mortalidade_feminina %>% 
-    filter(Ano==j) %>% 
-    pull(mort)
 
-for (i in 1:(length(morts[[j]])-1)){
-  lo[[j]][i+1] <-  lo[[j]][1]-morts[[j]][i] 
-}
-}
+# peguei os valores manualmente da tabua de vida lá de baixo
+# não é muito reprodutivel, mas enfim, na hora do apertto...
+
+L2010 <- c(4.941427, 4.935294, 4.922257, 4.905507, 4.884595, 4.859665, 4.805954)
+L2019 <- c(4.947250, 4.941111, 4.928058, 4.911288, 4.890351, 4.865393, 4.811618)
+L2021 <- c(4.947250, 4.941111, 4.928058, 4.911288, 4.890351, 4.865393, 4.811618)
+
+mortalidade_feminina <- data.frame(Ano=c(rep("2010",7),
+                                         rep("2019",7),
+                                         rep("2021",7)),
+                                   faixa=rep(c("15-19", "20-24", "25-29",
+                                               "30-34", "35-39", "40-44",
+                                               "45-49"),3),
+                                   Lx_lo=c(L2010,L2019,L2021))
+
   
-lx <- data_frame("2010"=lo[["2010"]],
-                 "2019"=lo[["2019"]],
-                 "2021"=lo[["2021"]],
-                 faixa=c("25-29", "30-34", "35-39", 
-                            "40-44", "45-49"))%>% 
-  pivot_longer(-faixa, names_to = "Ano",
-               values_to = "lx") 
-
-left_join(mortalidade_feminina, lx)
-
-
-
-
-  pivot_longer(cols=c("2010", "2019", "2021"), names_to = "Ano", 
-               values_to = "Pop") %>% 
-  group_by(Ano, Sexo, faixa) %>% 
-  summarise(Pop=sum(Pop)) %>% 
-  pivot_wider(id_cols=c(Sexo, faixa), 
-              names_from = Ano, values_from = Pop) 
-
-
-obitos_trat <- mort_anos_filtered %>% 
-  select(data_obito, data_nasc, idade, ano_obt,sexo) %>% 
-  mutate(faixa=cut(idade, breaks=c(-1, 1, 5, 10, 15, 20,
-                                      25, 30, 35, 40, 45, 50, 
-                                      55, 60, 65, 70, 75, 80, 
-                                      85, 90,  200), 
-                   labels=c("<1", "1-4", "5-9", "10-14", "15-19",
-                            "20-24", "25-29", "30-34", "35-39", 
-                            "40-44", "45-49", "50-54", "55-59",
-                            "60-64", "65-69", "70-74", "75-79", 
-                            "80-84", "85-89", ">90"), right=F))
-
-
-
-Lx_2010 <-
-Lx_2019 <- 
-Lx_2021 <- 
-TLR<- nffx %>% 
+TLR <- nffx %>% 
   pivot_longer(c("2010", "2019", "2021"),
-               names_to = "Ano", values_to = "nffx") 
-%>% 
-  mutate(TLR=5*nffx/1000) %>% 
+               names_to = "Ano", values_to = "nffx") %>% 
+  left_join(mortalidade_feminina) %>% 
+  mutate(nffx_5=Lx_lo*nffx/1000) %>% 
   select(-nffx) %>% 
   pivot_wider(id_cols = faixa, 
               names_from = Ano, 
-              values_from = TLR) %>% 
+              values_from = nffx_5) %>% 
   adorn_totals(name="TLR") %>% 
   filter(faixa=="TLR") %>% 
   select(-faixa) %>% 
   pivot_longer(everything(), names_to = "Ano", values_to = "TLR")
+
+
+caption7 <- "Taxa de Líquida de Reprodução no estado de Santa Catarina, Brasil, nos anos de 2010, 2019 e 2021."
+
+TLR  %>% 
+  mutate_if(is.numeric, ~comma(., decimal.mark = ",", big.mark = ".", accuracy = .01)) %>%
+  kable(format="latex",caption = caption6, booktabs = TRUE, linesep="", align=c("l", "r"), col.names=c("Ano", "TLR"))  %>%
+   kable_styling(latex_options="hold_position", position="center") 
+
 ```
 
 
@@ -455,8 +396,9 @@ Apresente graficamente os dados e obtenha medidas para essa associação.
 ```{r}
 # Dados -------
 
-populacao <- read_excel("Bases/populacao_Sc.xls")
-mortalidade <- readRDS("dados_SIM.rds")
+#populacao <- read_excel("Bases/populacao_Sc.xls")
+#mortalidade <- readRDS("dados_SIM.rds")
+#passei la pra cima pois ia precisar
 
 # Letra a -------
 
@@ -893,6 +835,7 @@ for (i in 2:20){
 }
 
 nLxF <- lx*n + ndx*ks_femininos
+nLxF_2021 <- nLxF[5:11]/100000
 nLxF[20] <- ndx[20]*ks_femininos[20] 
 TxF <- rev(cumsum(rev(nLxF)))
 
@@ -975,6 +918,128 @@ tabua_masculino %>%
 
 ```
 
+
+```{r}
+nasc_2021_feminino <- 46911 #dados do SINASC
+nasc_2019_feminino <- 47634
+nasc_2010_feminino <- 41263
+
+
+## Tabua 2019 ----
+l0 <- 100000
+
+# Tábua sexo FEMININO
+# calculando a TMI feminina
+
+nasc_feminino <- 47634 #dados do SINASC
+
+
+# nº medio de obitos de menores de 1 ano
+obitos_1_ano_mulher <- mortalidade %>% filter(ano_obt %in% c("2021")) %>%
+  filter(sexo=="F") %>%
+  filter(idade_dias<365) %>% group_by(ano_obt) %>%
+  summarise(obitos=n())
+
+media_obt_1_ano_F <- mean(obitos_1_ano_mulher$obitos)
+
+q10F <- media_obt_1_ano_F/nasc_feminino*1000
+
+# Estimando os fatores de separacao
+
+calcula_fator_separacao <- function(x,n,dados){
+  obitos_periodo <- dados %>% filter(idade>=x & idade<=(x+n))
+  tempo_vida_no_intervalo <- (obitos_periodo$idade - x)
+  nkx <- mean(tempo_vida_no_intervalo)
+  
+  return(nkx)
+}
+
+
+mort_feminino <- mortalidade %>% filter(sexo=="F")
+x <- c(0,1,seq(5,90,5)) 
+n <- c(1,4,rep(5,17),35) # o ultimo n=35 é para aceitar idades até 90+35=125
+
+ks_femininos <- purrr::map2(x,n, ~ calcula_fator_separacao(.x,.y,mort_feminino)) %>%
+  unlist()
+
+nMx_feminino <- nMx %>% filter(Ano==2021 & sexo=="Feminino")
+nMx_feminino <- nMx_feminino$nMx
+
+nqxF <- n*nMx_feminino/(1+(n-ks_femininos)*nMx_feminino)
+nqxF[1] <- q10F/1000
+nqxF[20] <- 1
+
+lx <- c(l0)
+ndx <- lx * nqxF[1]
+
+for (i in 2:20){
+  lx[i] <- lx[i-1]-ndx[i-1]
+  ndx[i] <- lx[i] * nqxF[i]
+}
+
+nLxF <- lx*n + ndx*ks_femininos
+nLxF_2019 <- nLxF[5:11]/100000
+
+
+## tabua 2010
+
+l0 <- 100000
+
+# Tábua sexo FEMININO
+# calculando a TMI feminina
+
+nasc_feminino <- 41263 #dados do SINASC
+
+
+# nº medio de obitos de menores de 1 ano
+obitos_1_ano_mulher <- mortalidade %>% filter(ano_obt %in% c("2021")) %>%
+  filter(sexo=="F") %>%
+  filter(idade_dias<365) %>% group_by(ano_obt) %>%
+  summarise(obitos=n())
+
+media_obt_1_ano_F <- mean(obitos_1_ano_mulher$obitos)
+
+q10F <- media_obt_1_ano_F/nasc_feminino*1000
+
+# Estimando os fatores de separacao
+
+calcula_fator_separacao <- function(x,n,dados){
+  obitos_periodo <- dados %>% filter(idade>=x & idade<=(x+n))
+  tempo_vida_no_intervalo <- (obitos_periodo$idade - x)
+  nkx <- mean(tempo_vida_no_intervalo)
+  
+  return(nkx)
+}
+
+
+mort_feminino <- mortalidade %>% filter(sexo=="F")
+x <- c(0,1,seq(5,90,5)) 
+n <- c(1,4,rep(5,17),35) # o ultimo n=35 é para aceitar idades até 90+35=125
+
+ks_femininos <- purrr::map2(x,n, ~ calcula_fator_separacao(.x,.y,mort_feminino)) %>%
+  unlist()
+
+nMx_feminino <- nMx %>% filter(Ano==2021 & sexo=="Feminino")
+nMx_feminino <- nMx_feminino$nMx
+
+nqxF <- n*nMx_feminino/(1+(n-ks_femininos)*nMx_feminino)
+nqxF[1] <- q10F/1000
+nqxF[20] <- 1
+
+lx <- c(l0)
+ndx <- lx * nqxF[1]
+
+for (i in 2:20){
+  lx[i] <- lx[i-1]-ndx[i-1]
+  ndx[i] <- lx[i] * nqxF[i]
+}
+
+nLxF <- lx*n + ndx*ks_femininos
+nLxF_2010 <- nLxF[5:11]/100000
+
+
+
+```
 
 
 **Com base na TV calculada, grafique as funções lx e nqx para cada sexo e comente os resultados. Se lo=1, qual o significado da função lx? Interprete, neste caso, l20 e l60.**
