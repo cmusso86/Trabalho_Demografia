@@ -753,6 +753,10 @@ tbl_mort_infantil %>%
 
 **c) Compare os seus resultados com os valores obtidos pelo estudo GBD, pela Nações Unidas (UN Population) e aqueles publicados no site do Datasus (RIPSA - Indicadores e dados básicos - http://tabnet.datasus.gov.br/cgi/idb2012/matriz.htm ). Para a TMI, compare com os valores obtidos na questão 1. Comente sobre os aspectos metodológicos dessas duas formas de cálculo.**
 
+Tendo como comparativo o método apresentado para a taxa de mortalidade infantil, junto ao fator que calcula a probabilidade de sobrevivência do nascido até o mesmo completar um ano de vida, observa-se que o segundo indicador trabalha com valores absolutos, apresentados diretamente, entretanto a taxa de mortalidade infantil, se caracteriza pela média móvel dos nascimentos, com o objetivo de diminuir o impacto de um ano que possa ter um comportamento fora do normal, por acontecimentos naturais ou algum problema de coleta e seleção.
+Para as taxas calculadas pela pesquisa relacionada à mortalidade de menores de 1 ano do RIPSA, os dados apresentam queda nesse fato com o decorrer dos anos.
+Embora possa se observar essa tendencia, temos que as taxas obtidas a partir dos dados do SIM e do SINASC são menores que as apresentadas na última pesquisa do RIPSA. Mesmo que a diferença apresentada seja baixa, nunca maior do que 1 ponto percentual, um fator explicativo, pode ser a diferença entre datas, já que, as taxas obtidas no item b são de 2021 e a última taxa calculada pelo RIPSA é de 2011.
+
 
 **d) Compare a estrutura de mortalidade por causas entre 2010 e 2021. Utilize 20 primeiras grupos de causas segundo Grupos CID-10 (ver Tabnet - Datasus), segundo sexo para os anos selecionado. Comente os resultados. Destacar a mortalidade por Covid-19 (CID B34.2).**
 
@@ -865,6 +869,12 @@ tbl_homens %>%
         align=c('l','r','r'))  %>%
    kable_styling(latex_options=c("HOLD_position","scale_down"), position="center")
 ```
+
+Nota-se que há muitas convergências, tanto de tendência quanto de ordem, como os apresentados por comparação das doenças do aparelho circulatório, doenças infecciosas e parasitárias, doenças do aparelho respiratório e casos de sintomas não classificados em outra parte. 
+Em consonância, em 2020 os primeiros casos de COVID-19 começam a ser diagnosticados. Estima-se que o aumento no registro de causas de morte, cujos sintomas apresentam semelhantes à doença recém-descoberta, tenha ocorrido por falta de consenso do CID a ser utilizado e do claro diagnóstico da doença. Destaca-se que o Brasil foi um dos principais polos mundiais da doença, dado a grande população e fatores culturais, podendo ser também um contexto que favorece a ação de outras variáveis intervenientes quanto à quantidade de registros de causa mortis COVID-19, podendo inclusive, apresentar uma sub contagem dos casos da doença.
+Nota-se que, em todas as causas de morte listadas ocorrerem em ambos os sexos, embora sempre é observado uma maior mortalidade na população masculina. 
+causas, de maneira enviesada, visto que há CID com características semelhantes à COVID-19.
+
 
 **e) Construa Tábuas de Vida para cada sexo para a UF escolhida para 2021, a partir das taxas específicas de mortalidade obtidas no item a:**
 
