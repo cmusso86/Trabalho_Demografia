@@ -120,7 +120,7 @@ tabela <- obitos %>% mutate(idade_arrumada = case_when(str_sub(IDADE,1,1)<4 ~ 0,
 # ggsave("diaglexis_a.png", width = 188, height = 93, units = "mm")
 ```
 
-O Diagrama de Lexis apresentado  a seguir (Figura: \ref{fig:lexis}) auxilia a localizar visualmente os nascimentos vivos e óbitos menores de 5 anos ocorridos entre os anos de 2000 e 2021 no estado de Santa Catarina. 
+O Diagrama de Lexis apresentado  a seguir (Figura \ref{fig:lexis}) auxilia a localizar visualmente os nascimentos vivos e óbitos menores de 5 anos ocorridos entre os anos de 2000 e 2021 no estado de Santa Catarina. 
 
 \begin{figure}[h!]
 	\centering
@@ -171,7 +171,7 @@ cbind(lo=lo$Ano_nascimento, Nasc=npx$Nascimentos) %>%
   mutate( Nasc=comma( Nasc, big.mark = ".",
                            decimal.mark = ",", accuracy = 0.001)) %>% 
   kable(format="latex", caption=titulo, booktabs = T, linesep="", align=c("c","c"),col.names=c("Ano","Probabilidade")) %>% 
-  kable_styling(latex_options = "hold_position",position="center")
+  kable_styling(latex_options = "HOLD_position",position="center")
   
 ```
 \newpage
@@ -307,8 +307,8 @@ TBN %>%
 
 ### Taxa Fecundidade Geral (TFG) {-}
 
-A TFG ligeriamente mais refinada que o indicador anterior por acrescenta uma informação que a medida anterior não possúia, que é a relaÇão de nascimentos por mulheres em período. Entretanto, ainda há muita influência da estrutura etária, uma vez que a fecundidade feminina não é constante durante seu período fértil. 
-Na Tabela \@ref(tab:tfg) abaixo podemos observar os resultados para os anos selecionados. Nesse caso o valor mais baixo foi observado em 2010 e o mais alto em 2019, e em 2021 o valor voltou a descrescer. 
+A TFG é ligeriamente mais refinada que o indicador anterior por acrescentar uma informação que a medida anterior não possuía, que é a relação de nascimentos por mulheres em período reprodutivo. Entretanto, ainda há muita influência da estrutura etária, uma vez que a fecundidade feminina não é constante durante seu período fértil. 
+Na Tabela \@ref(tab:tfg) abaixo podemos observar os resultados para os anos selecionados. Nesse caso o valor mais baixo foi observado em 2010 e o mais alto em 2019, e em 2021 o valor voltou a decrescer. 
 
 ```{r tfg}
 pop_fem_fertil <- pop_grupos %>% 
@@ -338,7 +338,7 @@ TFG %>%
 ### Taxas específicas de fecundidade - nfx {-}
 
 
-A medida de taxa específica acrescenta ainda a estratificação por faixa-etária. Nesse sentido, é uma medida que permite a comparação etre populações e ao longo do tempo. 
+A medida de taxa específica acrescenta ainda a estratificação por faixa-etária. Nesse sentido, é uma medida que permite a comparação entre populações e ao longo do tempo. 
 
 Abaixo (Tabela \@ref(tab:tef)) podemos observar que para todos os anos, a idade mais prolífica foi entre 25-29 anos. Entretanto, observamos que para o ano de 2010 a fecundidade era mais equilibrada entre 20-24 e 25-29 anos, enquanto que para o ano de 2019 e 2022 houve relativamente taxas maiores em idades de 25-29 > 30 anos. 
 
@@ -424,7 +424,7 @@ TFT %>%
 
 ### Taxas específicas de fecundidade feminina {-}
 
-As taxas específicas de fecundidade feminina já acrescentam a informação de reposição da população com indivíduos que, por sua vez, també, têm a capacidade de se reproduzir. A estratificação por faixa-etária permite a comparação entre populações e ao longo do tempo, e também o cálculo do indicador que será apresentado no próximo tópico. Abaixo podemos observar esse indicador (Tabela \@ref{tab:teff}).
+As taxas específicas de fecundidade feminina já acrescentam a informação de reposição da população com indivíduos que, por sua vez, também, têm a capacidade de se reproduzir. A estratificação por faixa-etária permite a comparação entre populações e ao longo do tempo, e também o cálculo do indicador que será apresentado no próximo tópico. Abaixo podemos observar esse indicador.
 
 
 
@@ -705,7 +705,7 @@ mosaico1 <- ggplot(data = ass1) +
 ggsave(mosaico1, filename = "img/mosaico1.png")
 ```
 
-Para permitir uma análise mais direta, a variável de idade foi dicotomizada em mulheres com mais ou menos de 30 anos. Já a variável de escolaridade foi dicotomizada em mulheres que possuem ou não ao menos o Ensino Fundamental (ESCMAE>=4, que corresponde a pelo menos 8 anos de estudo, que por sua vez corresponde a, pelo menos o Ensino Fundamental completo). Observações com valores faltantes foram excluídas. Nesse caso, notamos que a proporção de mulheres com ensino fundamental é a mesma independente da idade (*ca.* 70%). O teste de $\chi^2$ apresentou um p-valor de `r chi1`, indicando que não há evidência de associação quando as variáveis são agrupadas dessa forma. Isso também pode ser observado pelo *Odds Ratio* dessa relação é de `r odd1`, indicando que as chances nos dois grupos é muito próxima. Abaixo podemos visualizar essa relação no gráfico de mosaico. Apesar de haver numericamente mais mulheres que possuem Ensino Fundamental na base de dados, a proporção de mulheres em cada faiza é bem semelhante no grupo sem Ensino Fundamental.
+Para permitir uma análise mais direta, a variável de idade foi dicotomizada em mulheres com mais ou menos de 30 anos. Já a variável de escolaridade foi dicotomizada em mulheres que possuem ou não ao menos o Ensino Fundamental (ESCMAE>=4, que corresponde a pelo menos 8 anos de estudo, que por sua vez corresponde a, pelo menos o Ensino Fundamental completo). Observações com valores faltantes foram excluídas. Nesse caso, notamos que a proporção de mulheres com ensino fundamental é a mesma independente da idade (*ca.* 70%). O teste de $\chi^2$ apresentou um p-valor de `r chi1`, indicando que não há evidência de associação quando as variáveis são agrupadas dessa forma. Isso também pode ser observado pelo *Odds Ratio* dessa relação é de `r odd1`, indicando que as chances nos dois grupos é muito próxima. Abaixo podemos visualizar essa relação no gráfico de mosaico. Apesar de haver numericamente mais mulheres que possuem Ensino Fundamental na base de dados, a proporção de mulheres em cada faixa é bem semelhante no grupo sem Ensino Fundamental.
 
 
 
@@ -767,7 +767,7 @@ mosaico2 <- ggplot(data = ass2) +
 ggsave(mosaico2, filename = "img/mosaico2.png")
 ```
 
-A variável de idade foi dicotomizada da mesma forma descrita anteriormente. Nesse caso, notamos que no grupo parto Natural, a proporção de mulherem sem o Ensino Fundamental é maior. Provavelmente as mulheres sem Ensino Fundamental são também as mulheres que mais utilizam o serviço público de saúde, onde a frequência de partos naturais é maior. O teste de $\chi^2$ apresentou um p-valor <0,001, indicando que há evidência de associação entre essas variáveis. O *Odds Ratio* dessa relação é de `r odd2`, indicando que as chances de ocorrer um parto Natural no grupo de muilheres sem Ensino Médio é 1,8 vezes maior.  Apesar dessa evidência de uma associação não muito forte, indicado pelo Coeficiente V de Cramer de 0,0901 para essa tabela. 
+A variável de idade foi dicotomizada da mesma forma descrita anteriormente. Nesse caso, notamos que no grupo parto Natural, a proporção de mulherem sem o Ensino Fundamental é maior. Provavelmente as mulheres sem Ensino Fundamental são também as mulheres que mais utilizam o serviço público de saúde, onde a frequência de partos naturais é maior. O teste de $\chi^2$ apresentou um p-valor <0,001, indicando que há evidência de associação entre essas variáveis. O *Odds Ratio* dessa relação é de `r odd2`, indicando que as chances de ocorrer um parto Natural no grupo de mulheres sem Ensino Médio é 1,8 vezes maior.  Apesar dessa evidência de uma associação não muito forte, indicado pelo Coeficiente V de Cramer de 0,0901 para essa tabela. 
 
 
 \begin{figure}[H]
@@ -1495,7 +1495,7 @@ nLxF_2010 <- nLxF[5:11]/100000
 	\label{fig:nqx}
 \end{figure}
 
-No modelo, $l_x$ representa o número de pessoas que alcançam com vida a idade exata x de uma uma geração inicial de $l_0$ nascimentos e, portanto, é uma função de sobrevivência que inicia num determinado momento, com toda a população ainda viva, e permite calcular a porcentagem dessa população ainda viva em qualquer outro momento ao longo do tempo. Assim, $l_0 = 1$ indica a geração inicial de nascimentos, que neste caso é 1, e $l_20$ e $l_60$ seria o número de pessoas que alcançam com vida a idade exata 20 e 60, respectivamente. Portanto, esses valores são as probabilidades de sobreviver a idade exata 20 e 60.
+No modelo, $l_x$ representa o número de pessoas que alcançam com vida a idade exata x de uma uma geração inicial de $l_0$ nascimentos e, portanto, é uma função de sobrevivência que inicia num determinado momento, com toda a população ainda viva, e permite calcular a porcentagem dessa população ainda viva em qualquer outro momento ao longo do tempo. Assim, $l_0 = 1$ indica a geração inicial de nascimentos, que neste caso é 1, e $l_{20}$ e $l_{60}$ seria o número de pessoas que alcançam com vida a idade exata 20 e 60, respectivamente. Portanto, esses valores são as probabilidades de sobreviver a idade exata 20 e 60.
 
 Por outro lado, ${}_{n}q_x$ é a probabilidade que uma pessoa, tendo alcançado a idade exata $x$, tem de morrer entre as idades $x$ e $x + n$. Nota-se que as probabilidades de morte para as primeiras faixas etárias são menores do que para as últimas, já que a
 sobrevivência seria maior entre as pessoas mais jovens. No entanto, a mortalidade infantil ainda apresenta valores expressivos, como pode ser observado no gráfico.
