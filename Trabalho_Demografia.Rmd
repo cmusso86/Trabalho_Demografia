@@ -21,28 +21,28 @@ knitr::opts_chunk$set(echo = FALSE,
 
 ```{r}
 # Carregando bibliotecas ---------
-setwd("C:/Users/jehhv/OneDrive/Documentos/UnB/2023/2023.1/Demografia_Ana Maria/Trabalho 1 - Natalidade_Fecundidade e Mortalidade")
-pacman::p_load(foreign, tidyverse, LexisPlotR, lubridate, devtools)
 
-devtools::install_github("danicat/read.dbc")
-# read.dbc eh um pacote especifico para importacao de dados do datasus
-# ref: https://docs.bvsalud.org/biblioref/2018/07/906543/anais_cbis_2016_artigos_completos-601-606.pdf
+pacman::p_load(foreign,tidyverse, LexisPlotR, readxl, janitor, kableExtra, scales, reshape2, cowplot, ggmosaic)
+pacman::p_load_gh("danicat/read.dbc")
 
-library(read.dbc)
-library(tidyverse)
+# Dados -------
 
-# Banco de mortalidade - SIM ---------
+arquivos_nasc <- str_c("Bases/", 
+                  list.files(path="Bases/", pattern="^DNS"))
 
-anos <- 2000:2021
-arquivos_nome <- str_c("DOSC",anos,".dbc") %>% as.list()
-#concatenando strings em uma única para formar o nome e juntar em uma lista
+nascimentos <-  map_dfr(arquivos_nasc,~ read.dbc(.x)) %>% 
+  mutate_all(~as.character(.))
 
-dados_list <- map(arquivos_nome,~ read.dbc(.x))
-#funcao MAP remove a necessidade de declararmos um objeto iterador auxiliar (i) e aplica a funcao desejada em cada elemento do objeto dado
+obitos <- readRDS("Bases/dados_SIM.rds")
 
-dados_SIM <- dplyr::bind_rows(dados_list)
 
-saveRDS(dados_SIM,"dados_SIM.rds")
+populacao <- read_excel("Bases/populacao_Sc.xls")
+
+mortalidade <- readRDS("dados_SIM.rds")
+
+ibge_indicadores <- read_excel("Bases/indicadores_IBGE_SC.xlsx")
+
+
 ```
 
 # Introdução
@@ -70,12 +70,11 @@ O tema desse trabalho é a dinâmica demográfica, com a análise de dois compon
 **a) Construir o Diagrama de Lexis para os dados de nascidos vivos de 2000 a 2021 da UF escolhida (SINASC) e de óbitos menores de 5 anos (idades simples) para o mesmo período segundo ano de nascimento.**
 
 ```{r}
-nascimentos <- read_csv2("Nascidos_vivos_SINASC_tabela.csv", #dados simples de nascimento por ano
+nascimentos_jes <- read_csv2("Bases/Nascidos_vivos_SINASC_tabela.csv", 
                          locale=locale(encoding="latin1"))
 
-names(nascimentos)<- c("Ano_nascimento","Nascimentos")
+names(nascimentos_jes)<- c("Ano_nascimento","Nascimentos")
 
-obitos <- readRDS("dados_SIM.rds") # microdados do SIM
 ```
 
 ```{r}
@@ -98,27 +97,28 @@ tabela <- obitos %>% mutate(idade_arrumada = case_when(str_sub(IDADE,1,1)<4 ~ 0,
 
 # Plotando diagrama de Lexis
 
-diagrama <- lexis_grid(lwd=0.15, year_start = 1995, year_end = 2023, age_start = -1, age_end = 5) + 
-  annotate(geom="text", x=as.Date(paste0(tabela$ano_obt[tabela$TRI==1]
-                                         ,"-05-07"))
-           ,y=tabela$idade_certa[tabela$TRI==1]+0.75,
-           label=c(tabela$n[tabela$TRI==1]), size = 2,
-           color="black", fontface = "bold") +
-  annotate(geom = "text", x= as.Date(paste0(nascimentos$Ano_nascimento,"-07-01")),
-           y= -0.2,
-           label=nascimentos$Nascimentos,size = 1.6 ,color = "darkred", fontface = "bold") +
-  annotate(geom="text", x=as.Date(paste0(tabela$ano_obt[tabela$TRI==0]
-                                         ,"-10-01"))
-           ,y=tabela$idade_certa[tabela$TRI==0]+0.4,
-           label=c(tabela$n[tabela$TRI==0]), size = 2,
-           color="black", fontface = "bold") +
-  labs(
-       x = "Ano",
-       y = "Idade") +
-  theme(axis.text.x = element_text(angle = 45, vjust = 0.9, hjust=1))
-
-diagrama
-ggsave("diaglexis_a.png", width = 188, height = 93, units = "mm")
+# diagrama <- lexis_grid(lwd=0.15, year_start = 1995, year_end = 2023, age_start = -1, age_end = 5) + 
+#   annotate(geom="text", x=as.Date(paste0(tabela$ano_obt[tabela$TRI==1]
+#                                          ,"-05-07"))
+#            ,y=tabela$idade_certa[tabela$TRI==1]+0.75,
+#            label=c(tabela$n[tabela$TRI==1]), size = 2,
+#            color="black", fontface = "bold") +
+#   annotate(geom = "text", x= as.Date(paste0(nascimentos_jes$Ano_nascimento,"-07-01")),
+#            y= -0.2,
+#            label=nascimentos_jes$Nascimentos,size = 1.6 ,color = "darkred", fontface = "bold") +
+#   annotate(geom="text", x=as.Date(paste0(tabela$ano_obt[tabela$TRI==0]
+#                                          ,"-10-01"))
+#            ,y=tabela$idade_certa[tabela$TRI==0]+0.4,
+#            label=c(tabela$n[tabela$TRI==0]), size = 2,
+#            color="black", fontface = "bold") +
+#   labs(
+#        x = "Ano",
+#        y = "Idade") +
+#   theme(axis.text.x = element_text(angle = 45, vjust = 0.9, hjust=1))
+# 
+# diagrama
+# ggsave("diaglexis_a.png", width = 188, height = 93, units = "mm")
+```
 
 O Diagrama de Lexis apresentado a seguir auxilia a localizar visualmente os nascimentos vivos e óbitos menores de 5 anos ocorridos entre os anos de 2000 e 2021 no estado de Santa Catarina. 
 
@@ -131,6 +131,7 @@ O Diagrama de Lexis apresentado a seguir auxilia a localizar visualmente os nasc
 
 Os valores destacados em vermelho indicam o total de nascimentos em cada ano observado, enquanto a visão longitudinal acompanha os grupos de indivíduos ao longo do tempo, com nascimentos e óbitos a cada faixa etária. Observa-se, no geral, que a quantidade de óbitos diminui não somente ao longo dos anos, mas também a medida em que as crianças envelhecem. 
 
+\newpage
 **b) Supondo população fechada (inexistência de migração), calcule a probabilidade de um recém-nascido na UF ou território de escolha sobreviver à idade exata 5 para as coortes de 2000 a 2016.**
 
 ```{r}
@@ -149,7 +150,7 @@ ndx <- obt_coorte %>%
   group_by(ano_nasc) %>% 
   summarise(sum(n)) #numeradores de nqx
 
-lo <- nascimentos %>% 
+lo <- nascimentos_jes %>% 
   filter(Ano_nascimento %in% c(2000,2001,2002,2003,2004,
                                2005,2006,2007,2008,2009,
                                2010,2011,2012,2013,2014,
@@ -160,14 +161,17 @@ npx <- 1-nqx
 
 ```{r}
 
-titulo <-"Tabela 1: Probabilidade de sobrevivência de um recém-nascido à idade exata 5 para as coortes de 2000 a 2016 em Santa Catarina"
+titulo <-"Probabilidade de sobrevivência de um recém-nascido à idade exata 5 para as coortes de 2000 a 2016 em Santa Catarina"
 
-cbind(lo$Ano_nascimento, npx$`sum(n)`) %>% 
-  kable(format="html", caption=titulo, booktabs = T, digits=4, linesep="", align=c("c","c"),col.names=c("Ano","Probabilidade")) %>% 
+cbind(lo=lo$Ano_nascimento, Nasc=npx$Nascimentos) %>% 
+  as_tibble() %>% 
+  mutate( Nasc=comma( Nasc, big.mark = ".",
+                           decimal.mark = ",", accuracy = 0.001)) %>% 
+  kable(format="latex", caption=titulo, booktabs = T, linesep="", align=c("c","c"),col.names=c("Ano","Probabilidade")) %>% 
   kable_styling(latex_options = "hold_position",position="center")
   
 ```
-
+\newpage
 **c) Considerando o mesmo pressuposto, calcule a probabilidade de sobreviver ao primeiro aniversário dos recém-nascidos no período de 2000 a 2020.**
 
 ```{r}
@@ -180,7 +184,7 @@ obt_coorte <- tabela %>%
 
 obt_coorte$ano_nasc <- as.numeric(obt_coorte$ano_nasc)
 
-lo <- nascimentos %>% 
+lo <- nascimentos_jes %>% 
   filter(Ano_nascimento %in% c(2000,2001,2002,2003,2004,
                                2005,2006,2007,2008,2009,
                                2010,2011,2012,2013,2014,
@@ -198,10 +202,11 @@ nqx0 <- ndx0/lo
 npx0 <- 1-nqx0
 
 
-titulo2 <-"Tabela 2: Probabilidade de sobrevivência ao primeiro aniversário dos recém-nascidos em Santa Catarina no período de 2000 a 2020"
+titulo2 <-"Probabilidade de sobrevivência ao primeiro aniversário dos recém-nascidos em Santa Catarina no período de 2000 a 2020"
 
-cbind(lo$Ano_nascimento, npx0$`sum(n)`) %>% 
-  kable(format="html", caption=titulo2, booktabs = T, digits=4, linesep="", align=c("c","c"),col.names=c("Ano","Probabilidade")) %>% 
+data.frame(lo=lo$Ano_nascimento, prob=npx0$`sum(n)`) %>% 
+  mutate( prob=comma( prob,big.mark = ".", decimal.mark = ",", accuracy = 0.001)) %>% 
+  kable(format="latex", caption=titulo2, booktabs = T, digits=4, linesep="", align=c("c","c"),col.names=c("Ano","Probabilidade")) %>% 
   kable_styling(latex_options = "hold_position",position="center")
 ```
 
@@ -220,25 +225,7 @@ Supondo população fechada (inexistência de migração), a probabilidade de um
 ### Taxa Bruta de Natalidade (TBN) {-}
 
 ```{r}
-pacman::p_load(tidyverse, LexisPlotR, readxl, janitor, kableExtra, scales, reshape2, cowplot)
-pacman::p_load_gh("danicat/read.dbc")
 
-# Dados -------
-
-arquivos_nasc <- str_c("Bases/", 
-                  list.files(path="Bases/", pattern="^DNS"))
-
-nascimentos <-  map_dfr(arquivos_nasc,~ read.dbc(.x)) %>% 
-  mutate_all(~as.character(.))
-
-obitos <- readRDS("Bases/dados_SIM.rds")
-
-
-populacao <- read_excel("Bases/populacao_Sc.xls")
-
-mortalidade <- readRDS("dados_SIM.rds")
-
-ibge_indicadores <- read_excel("Bases/indicadores_IBGE_SC.xlsx")
 
 # Processamento dados -----
 
@@ -381,7 +368,7 @@ nfx %>%
 Abaixo podemos observar o gráfico dessa dinâmica. No ano de 2010 foi mais comum a ocorrência de mães adolescentes. Nos anos de 2019 e 2021 houve um aumento na reprodução no estado, com aumento nos nascimentos para todas as outras faixas-estárias maternas. 
 
 ```{r}
-nfx %>% 
+fig1 <- nfx %>% 
   pivot_longer(-faixa, names_to = "Ano", values_to = "nfx") %>% 
   #mutate(faixa=as.numeric(str_sub(faixa, 1, 2))) %>% 
   ggplot(aes(x=factor(faixa), color=Ano, group=Ano))+
@@ -390,7 +377,17 @@ nfx %>%
   theme_classic()+
   theme(axis.text.x = element_text(angle=45, hjust=1))+
   labs(x="Faixa-Etária", y= "Taxa Específica de Fecundidade (mil hab.)")
+
+ggsave(fig1, filename = "img/fig_nfx.png")
+
 ```
+
+\begin{figure}[H]
+	\centering
+		\includegraphics[scale = 1]{img/fig_nfx.png}
+		\caption{Taxa de Fecundidade específica para os anos de 2010, 2019, 2021, Santa Catarina.}
+	\label{fig:fig1}
+\end{figure}
 
 ### Taxa de Fecundidade Total {-}
 
@@ -524,9 +521,11 @@ TLR  %>%
 
 ```
 
+\newpage
 
 **b) Compare os seus resultados com os valores obtidos  pelo IBGE (projeções), e para o Brasil, pelo estudo GBD, pelas Nações Unidas (UN Population) e aqueles publicados no site do Datasus para 2010 (RIPSA - Indicadores e dados básicos - http://tabnet.datasus.gov.br/cgi/idb2012/matriz.htm ). Como  os indicadores de reprodução não aparecem nessas listas, a partir das TFT, calcule esses indicadores para comparação.**
 
+Podemos observar que os valores encontrados nesse trabalho são próximos aos apresentados por outras fontes. Enteranto, observam-se algumas variações. Destacamos a diferença da Taxa Bruta de Natalidade divulgada pela UN para 2010, que foi maior em relação a todos os outros indicadores publicados e em relação a esse trabalho. É esperado que os indicadores nacionais estejam mais próximos a realidade, por estarem mais próximos a fonte original de dados bem como a valores mais atualizados das projeções populacionais para o cálculo desse indicador específico. 
 
 
 ```{r}
@@ -551,13 +550,18 @@ nfx_IBGE <- ibge_indicadores_menor %>%
   rename(IBGE_2019=`2019`,
          IBGE_2010=`2010`,
          IBGE_2021=`2021`) %>% 
-  left_join(nfx) %>% 
+  left_join(nfx) %>%
+  mutate(`2019`=`2019`/1000,
+         `2010`=`2010`/1000,
+         `2021`=`2021`/1000) %>% 
   rename(Ind=faixa) 
 
 TBR_nfx_comp <- TBR_comp %>% 
   bind_rows(nfx_IBGE)
 
 TBR_nfx_comp[2:8, 2] <- c(0.05088,	0.07962,	0.08163,	0.06592,	0.03475,	0.00865,	0.00055)
+
+TBR_nfx_comp[2:8,1]<-paste0("nfx ", TBR_nfx_comp[2:8,1]$Ind)
 
 # - segundo RIPSA a taxa específica de fecundidade para 2010
 # 	0,05088	0,07962	0,08163	0,06592	0,03475	0,00865	0,00055
@@ -607,30 +611,128 @@ TBR_comp <- data_frame(Ind="TBR", "RIPSA_2010"=TBR_ripsa_2010,"IBGE_2010"=TBR_ib
                        GBD_2019=TBR_GDB_2021, "2010"=0.76, "2019"=0.84,
                        "2021"=0.83) 
 
+TBR_TFT_nfx_comp[2,3:5] <- t(c(13.57, 13.66, 13.24))
 
 TBR_TFT_TBR_nfx_comp <-TBR_TFT_nfx_comp %>% 
   bind_rows(TBR_comp) %>% 
   mutate_if(is.numeric, ~comma(., decimal.mark = ",", big.mark = ".",
-                    accuracy = 0.001)) %>% 
-  mutate_all(~replace(. ,NA, "-")) %>% 
-  mutate(Ind=fct_relevel(Ind,"TBN", "TFT", "TBR", "15-19",
-                         "20-24", "25-29", "30-34", "35-39",
-                         "40-44", "45-49")) %>% 
+                    accuracy = 0.001))%>% 
+  mutate_all(~replace_na(., "-")) %>% 
+  mutate(Ind=fct_relevel(Ind,"TBN", "TFT", "TBR", "nfx 15-19",
+                         "nfx 20-24", "nfx 25-29", "nfx 30-34", "nfx 35-39", "nfx 40-44", "nfx 45-49")) %>% 
   arrange(Ind)
+
+
+
 # c) Comente esses resultados (inclusive os gráficos das nfx), fazendo referência a artigos já publicados sobre o assunto.
 
-kable(TBR_TFT_TBR_nfx_comp)
+
+TBR_TFT_TBR_nfx_comp %>% 
+  kable(format="latex",caption = caption6, booktabs = TRUE, linesep="", align=c("l", rep("r", 10)), col.names=c("Indicador", "2010", "2010", "2019", "2021", "2010", "2021", "2019", "2010", "2019", "2021"))  %>%
+   kable_styling(latex_options="hold_position", position="center", full_width = FALSE) %>% 
+   add_header_above(c(" ", "RIPSA" = 1, "IBGE" = 3,
+                      "UN"=2, "GDB"=1, "Este trabalho"=3))
+
 ```
+
+\newpage
+
+Ademais, outras varações encontradas neste trabalho em relação aos indicadores oficiais podem ser provenientes de diferença na qualidade das bases de dados. Neste trabalho utilizou-se as bases abertas do SIM e SINASC e não foi realizado um trabalho de correção de inconsistências e incompletidudes propriamente dito. Um trabalho mais refinado de correções é necessário para registrar indicadores mais realistas. Por exemplo, nese trabalho foram identificados alguns partos de mães com <10 anos de idade e com >80 anos, o que é muito provavelmente um erro de digitação. 
+
 
 **c) Comente esses resultados (inclusive os gráficos das nfx), fazendo referência a artigos já publicados sobre o assunto.**
 
+Os dados foram comentados em vias gerais a medida que foram apresentados nas questões anteriores. 
 
 **d) Para os dados do SINASC para 2021, análise a associação entre (apresente ao menos uma medida de associação):**
 
-idade e escolaridade da mãe 
+### Idade e escolaridade da mãe {-}
 
-tipo de parto e escolaridade da mãe
-Apresente graficamente os dados e obtenha medidas para essa associação.
+```{r fig}
+ass1 <- nascimentos %>% 
+  mutate(ano=str_sub(DTNASC, 5,8)) %>% 
+  filter(ano=="2021") %>% 
+  mutate(idade=as.numeric(IDADEMAE),
+         escol=as.double(ESCMAE)) %>% 
+  filter(idade<50,
+         idade>15,
+         !is.na(escol),
+         escol!=9) %>% 
+  mutate(faixa=cut(idade, breaks=c(0,30, 100 ), 
+                   labels=c("<30",  ">30" )),
+         ensino_medio=ifelse(escol>=4, "Sim", "Não")) 
+  
+tab1 <-table(ass1$faixa, ass1$ensino_medio)
+chi1 <- comma(chisq.test(tab1)$p.value, decimal.mark = ",", accuracy = 0.01)
+odd1 <-comma((as.numeric(tab1[1,1])*as.numeric(tab1[2,2]))/(as.numeric(tab1[2,1])*as.numeric(tab1[1,2])), decimal.mark = ",", accuracy = 0.01) 
+
+
+
+
+mosaico1 <- ggplot(data = ass1) +
+  geom_mosaic(aes(x = product(faixa, ensino_medio), fill=faixa), color="black") + 
+  scale_fill_manual(values=c("darkcyan",
+                                           "darkred"))+
+  theme_classic(base_size = 14) +
+  labs(x="Possui Ens Méd.", y="Faixa-Etária")+
+  theme(legend.position = "none")
+
+ggsave(mosaico1, filename = "img/mosaico1.png")
+```
+
+Para permitir uma análise mais direta, a variável de idade foi dicotomizada em mulheres com mais ou menos de 30 anos. Já a variável de escolaridade foi dicotomizada em mulheres que possuem ou não ao menos o Ensino Médio. Observações com valores faltantes foram excluídas. nesse caso, notamos que a proporção de mulheres com ensino médio é a mesma independente da idade ( \~70%). O teste de $\chi^2$ apresentou um p-valor de `r chi1`, indicando que não há evidência de associação. O *Odds Ratio* dessa relação é de `r odd1`, indicando que as chances nos dois grupos é muito próxima. Abaixo podemos ver essa relação graficamente.
+
+\begin{figure}[H]
+	\centering
+		\includegraphics[scale = 0.8]{img/mosaico1.png}
+		\caption{Associação entre duas classes de Faixa-Etária e o fato de ter cursado ou não ao menos o Ensino Médio para mães no ano de 2021 em Santa Catarina.}
+	\label{fig:mosaico1}
+\end{figure}
+
+### Tipo de parto e Escolaridade da mãe {-}
+```{r}
+ass2 <- nascimentos %>% 
+  mutate(ano=str_sub(DTNASC, 5,8)) %>% 
+  filter(ano=="2021") %>% 
+  mutate(parto=as.numeric(PARTO),
+         escol=as.numeric(ESCMAE)) %>% 
+  filter(!is.na(escol),
+         escol!=9) %>% 
+  filter(!is.na(parto),
+         parto!=9) %>% 
+  mutate(EM = ifelse(escol>=4, "sim", "não"),
+         tipo = ifelse(parto==1, "Natural", "Cesárea")) 
+
+
+tab2 <-table(ass2$EM, ass2$tipo)
+chi2<-comma(chisq.test(tab2)$p.value, decimal.mark = ",",
+            accuracy = 0.001)
+
+odd2 <-(as.numeric(tab2[1,1])*as.numeric(tab2[2,2]))/(as.numeric(tab2[2,1])*as.numeric(tab2[1,2]))
+odd2 <- comma(1/odd2, decimal.mark = ",", accuracy = 0.01)
+
+mosaico2 <- ggplot(data = ass2) +
+  geom_mosaic(aes(x = product(EM, tipo), fill=EM),
+              color="black") + 
+  scale_fill_manual(values=c("darkcyan",
+                                           "darkred"))+
+  theme_classic(base_size = 14) +
+  labs(x="Parto", y="Possui Ens. Méd.")+
+  theme(legend.position = "none")
+
+ggsave(mosaico2, filename = "img/mosaico2.png")
+```
+
+A variável de idade foi dicotomizada da mesma forma descrita anteriormente. Nesse caso, notamos que no grupo parto Natural, a proporção de mulherem sem Ensino Médio é maior. Provavelmente as mulheres sem Ensino Médio são também as mulheres que mais utilizam o serviço púplico de saúde, onde a frequência de partos naturais é maior.    O teste de $\chi^2$ apresentou um p-valor <0,001, indicando que há evidência de associação entre essas variáveis. O *Odds Ratio* dessa relação é de `r odd2`, indicando que as chances de ocorrer um parto Natural no grupo de muilheres sem Ensino Médio é 1,8 vezes maior.  
+
+
+\begin{figure}[H]
+	\centering
+		\includegraphics[scale = 0.8]{img/mosaico2.png}
+		\caption{Associação entre o tipo de parto e o fato de ter cursado ou não ao menos o Ensino Médio para mães no ano de 2021 em Santa Catarina.}
+	\label{fig:mosaico2}
+\end{figure}
+
 
 \newpage
 
@@ -787,9 +889,9 @@ plot2021 <- nMx %>% filter(Ano=="2021") %>%
 
 \begin{figure}[h!]
 	\centering
-	\caption{Taxas específicas de mortalidade por sexo e idade em Santa Catarina, Brasil, nos
-anos de 2010, 2019 e 2021.}
 		\includegraphics[scale = .9]{img/TEM.png}
+		\caption{Taxas específicas de mortalidade por sexo e idade em Santa Catarina, Brasil, nos
+anos de 2010, 2019 e 2021.}
 	\label{fig:nMx}
 \end{figure}
 
@@ -821,6 +923,7 @@ tbl_nMx %>%
 
 ```
 
+\newpage
 **b) Calcule a TMI, utilizando o número médio de óbitos ocorridos entre 2019 e 2021 e o número de nascimentos de 2020. Calcule os indicadores: taxa de mortalidade neonatal, neonatal precoce, neonatal tardia, posneonatal. Agregando a informação sobre óbitos fetais para os mesmos anos, calcule a taxa de mortalidade perinatal.**
 
 ```{r}
@@ -902,6 +1005,7 @@ tbl_mort_infantil %>%
    kable_styling(latex_options="hold_position", position="center")
 ```
 
+\newpage
 
 **c) Compare os seus resultados com os valores obtidos pelo estudo GBD, pela Nações Unidas (UN Population) e aqueles publicados no site do Datasus (RIPSA - Indicadores e dados básicos - http://tabnet.datasus.gov.br/cgi/idb2012/matriz.htm ). Para a TMI, compare com os valores obtidos na questão 1. Comente sobre os aspectos metodológicos dessas duas formas de cálculo.**
 
@@ -909,7 +1013,7 @@ Tendo como comparativo o método apresentado para a taxa de mortalidade infantil
 Para as taxas calculadas pela pesquisa relacionada à mortalidade de menores de 1 ano do RIPSA, os dados apresentam queda nesse fato com o decorrer dos anos.
 Embora possa se observar essa tendencia, temos que as taxas obtidas a partir dos dados do SIM e do SINASC são menores que as apresentadas na última pesquisa do RIPSA. Mesmo que a diferença apresentada seja baixa, nunca maior do que 1 ponto percentual, um fator explicativo, pode ser a diferença entre datas, já que, as taxas obtidas no item b são de 2021 e a última taxa calculada pelo RIPSA é de 2011.
 
-
+\newpage
 **d) Compare a estrutura de mortalidade por causas entre 2010 e 2021. Utilize 20 primeiras grupos de causas segundo Grupos CID-10 (ver Tabnet - Datasus), segundo sexo para os anos selecionado. Comente os resultados. Destacar a mortalidade por Covid-19 (CID B34.2).**
 
 
@@ -1027,6 +1131,7 @@ Em consonância, em 2020 os primeiros casos de COVID-19 começam a ser diagnosti
 Nota-se que, em todas as causas de morte listadas ocorrerem em ambos os sexos, embora sempre é observado uma maior mortalidade na população masculina. 
 causas, de maneira enviesada, visto que há CID com características semelhantes à COVID-19.
 
+\newpage
 
 **e) Construa Tábuas de Vida para cada sexo para a UF escolhida para 2021, a partir das taxas específicas de mortalidade obtidas no item a:**
 
@@ -1303,15 +1408,15 @@ nLxF_2010 <- nLxF[5:11]/100000
 
 \begin{figure}[H]
 	\centering
-	\caption{Função de sobrevivência lx para ambos sexos em 2021, Santa Catarina.}
 		\includegraphics[scale = 1]{img/graf_lx.png}
+		\caption{Função de sobrevivência lx para ambos sexos em 2021, Santa Catarina.}
 	\label{fig:lx}
 \end{figure}
 
 
 \begin{figure}[H]
 	\centering
-	\caption{Função nqx para ambos sexos em 2021, Santa Catarina.}
 		\includegraphics[scale = 1]{img/graf_nqx.png}
+		\caption{Função nqx para ambos sexos em 2021, Santa Catarina.}
 	\label{fig:nqx}
 \end{figure}
