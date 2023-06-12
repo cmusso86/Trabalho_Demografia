@@ -1029,7 +1029,7 @@ Tendo como comparativo o método apresentado para a taxa de mortalidade infantil
 
 Embora possa se observar essa tendência, temos que as taxas obtidas a partir dos dados do SIM e do SINASC são menores que as apresentadas na última pesquisa do RIPSA. Mesmo que a diferença apresentada seja baixa, nunca maior do que 1 ponto percentual, um fator explicativo pode ser a diferença entre datas, já que as taxas obtidas no item b são de 2021 e a última taxa calculada pelo RIPSA é de 2011.
 
-Por fim, em relação a taxa bruta de mortalidade, o Global Burden of Disease (GBD) apresentou uma estimativa de 6,08 para o ano de 2019, valor muito próximo ao encontrado neste trabalho (5,90).
+Em relação a taxa bruta de mortalidade, o Global Burden of Disease (GBD) apresentou uma estimativa de 6,08 para o ano de 2019, valor muito próximo ao encontrado neste trabalho (5,90).
 
 \newpage
 **d) Compare a estrutura de mortalidade por causas entre 2010 e 2021. Utilize 20 primeiras grupos de causas segundo Grupos CID-10 (ver Tabnet - Datasus), segundo sexo para os anos selecionado. Comente os resultados. Destacar a mortalidade por Covid-19 (CID B34.2).**
@@ -1155,6 +1155,8 @@ Dentre as 20 principais causas básicas de óbito, chama atenção na populaçã
 \newpage
 
 **e) Construa Tábuas de Vida para cada sexo para a UF escolhida para 2021, a partir das taxas específicas de mortalidade obtidas no item a:**
+
+As tábuas de vida para o sexo feminino e masculino em 2021 são apresentadas, respectivamente, a seguir. Para os cálculos utilizou-se a TMI obtida no item b, por sexo. Já os fatores de separação foram calculados por meio dos microdados de mortalidade (SIM) para todas as faixas etárias. A raíz $l_0$ foi fixada em 100.000.
 
 ```{r}
 # Letra e -------
@@ -1301,6 +1303,13 @@ tabua_masculino %>%
 
 ```
 
+Tanto na tábua feminina quanto na masculina, é possível observar que os fatores de separação ${}_{n}k_x$ a partir da idade $x=5$ são próximos de $\frac{n}{2} = 2,5$. Ou seja, admitindo que a sobrevivência $l_x$ varia de forma linear nesses grupos, a aproximação chegaria em resultados satisfatórios, próximos do encontrado usando os microdados. O fator de separação no primeiro grupo etário ${}_{1}k_0 = 0,1220$ para mulheres e ${}_{1}k_0 = 0,1160$ para os homens indica que os óbitos em menores de 1 ano em Santa Catarina, 2021, ocorrem em maioria no início do intervalo etário, entre o 1º e 2º mês de vida. Esse resultado está em consonância com aqueles encontrados em países desenvolvidos.
+
+
+A expectativa de vida é umas das principais métricas para avaliar a saúde de uma população, captando a mortalidade ao longo de todo o curso da vida. Os resultados encontrados mostram uma alta esperança de vida ao nascer, principalmente para as mulheres (81,43 anos). Os valores são próximos dos estimados pelo GBD para 2019: 79,94 para as mulheres e 73,97 para os homens.
+
+A esperança de vida para a idade exata 60 também apresenta resultados satisfatórios para homens e mulheres, com valores 22,92 e 26,05, respectivamente. O valor estimado pela Nações Unidas (UN Population) para o Brasil em 2021, ambos os sexos, é de 19,58. Ou seja, as estimativas obtidas neste trabalho para Santa Catarina se mostram mais otimistas que o cenário nacional.
+
 
 ```{r}
 nasc_2021_feminino <- 46911 #dados do SINASC
@@ -1441,3 +1450,8 @@ nLxF_2010 <- nLxF[5:11]/100000
 		\includegraphics[scale = 1]{img/graf_nqx.png}
 	\label{fig:nqx}
 \end{figure}
+
+No modelo, $l_x$ representa o número de pessoas que alcançam com vida a idade exata x de uma uma geração inicial de $l_0$ nascimentos e, portanto, é uma função de sobrevivência que inicia num determinado momento, com toda a população ainda viva, e permite calcular a porcentagem dessa população ainda viva em qualquer outro momento ao longo do tempo. Assim, $l_0 = 1$ indica a geração inicial de nascimentos, que neste caso é 1, e $l_20$ e $l_60$ seria o número de pessoas que alcançam com vida a idade exata 20 e 60, respectivamente. Portanto, esses valores são as probabilidades de sobreviver a idade exata 20 e 60.
+
+Por outro lado, ${}_{n}q_x$ é a probabilidade que uma pessoa, tendo alcançado a idade exata $x$, tem de morrer entre as idades $x$ e $x + n$. Nota-se que as probabilidades de morte para as primeiras faixas etárias são menores do que para as últimas, já que a
+sobrevivência seria maior entre as pessoas mais jovens. No entanto, a mortalidade infantil ainda apresenta valores expressivos, como pode ser observado no gráfico.
