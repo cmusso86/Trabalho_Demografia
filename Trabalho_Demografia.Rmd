@@ -1,10 +1,10 @@
 ---
-titulo: "Trabalho Demografia"
-subtitulo: "Santa Catarina"
+titulo: "Natalidade/Fecundidade e Mortalidade em Santa Catarina"
+subtitulo: ""
 aluno1:  "Carolina Musso 18/0047850"
 aluno2: "Laura Teixeira 19/0016051"
 aluno3: "Jéssica Vasconcelos 18/0048708"
-aluno4: "Leonardo 21/1029030"
+aluno4: "Leonardo dos Reis Andrade 21/1029030"
 orientador: "Ana Maria Nogales"
 ano: "1/2023"
 referencias: referencias.bib
@@ -1525,3 +1525,7 @@ As Figuras \ref{fig:lx} e \ref{fig:nqx} abaixo ilustra as funções lx e nqx.
 
 No modelo, lx representa o número de pessoas que alcançam com vida a idade exata x de uma uma geração inicial de l0 nascimentos e, portanto,  é uma função de sobrevivência que inicia num determinado momento, com toda a população ainda viva, e permite calcular a porcentagem dessa população ainda viva em qualquer outro momento ao longo do tempo. Assim, l0 = 1 indica a geração inicial de nascimentos, que neste caso  é 1, e l20 e l60 seria o número de pessoas que alcançam com vida a idade exata 20 e 60, respectivamente. Portanto, esses valores são as probabilidades de sobreviver a idade exata 20 e 60.
 Por outro lado, nqx  é a probabilidade que uma pessoa, tendo alcançado a idade exata x, tem de morrer entre as idades x e x + n. Nota-se que as probabilidades de morte para as primeiras faixas etárias são menores do que para as últimas, já que a sobreviência seria maior entre as pessoas mais jovens. No entanto, a mortalidade infantil ainda apresenta valores expressivos, como pode ser observado no gráfico.
+
+# Anexo
+
+O código desta análise pode ser acessado no [GitHub](https://github.com/cmusso86/Trabalho_Demografia/blob/master/Trabalho_Demografia.Rmd).
