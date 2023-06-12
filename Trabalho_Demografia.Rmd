@@ -47,7 +47,7 @@ ibge_indicadores <- read_excel("Bases/indicadores_IBGE_SC.xlsx")
 
 # Introdução
 
-O estado brasileiro de Santa Catarina tem como capital a ilha de Floranópolis e está localizado no centro da região sul do país. O estado faz fronteira ao norte com o Paraná e ao sul pelo Rio Grande do Sul. É banhado ao leste pelo Oceano Atlântico e e ao oeste faz fronteira com a Argentina. Sua área abrange 95.736,165 km² e possui uma população de mais de 6 milhões de habitantes , sendo o décimo estado mais populoso do Brasil. O estado possui 295 municípios, sendo Joinville, Florianópolis, Blumenau, Criciúma e Chapecó as principais cidades \cite{IBGE}.
+O estado brasileiro de Santa Catarina tem como capital a ilha de Floranópolis e está localizado no centro da região sul do país. O estado faz fronteira ao norte com o Paraná e ao sul pelo Rio Grande do Sul. É banhado ao leste pelo Oceano Atlântico e e ao oeste faz fronteira com a Argentina. Sua área abrange 95.736,165 km² e possui uma população de mais de 6 milhões de habitantes, sendo o décimo estado mais populoso do Brasil. O estado possui 295 municípios, sendo Joinville, Florianópolis, Blumenau, Criciúma e Chapecó as principais cidades \cite{IBGE}.
 
 Santa Catarina possui índices sociais muito elevados em comparação com o restante do Brasil. É o estado com a maior expectativa de vida, empatando com o Distrito Federal. Além disso, possui a menor taxa de mortalidade infantil e é o estado com menor desigualdade econômica e analfabetismo no país. Em termos econômicos, Santa Catarina possui o sexto maior Produto Interno Bruto (PIB) do Brasil e o quarto maior PIB per capita, ficando atrás apenas do Distrito Federal, São Paulo e Mato Grosso. Sua economia é diversificada e tem uma forte ênfase na industrialização. O estado é um importante polo de exportação e consumo, sendo um dos maiores contribuintes para o crescimento da economia brasileira, representando 4% do PIB nacional \cite{IBGE2}.
 
@@ -291,7 +291,7 @@ TBN <-pop_grupos %>%
 
 ```
 
-A TBN é uma medida da intensidade dos nacimentos em uma população. É uma das medidas mais simples de serem realizadas no que se refere a medida de nascimentos de uma população, uma vez que para seu cálculo são necessários apensas os valores de população residente e de nascimentos ocorridos em um período. É uma medida que pode ser muito influenciada pela estrutura etária de uma população bem como a razão de sexo. 
+A TBN é uma medida da intensidade dos nascimentos em uma população. É uma das medidas mais simples de serem realizadas no que se refere a medida de nascimentos de uma população, uma vez que para seu cálculo são necessários apenas os valores de população residente e de nascimentos ocorridos em um período. É uma medida que pode ser muito influenciada pela estrutura etária de uma população bem como a razão de sexo. 
 
 Pela Tabela \@ref(tab:tbn) abaixo, podemos observar que a TBN do estado se manteve em torno de 13 nascimentos para cada mil habitantes, sendo que a taxa mais baixa foi observada em 2021. 
 
@@ -308,7 +308,7 @@ TBN %>%
 
 ### Taxa Fecundidade Geral (TFG) {-}
 
-A TFG ligeriamente mais refinada que o indicador anterior por acrescenta uma informação que a medida anterior não possúia, que é a relaÇão de nascimentos por mulheres em período. Entretanto, ainda há muita influência da estrutura etária, uma vez que a fecundidade feminina não é constante durante seu período fértil. 
+A TFG é um indicador ligeiramente mais refinado que o indicador anterior por acrescentar uma informação que a medida anterior não possúia, que é a relação de nascimentos por população de mulheres em um período. Entretanto, ainda há muita influência da estrutura etária, uma vez que a fecundidade feminina não é constante durante seu período fértil. 
 Na Tabela \@ref(tab:tfg) abaixo podemos observar os resultados para os anos selecionados. Nesse caso o valor mais baixo foi observado em 2010 e o mais alto em 2019, e em 2021 o valor voltou a descrescer. 
 
 ```{r tfg}
@@ -340,9 +340,9 @@ TFG %>%
 ### Taxas específicas de fecundidade - nfx {-}
 
 
-A medida de taxa específica acrescenta ainda a estratificação por faixa-etária. Nesse sentido, é uma medida que permite a comparação etre populações e ao longo do tempo. 
+A medida de taxa específica acrescenta ainda a estratificação por faixa etária. Nesse sentido, é uma medida que permite a comparação entre populações e ao longo do tempo. 
 
-Abaixo (Tabela \@ref(tab:tef)) podemos observar que para todos os anos, a idade mais prolífica foi entre 25-29 anos. Entretanto, observamos que para o ano de 2010 a fecundidade era mais equilibrada entre 20-24 e 25-29 anos, enquanto que para o ano de 2019 e 2022 houve relativamente taxas maiores em idades de 25-29 > 30 anos. 
+Abaixo (Tabela \@ref(tab:tef)) podemos observar que para todos os anos, a idade mais prolífica foi entre 25-29 anos. Entretanto, observamos que para o ano de 2010 a fecundidade era mais equilibrada entre 20-24 e 25-29 anos, enquanto que para o ano de 2019 e 2022 houve relativamente taxas maiores em idades de 25-29 e acima de 30 anos. 
 
 
 ```{r tef}
@@ -361,19 +361,19 @@ nfx <- nascimentos_trat %>%
               values_from = nfx) 
 
 
-caption3 <- "Taxa de Fecundidade Específica por mil habitante no estado de Santa Catarina, Brasil, nos anos de 2010, 2019 e 2021."
+caption3 <- "Taxa de Fecundidade Específica por mil habitantes no estado de Santa Catarina, Brasil, nos anos de 2010, 2019 e 2021."
 
 nfx %>% 
   mutate_if(is.numeric, ~comma(., decimal.mark = ",", big.mark = ".", accuracy = .01)) %>%
   mutate(faixa=str_c(faixa,  " anos")) %>% 
-  kable(format="latex",caption = caption3, booktabs = TRUE, linesep="", align=c("l", "r", "r", "r"), col.names=c("Faixa-Etária", "2010", "2019", "2021"))  %>%
+  kable(format="latex",caption = caption3, booktabs = TRUE, linesep="", align=c("l", "r", "r", "r"), col.names=c("Faixa Etária", "2010", "2019", "2021"))  %>%
    kable_styling(latex_options="hold_position", position="center") %>% 
   add_header_above(c(" ", "nfx (mil hab.)"=3)) %>%  footnote("\\\\tiny{Elaboração própria. \n Dados: Ministério da Saúde}",  escape=F,  footnote_as_chunk=T, general_title ="")
 
 ```
 
 
-Abaixo (Figura \ref{fig:fig1}) podemos observar o gráfico dessa dinâmica. No ano de 2010 foi mais comum a ocorrência de mães adolescentes. Nos anos de 2019 e 2021 houve um aumento na reprodução no estado, com aumento nos nascimentos para todas as outras faixas-estárias maternas. 
+Abaixo (Figura \ref{fig:fig1}) podemos observar o gráfico dessa dinâmica. No ano de 2010 foi mais comum a ocorrência de mães adolescentes. Nos anos de 2019 e 2021 houve um aumento na reprodução no estado, com aumento nos nascimentos para todas as outras faixas etárias maternas. 
 
 ```{r graf-nfx}
 fig1 <- nfx %>% 
@@ -384,7 +384,7 @@ fig1 <- nfx %>%
   geom_point(aes(y=nfx))+
   theme_classic()+
   theme(axis.text.x = element_text(angle=45, hjust=1))+
-  labs(x="Faixa-Etária", y= "Taxa Específica de Fecundidade (mil hab.)")
+  labs(x="Faixa Etária", y= "Taxa Específica de Fecundidade (mil hab.)")
 
 ggsave(fig1, filename = "img/fig_nfx.png")
 
@@ -416,7 +416,7 @@ TFT <- nfx %>%
   pivot_longer(-faixa, names_to =  "Ano", values_to = "TFT") %>% 
   select(-faixa)
 
-caption4 <- "Taxa de Fecundidade total no estado de Santa Catarina, Brasil, nos anos de 2010, 2019 e 2021."
+caption4 <- "Taxa de Fecundidade Total no estado de Santa Catarina, Brasil, nos anos de 2010, 2019 e 2021."
 
 TFT %>% 
   mutate_if(is.numeric, ~comma(., decimal.mark = ",", big.mark = ".", accuracy = .01)) %>%
@@ -428,7 +428,7 @@ TFT %>%
 
 ### Taxas específicas de fecundidade feminina {-}
 
-As taxas específicas de fecundidade feminina já acrescentam a informação de reposição da população com indivíduos que, por sua vez, també, têm a capacidade de se reproduzir. A estratificação por faixa-etária permite a comparação entre populações e ao longo do tempo, e também o cálculo do indicador que será apresentado no próximo tópico. Abaixo podemos observar esse indicador (Tabela \@ref(tab:teff)).
+As taxas específicas de fecundidade feminina já acrescentam a informação de reposição da população com indivíduos que, por sua vez, também têm a capacidade de se reproduzir, ou seja, as mulheres. A estratificação por faixa etária permite a comparação entre populações e ao longo do tempo, e também o cálculo do indicador que será apresentado no próximo tópico. Abaixo podemos observar esse indicador (Tabela \@ref(tab:teff)).
 
 
 
@@ -445,7 +445,7 @@ nffx <- nascimentos_trat %>%
               values_from = nffx) 
 
 
-caption5 <- "Taxas Específica de Fecundidade Feminina por mil habitante no estado de Santa Catarina, Brasil, nos anos de 2010, 2019 e 2021."
+caption5 <- "Taxas Específica de Fecundidade Feminina por mil habitantes no estado de Santa Catarina, Brasil, nos anos de 2010, 2019 e 2021."
 
 nffx %>% 
   mutate_if(is.numeric, ~comma(., decimal.mark = ",", big.mark = ".", accuracy = .01)) %>%
@@ -458,7 +458,7 @@ nffx %>%
 
 ### Taxa Bruta de Reprodução {-}
 
-A taxa bruta de repodução poderia ser equivalente a taxa de fecundidade total, mas dessa vez considerando apenas a população feminina. Na Tabela \@ref(tab:tbr) abaixo podemos observar esses valores. 
+A taxa bruta de reprodução poderia ser considerada equivalente a taxa de fecundidade total, mas dessa vez considerando apenas a população feminina. Na Tabela \@ref(tab:tbr) abaixo podemos observar esses valores. 
 
 ```{r tbr}
 TBR <- nffx %>% 
@@ -474,7 +474,7 @@ TBR <- nffx %>%
   select(-faixa) %>% 
   pivot_longer(everything(), names_to = "Ano", values_to = "TBR")
 
-caption6 <- "Taxa de Bruta de Reprodução no estado de Santa Catarina, Brasil, nos anos de 2010, 2019 e 2021."
+caption6 <- "Taxa Bruta de Reprodução no estado de Santa Catarina, Brasil, nos anos de 2010, 2019 e 2021."
 
 TBR  %>% 
   mutate_if(is.numeric, ~comma(., decimal.mark = ",", big.mark = ".", accuracy = .01)) %>%
@@ -486,7 +486,8 @@ TBR  %>%
 
 ### Taxa Líquida de Reprodução {-}
 
-Finalmente, a taxa líquida de reprodução leva em consideração o risco de mortalidade em cada faixa-etária. Notamos então (Tabela \@ref(tab:tlr)) valores líquidos ligeiramentes menores do que o apresentado na Tabela \@ref(tab:tbr) anterior. 
+Finalmente, a taxa líquida de reprodução leva em consideração o risco de morte em cada faixa etária. Notamos então (Tabela \@ref(tab:tlr)) valores líquidos ligeiramente menores do que o apresentado na Tabela \@ref(tab:tbr) anterior. 
+
 ```{r tlr}
 
 
@@ -523,11 +524,11 @@ TLR <- nffx %>%
   pivot_longer(everything(), names_to = "Ano", values_to = "TLR")
 
 
-caption7 <- "Taxa de Líquida de Reprodução no estado de Santa Catarina, Brasil, nos anos de 2010, 2019 e 2021."
+caption7 <- "Taxa Líquida de Reprodução no estado de Santa Catarina, Brasil, nos anos de 2010, 2019 e 2021."
 
 TLR  %>% 
   mutate_if(is.numeric, ~comma(., decimal.mark = ",", big.mark = ".", accuracy = .01)) %>%
-  kable(format="latex",caption = caption6, booktabs = TRUE, linesep="", align=c("l", "r"), col.names=c("Ano", "TLR"))  %>%
+  kable(format="latex",caption = caption7, booktabs = TRUE, linesep="", align=c("l", "r"), col.names=c("Ano", "TLR"))  %>%
    kable_styling(latex_options="hold_position", position="center")  %>% 
   footnote("\\\\tiny{Elaboração própria. \n Dados: Ministério da Saúde}",  escape=F,  footnote_as_chunk=T, general_title ="")
 
@@ -537,7 +538,7 @@ TLR  %>%
 
 **b) Compare os seus resultados com os valores obtidos  pelo IBGE (projeções), e para o Brasil, pelo estudo GBD, pelas Nações Unidas (UN Population) e aqueles publicados no site do Datasus para 2010 (RIPSA - Indicadores e dados básicos - http://tabnet.datasus.gov.br/cgi/idb2012/matriz.htm ). Como  os indicadores de reprodução não aparecem nessas listas, a partir das TFT, calcule esses indicadores para comparação.**
 
-Podemos observar que os valores encontrados nesse trabalho são próximos aos apresentados por outras fontes (Tabela \@ref(tab:comp)). Enteranto, observam-se algumas variações. Destacamos a diferença da Taxa Bruta de Natalidade divulgada pela UN para 2010, que foi maior em relação a todos os outros indicadores publicados e em relação a esse trabalho. É esperado que os indicadores nacionais estejam mais próximos a realidade, por estarem mais próximos a fonte original de dados bem como a valores mais atualizados das projeções populacionais para o cálculo desse indicador específico. 
+Podemos observar que os valores encontrados nesse trabalho são próximos aos apresentados por outras fontes (Tabela \@ref(tab:comp)). Entretanto, observam-se algumas variações. Destaca-se a diferença da Taxa Bruta de Natalidade divulgada pela UN para 2010, que foi maior em relação a todos os outros indicadores publicados e em relação a esse trabalho. É esperado que os indicadores nacionais estejam mais próximos a realidade, por estarem mais próximos a fonte original de dados bem como a valores mais atualizados das projeções populacionais para o cálculo desse indicador específico. 
 
 
 ```{r comp}
@@ -638,9 +639,9 @@ TBR_TFT_TBR_nfx_comp <-TBR_TFT_nfx_comp %>%
 
 # c) Comente esses resultados (inclusive os gráficos das nfx), fazendo referência a artigos já publicados sobre o assunto.
 
-
+caption8 <- "Comparação dos indicadores obtidos pelo IBGE, Nações Unidas e Global Burden of Deseases no estado de Santa Catarina."
 TBR_TFT_TBR_nfx_comp %>% 
-  kable(format="latex",caption = caption6, booktabs = TRUE, linesep="", align=c("l", rep("r", 10)), col.names=c("Indicador", "2010", "2010", "2019", "2021", "2010", "2021", "2019", "2010", "2019", "2021"))  %>%
+  kable(format="latex",caption = caption8, booktabs = TRUE, linesep="", align=c("l", rep("r", 10)), col.names=c("Indicador", "2010", "2010", "2019", "2021", "2010", "2021", "2019", "2010", "2019", "2021"))  %>%
    kable_styling(latex_options="hold_position", position="center", full_width = FALSE) %>% 
    add_header_above(c(" ", "RIPSA" = 1, "IBGE" = 3,
                       "UN"=2, "GDB"=1, "Este trabalho"=3)) %>% 
@@ -650,12 +651,12 @@ TBR_TFT_TBR_nfx_comp %>%
 
 \newpage
 
-Ademais, outras varações encontradas neste trabalho em relação aos indicadores oficiais podem ser provenientes de diferença na qualidade das bases de dados. Neste trabalho utilizou-se as bases abertas do SIM e SINASC e não foi realizado um trabalho de correção de inconsistências e incompletidudes propriamente dito. Um trabalho mais refinado de correções é necessário para registrar indicadores mais realistas. Por exemplo, nese trabalho foram identificados alguns partos de mães com <10 anos de idade e com >80 anos, o que é muito provavelmente um erro de digitação. 
+Ademais, outras variações encontradas neste trabalho em relação aos indicadores oficiais podem ser provenientes de diferença na qualidade das bases de dados. Neste trabalho utilizou-se as bases abertas do SIM e SINASC e não foi realizado um trabalho de correção de inconsistências e incompletudes propriamente dito. Um trabalho mais refinado de correções é necessário para registrar indicadores mais realistas. Por exemplo, nesse trabalho foram identificados alguns partos de mães com menos de 10 anos de idade e com mais de 80 anos, o que é muito provavelmente um erro de digitação. 
 
 
 **c) Comente esses resultados (inclusive os gráficos das nfx), fazendo referência a artigos já publicados sobre o assunto.**
 
-O comportamento geral dos dados encontrados nesse trabalho foi apresentado na questão b) acima. Nós notamos que Santa Catarina está com valores de Fecundidade Total e Reprodução Líquida abaixo dos limiares considerados como de reposição da população. Essa situação dmográfica é observada no Brasil como tum todo. Entretanto, Santa Cataria parece ter apresentando uma dinâmica ligeiramente diferente do restante do Brasil: estava abaixo da média em 2010, mas apresentou aumento na fertilidade em 2019 e 2021, passando a estar acima da média do país \cite{WDB}. 
+O comportamento geral dos dados encontrados nesse trabalho foi apresentado na questão b) acima. Nota-se que Santa Catarina está com valores de Fecundidade Total e Reprodução Líquida abaixo dos limiares considerados como de reposição da população. Essa situação demográfica é observada no Brasil como um todo. Entretanto, Santa Cataria parece ter apresentando uma dinâmica ligeiramente diferente do restante do Brasil: estava abaixo da média em 2010, mas apresentou aumento na fertilidade em 2019 e 2021, passando a estar acima da média do país \cite{WDB}. 
 
 **d) Para os dados do SINASC para 2021, análise a associação entre (apresente ao menos uma medida de associação):**
 
@@ -702,17 +703,17 @@ odd1 <-comma((as.numeric(tab1[1,1])*as.numeric(tab1[2,2]))/(as.numeric(tab1[2,1]
 
 
 mosaico1 <- ggplot(data = ass1) +
-  geom_mosaic(aes(x = product(faixa, ensino_medio), fill=faixa), color="black") + 
+  geom_mosaic(aes(x = product( ensino_medio, faixa), fill=faixa), color="black") + 
   scale_fill_manual(values=c("darkcyan",
                                            "darkred"))+
   theme_classic(base_size = 14) +
-  labs(y="Possui Ens Fund.", x="Faixa-Etária")+
+  labs(y="Possui Ens Fund.", x="Faixa Etária")+
   theme(legend.position = "none")
 
 ggsave(mosaico1, filename = "img/mosaico1.png")
 ```
 
-Para permitir uma análise mais direta, a variável de idade foi dicotomizada em mulheres com mais ou menos de 30 anos. Já a variável de escolaridade foi dicotomizada em mulheres que possuem ou não ao menos o Ensino Fundamental (ESCMAE>=4, que corresponde a pelo menos 8 anos de estudo, que por sua vez corresponde a, pelo menos o Ensino Fundamental completo). Observações com valores faltantes foram excluídas. Nesse caso, notamos que a proporção de mulheres com ensino fundamental é a mesma independente da idade (*ca.* 70%). O teste de $\chi^2$ apresentou um p-valor de `r chi1`, indicando que não há evidência de associação quando as variáveis são agrupadas dessa forma. Isso também pode ser observado pelo *Odds Ratio* dessa relação é de `r odd1`, indicando que as chances nos dois grupos é muito próxima. Abaixo podemos visualizar essa relação no gráfico de mosaico (Figura \ref{fig:mosaico1}). Apesar de haver numericamente mais mulheres que possuem Ensino Fundamental na base de dados, a proporção de mulheres em cada faiza é bem semelhante no grupo sem Ensino Fundamental.
+Para permitir uma análise mais direta, a variável de idade foi dicotomizada em mulheres com mais ou menos de 30 anos. Já a variável de escolaridade foi dicotomizada em mulheres que possuem ou não ao menos o Ensino Fundamental (ESCMAE>=4, que corresponde a pelo menos 8 anos de estudo, que por sua vez corresponde a, pelo menos o Ensino Fundamental completo). Observações com valores faltantes foram excluídas. Nesse caso, notamos que a proporção de mulheres com ensino fundamental é a mesma independente da idade (*ca.* 70%). O teste de $\chi^2$ apresentou um p-valor de `r chi1`, indicando que não há evidência de associação quando as variáveis são agrupadas dessa forma. Isso também pode ser observado pelo *Odds Ratio* dessa relação, que é de `r odd1`, indicando que as chances nos dois grupos é muito próxima. Abaixo podemos visualizar essa relação no gráfico de mosaico (Figura \ref{fig:mosaico1}). Apesar de haver numericamente mais mulheres que possuem Ensino Fundamental na base de dados, a proporção de mulheres em cada faixa é bem semelhante no grupo sem Ensino Fundamental.
 
 
 
@@ -725,13 +726,13 @@ Para permitir uma análise mais direta, a variável de idade foi dicotomizada em
 	\label{fig:mosaico1}
 \end{figure}
 
-Entretanto, fazendo uma análise mais detalhada, nota-se que essa relação é mais complexa. Discretizando as variáveis em Escolaridade Baixa (não tem o Ensino Fundamental completo), Escolaridade Alta (têm ao menos o Ensino Médio Completo) e Escolaridade Média (as que se encontram entre esses dois grupos) e discretizando a com mais faixa-etárias observamos a relação abaixo, em que podemos observar a frequência na tabela de contingência (Figura \@ref(fig:cont)). Nesse caso o teste de $\chi^2$ apresenta um p-valor significativo.  
+Entretanto, fazendo uma análise mais detalhada, nota-se que essa relação é mais complexa. Discretizando as variáveis em Escolaridade Baixa (não tem o Ensino Fundamental completo), Escolaridade Alta (têm ao menos o Ensino Médio Completo) e Escolaridade Média (as que se encontram entre esses dois grupos) e discretizando a idade com mais faixas etárias observamos a relação abaixo, em que podemos observar a frequência na tabela de contingência (Figura \@ref(fig:cont)). Nesse caso o teste de $\chi^2$ apresenta um p-valor significativo.  
 
 ```{r cont, fig.cap="Tabela de Contigência para a relação entre Faixa-etária e Escolaridade da Mãe"}
 balloonplot(tab1.1, main= "Escolaridade e Idade")
 ```
 
-As caselas que mais contribuiram para um alto valor da estatística $\chi^2$ podem ser observadas no gráfico de resíduos seguinte (Figura \@ref(fig:res)), em que a escala de valores azuis estão abaixo do esperado e vermelhos acima do esperado. Vemos então que há bem menos mães com alta escolaridade para mulheres abaixo de 20 anos. O que é esperado, uma vez que se trata de pessoas muito jovens e que talvez não tenham tido tempo suficiente de atingir uma alta Escolaridade ou mesmo, se engravidaram na adolescência, tiveram que abandonar os estudos cedo. Por outro lado, mães com alta escolaridade se encontram no grupo de 30-39 anos, representando talvez, aquela gravidez que foi planejada, depois da conclusão da graduação. 
+As caselas que mais contribuíram para um alto valor da estatística $\chi^2$ podem ser observadas no gráfico de resíduos seguinte (Figura \@ref(fig:res)), em que a escala de cores indica em azul valores abaixo esperado e em vermelho acima do esperado. Vemos então que há bem menos mães com alta escolaridade para mulheres abaixo de 20 anos. O que é esperado, uma vez que se trata de pessoas muito jovens e que talvez não tenham tido tempo suficiente de atingir uma alta escolaridade ou mesmo, se engravidaram na adolescência, tiveram que abandonar os estudos cedo. Por outro lado, mães com alta escolaridade se encontram no grupo de 30-39 anos, representando talvez, aquela gravidez que foi planejada, depois da conclusão da graduação. 
 
 ```{r res, fig.cap="Resíduos para o teste de Qui-quadrado entre escolaridade da mãe e idade. Elaboração própria.", out.width="70%"}
 
@@ -775,12 +776,12 @@ mosaico2 <- ggplot(data = ass2) +
 ggsave(mosaico2, filename = "img/mosaico2.png")
 ```
 
-A variável de idade foi dicotomizada da mesma forma descrita anteriormente. Nesse caso, notamos que no grupo parto Natural, a proporção de mulherem sem o Ensino Fundamental é maior. Provavelmente as mulheres sem Ensino Fundamental são também as mulheres que mais utilizam o serviço público de saúde, onde a frequência de partos naturais é maior. O teste de $\chi^2$ apresentou um p-valor <0,001, indicando que há evidência de associação entre essas variáveis. O *Odds Ratio* dessa relação é de `r odd2`, indicando que as chances de ocorrer um parto Natural no grupo de muilheres sem Ensino Médio é 1,8 vezes maior.  Apesar dessa evidência de uma associação não muito forte, indicado pelo Coeficiente V de Cramer de 0,0901 para essa tabela. 
+A variável de idade foi dicotomizada da mesma forma descrita anteriormente. Nesse caso, notamos que no grupo Parto Natural, a proporção de mulheres sem o Ensino Fundamental é maior. Provavelmente as mulheres sem Ensino Fundamental são também as mulheres que mais utilizam o serviço público de saúde, onde a frequência de partos naturais é maior. O teste de $\chi^2$ apresentou um p-valor <0,001, indicando que há evidência de associação entre essas variáveis. A *Odds Ratio* dessa relação é de `r odd2`, indicando que as chances de ocorrer um parto Natural no grupo de mulheres sem Ensino Médio é 1,8 vezes maior.  Apesar dessa evidência, não se trata de uma associação muito forte, indicada pelo Coeficiente V de Cramer de 0,0901 para essa tabela. 
 
 
 \begin{figure}[H]
 	\centering
-		\caption{Associação entre o tipo de parto e o fato de ter cursado ou não ao menos o Ensino Médio para mães no ano de 2021 em Santa Catarina.}
+		\caption{Associação entre o tipo de parto e o fato de ter cursado ou não ao menos o Ensino Fundamental para mães no ano de 2021 em Santa Catarina.}
 		\includegraphics[scale = 0.8]{img/mosaico2.png}
 		\small\textsuperscript{Elaboração Própria. Fonte dos Dados: Ministério da Saúde } 
 	\label{fig:mosaico2}
@@ -1222,7 +1223,7 @@ Dentre as 20 principais causas básicas de óbito, chama atenção na populaçã
 
 **e) Construa Tábuas de Vida para cada sexo para a UF escolhida para 2021, a partir das taxas específicas de mortalidade obtidas no item a:**
 
-Podemos observar as tábuas de vida Feminina e Maculina nas Tabelas \@ref(tab:TVF) e \@ref(tab:TFM). Para os cálculos utilizou-se a TMI obtida no item b, por sexo. Já os fatores de separaçãoo foram calculados por meio dos microdados de mortalidade (SIM) para todas as faixas etárias. A raiz l0 foi fixada em 100.000.
+Podemos observar as tábuas de vida Feminina e Maculina nas Tabelas \@ref(tab:TVF) e \@ref(tab:TFM). Para os cálculos utilizou-se a TMI obtida no item b, por sexo. Já os fatores de separação foram calculados por meio dos microdados de mortalidade (SIM) para todas as faixas etárias. A raiz l0 foi fixada em 100.000.
 
 ```{r TVF}
 # Letra e -------
@@ -1497,7 +1498,7 @@ nLxF_2010 <- nLxF[5:11]/100000
 ```
 
 
-Tanto na tábua feminina quanto na masculina,  é possível observar que os fatores de separação nkx a partir da idade x = 5 são próximos de n2 = 2,5. Ou seja, admitindo que a sobrevivência lx varia de forma linear nesses grupos, a aproximaçãoo chegaria em resultados satisfatórios, próoximos do encontrado usando os microdados. O fator de separação no primeiro grupo etário 1k0 = 0,1220 para mulheres e 1k0 = 0,1160 para os homens indica que os óbitos em menores de 1 ano em Santa Catarina, 2021, ocorrem em maioria no início do intervalo etário, entre o 1o e 2o mês de vida. Esse resultado está em consonância com aqueles encontrados em países desenvolvidos.
+Tanto na tábua feminina quanto na masculina, é possível observar que os fatores de separação ${}_{n}k_x$ a partir da idade $x = 5$ são próximos de $\frac{n}{2} = 2,5$. Ou seja, admitindo que a sobrevivência $l_x$ varia de forma linear nesses grupos, a aproximação chegaria em resultados satisfatórios, próoximos do encontrado usando os microdados. O fator de separação no primeiro grupo etário ${}_{1}k_0 = 0,1220$ para mulheres e ${}_{1}k_0 = 0,1160$ para os homens indica que os óbitos em menores de 1 ano em Santa Catarina, 2021, ocorrem em maioria no início do intervalo etário, entre o 1º e 2º mês de vida. Esse resultado está em consonância com aqueles encontrados em países desenvolvidos.
 A expectativa de vida  é umas das principais métricas para avaliar a saúde de uma população, captando a mortalidade ao longo de todo o curso da vida. Os resultados encontrados mostram uma alta esperança de vida ao nascer, principalmente para as mulheres (81,43 anos). Os valores são próximos dos estimados pelo GBD para 2019: 79,94 para as mulheres e 73,97 para os homens.
 
 A esperança de vida para a idade exata 60 também apresenta resultados satisfatórios para homens e mulheres, com valores 22,92 e 26,05, respectivamente. O valor estimado pela Nações Unidas (UN Population) para o Brasil em 2021, ambos os sexos,  é de 19,58. Ou seja, as estimativas obtidas neste trabalho para Santa Catarina se mostram mais otimistas que o cenário nacional.
@@ -1523,9 +1524,9 @@ As Figuras \ref{fig:lx} e \ref{fig:nqx} abaixo ilustra as funções lx e nqx.
 	\label{fig:nqx}
 \end{figure}
 
-No modelo, lx representa o número de pessoas que alcançam com vida a idade exata x de uma uma geração inicial de l0 nascimentos e, portanto,  é uma função de sobrevivência que inicia num determinado momento, com toda a população ainda viva, e permite calcular a porcentagem dessa população ainda viva em qualquer outro momento ao longo do tempo. Assim, l0 = 1 indica a geração inicial de nascimentos, que neste caso  é 1, e l20 e l60 seria o número de pessoas que alcançam com vida a idade exata 20 e 60, respectivamente. Portanto, esses valores são as probabilidades de sobreviver a idade exata 20 e 60.
-Por outro lado, nqx  é a probabilidade que uma pessoa, tendo alcançado a idade exata x, tem de morrer entre as idades x e x + n. Nota-se que as probabilidades de morte para as primeiras faixas etárias são menores do que para as últimas, já que a sobreviência seria maior entre as pessoas mais jovens. No entanto, a mortalidade infantil ainda apresenta valores expressivos, como pode ser observado no gráfico.
+No modelo, $l_x$ representa o número de pessoas que alcançam com vida a idade exata x de uma uma geração inicial de $l_0$ nascimentos e, portanto,  é uma função de sobrevivência que inicia num determinado momento, com toda a população ainda viva, e permite calcular a porcentagem dessa população ainda viva em qualquer outro momento ao longo do tempo. Assim, $l_0 = 1$ indica a geração inicial de nascimentos, que neste caso  é 1, e $l_{20}$ e $l_{60}$ seria o número de pessoas que alcançam com vida a idade exata 20 e 60, respectivamente. Portanto, esses valores são as probabilidades de sobreviver a idade exata 20 e 60.
+Por outro lado, ${}_{n}q_x$  é a probabilidade que uma pessoa, tendo alcançado a idade exata $x$, tem de morrer entre as idades $x$ e $x + n$. Nota-se que as probabilidades de morte para as primeiras faixas etárias são menores do que para as últimas, já que a sobrevivência seria maior entre as pessoas mais jovens. No entanto, a mortalidade infantil ainda apresenta valores expressivos, como pode ser observado no gráfico.
 
 # Anexo
 
-O código desta análise pode ser acessado no [GitHub](https://github.com/cmusso86/Trabalho_Demografia/blob/master/Trabalho_Demografia.Rmd).
+O código desta análise pode ser acessado neste link do [GitHub](https://github.com/cmusso86/Trabalho_Demografia/blob/master/Trabalho_Demografia.Rmd).
