@@ -1073,6 +1073,8 @@ Tendo como comparativo o método apresentado para a taxa de mortalidade infantil
 
 Embora possa se observar essa tendência, temos que as taxas obtidas a partir dos dados do SIM e do SINASC são menores que as apresentadas na última pesquisa do RIPSA. Mesmo que a diferença apresentada seja baixa, nunca maior do que 1 ponto percentual, um fator explicativo pode ser a diferença entre datas, já que as taxas obtidas no item b são de 2021 e a última taxa calculada pelo RIPSA é de 2011.
 
+Por fim, em relação a taxa bruta de mortalidade, o Global Burden of Disease (GBD) apresentou uma estimativa de 6,08 para o ano de 2019, valor muito próximo ao encontrado neste trabalho (5,90).
+
 \newpage
 **d) Compare a estrutura de mortalidade por causas entre 2010 e 2021. Utilize 20 primeiras grupos de causas segundo Grupos CID-10 (ver Tabnet - Datasus), segundo sexo para os anos selecionado. Comente os resultados. Destacar a mortalidade por Covid-19 (CID B34.2).**
 
@@ -1187,9 +1189,12 @@ tbl_homens %>%
 ```
 
 Nota-se que há muitas convergências, tanto de tendência quanto de ordem, como os apresentados por comparação das doenças do aparelho circulatório, doenças infecciosas e parasitárias, doenças do aparelho respiratório e casos de sintomas não classificados em outra parte. 
-Em consonância, em 2020 os primeiros casos de COVID-19 começam a ser diagnosticados. Estima-se que o aumento no registro de causas de morte, cujos sintomas apresentam semelhantes à doença recém-descoberta, tenha ocorrido por falta de consenso do CID a ser utilizado e do claro diagnóstico da doença. Destaca-se que o Brasil foi um dos principais polos mundiais da doença, dado a grande população e fatores culturais, podendo ser também um contexto que favorece a ação de outras variáveis intervenientes quanto à quantidade de registros de causa mortis COVID-19, podendo inclusive, apresentar uma sub contagem dos casos da doença.
-Nota-se que, em todas as causas de morte listadas ocorrerem em ambos os sexos, embora sempre é observado uma maior mortalidade na população masculina. 
-causas, de maneira enviesada, visto que há CID com características semelhantes à COVID-19.
+Em consonância, em 2020 os primeiros casos de COVID-19 começam a ser diagnosticados. Estima-se que o aumento no registro de causas de morte, cujos sintomas apresentam semelhanças à doença recém-descoberta, tenha ocorrido por falta de consenso do CID a ser utilizado e do claro diagnóstico da doença.
+
+Destaca-se que o Brasil foi um dos principais polos mundiais da doença, dado a grande população e fatores culturais, podendo ser também um contexto que favorece a ação de outras variáveis intervenientes quanto à quantidade de registros de causa mortis COVID-19, podendo inclusive, apresentar uma sub contagem dos casos da doença. O número de óbitos por infecção por coronavírus de localização não especificada (CID B34.2) é notório em 2021, não sendo uma causa relevante em 2010.
+
+Nota-se que existem diferenças no perfil de causas de morte por sexo, embora sempre é observado uma maior mortalidade na população masculina.
+Dentre as 20 principais causas básicas de óbito, chama atenção na população feminina a neoplasia maligna da mama e, na masculina, a cirrose hepática alcoólica, que se mostra relevante tanto em 2010 como em 2021.
 
 \newpage
 
