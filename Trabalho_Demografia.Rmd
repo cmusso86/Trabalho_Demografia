@@ -984,9 +984,9 @@ tbl_nMx %>%
 ```
 
 
-É possível notar que para todos os anos as curvas seguem uma forma semelhante. Essa forma indica que a mortalidade infantil (menores de 1 ano) é maior que a mortalidade no restante da infância e juventude. Isso deve-se às vulnerabilidades intrínsicas aos menores de 1 ano, por vezes agravadas por fatores como qualidade (ou ausência) do serviço de água e esgotamento sanitário. Ademais, conforme a idade avança aumenta também a taxa de mortalidade.
+É possível notar que para todos os anos as curvas seguem uma forma semelhante. Essa forma indica que a mortalidade infantil (menores de 1 ano) é maior que a mortalidade no restante da infância e juventude. Isso deve-se às vulnerabilidades intrínsecas aos menores de 1 ano, por vezes agravadas por fatores como qualidade (ou ausência) do serviço de água e esgotamento sanitário. Ademais, conforme a idade avança aumenta também a taxa de mortalidade.
 
-Outro ponto que se destaca é a diferença por sexo. De modo geral, os homens possuem maiores taxas de mortalidade, para todos os anos e faixas etárias, com exceção da faixa de 5 a 9 anos em 2019. Especialmente, entre 15 e 30 anos, a diferença entre homens e mulheres é acentuado. O motivo desse maior risco na população masculina ainda é incerto e muitas vezes especulativo, como é discutivo em \citeonline{nathanson1984sex}, entretanto, alguns pontos que ajudam a explicar essa diferença são os papéis de gênero e a estrutura social. Além disso, os homens parecem ter uma desvantagem na mortalidade por doenças cardiovasculares e neoplasias em comparação com as mulheres, por fim, hábitos pessoais de saúde parecem afetar mortalidade masculina mais que feminina \cite{nathanson1984sex}.
+Outro ponto que se destaca é a diferença por sexo. De modo geral, os homens possuem maiores taxas de mortalidade, para todos os anos e faixas etárias, com exceção da faixa de 5 a 9 anos em 2019. Especialmente, entre 15 e 30 anos, a diferença entre homens e mulheres é acentuada. O motivo desse maior risco na população masculina ainda é incerto e muitas vezes especulativo, como é discutivo em \citeonline{nathanson1984sex}, entretanto, alguns pontos que ajudam a explicar essa diferença são os papéis de gênero e a estrutura social. Além disso, os homens parecem ter uma desvantagem na mortalidade por doenças cardiovasculares e neoplasias em comparação com as mulheres. Por fim, hábitos pessoais de saúde parecem afetar mortalidade masculina mais que feminina \cite{nathanson1984sex}.
 
 
 \newpage
@@ -1088,7 +1088,7 @@ Entretanto, vale ressaltar que de acordo com a meta dos Objetivos de Desenvolvim
 
 **c) Compare os seus resultados com os valores obtidos pelo estudo GBD, pela Nações Unidas (UN Population) e aqueles publicados no site do Datasus (RIPSA - Indicadores e dados básicos - http://tabnet.datasus.gov.br/cgi/idb2012/matriz.htm ). Para a TMI, compare com os valores obtidos na questão 1. Comente sobre os aspectos metodológicos dessas duas formas de cálculo.**
 
-Tendo como comparativo o método apresentado para a taxa de mortalidade infantil, junto ao fator que calcula a probabilidade de sobrevivência do nascido até o mesmo completar um ano de vida na questão 1, observa-se que o segundo indicador trabalha com valores absolutos, apresentados diretamente, entretanto a taxa de mortalidade infantil foi calculada pela média dos óbitos centralizado em 2020, com o objetivo de diminuir o impacto de um ano que possa ter um comportamento fora do normal, seja por acontecimentos naturais ou algum problema de coleta. Para as taxas calculadas pela pesquisa relacionada à mortalidade de menores de 1 ano do RIPSA, os dados apresentam queda com o decorrer dos anos.
+Tendo como comparativo o método apresentado para a taxa de mortalidade infantil, junto ao fator que calcula a probabilidade de sobrevivência do nascido até o mesmo completar um ano de vida na questão 1, observa-se que o segundo indicador trabalha com valores absolutos, apresentados diretamente. Entretanto a taxa de mortalidade infantil foi calculada pela média dos óbitos centralizado em 2020, com o objetivo de diminuir o impacto de um ano que possa ter um comportamento fora do normal, seja por acontecimentos naturais ou algum problema de coleta. Para as taxas calculadas pela pesquisa relacionada à mortalidade de menores de 1 ano do RIPSA, os dados apresentam queda com o decorrer dos anos.
 
 Embora possa se observar essa tendência, temos que as taxas obtidas a partir dos dados do SIM e do SINASC são menores que as apresentadas na última pesquisa do RIPSA. Mesmo que a diferença apresentada seja baixa, nunca maior do que 1 ponto percentual, um fator explicativo pode ser a diferença entre datas, já que as taxas obtidas no item b são de 2021 e a última taxa calculada pelo RIPSA é de 2011.
 
@@ -1222,7 +1222,7 @@ Dentre as 20 principais causas básicas de óbito, chama atenção na populaçã
 
 **e) Construa Tábuas de Vida para cada sexo para a UF escolhida para 2021, a partir das taxas específicas de mortalidade obtidas no item a:**
 
-Podemos observar as tábuas de vida Feminina e Maculina nas Tabelas \@ref(tab:TVF) e \@ref(tab:TFM)
+Podemos observar as tábuas de vida Feminina e Maculina nas Tabelas \@ref(tab:TVF) e \@ref(tab:TFM). Para os cálculos utilizou-se a TMI obtida no item b, por sexo. Já os fatores de separaçãoo foram calculados por meio dos microdados de mortalidade (SIM) para todas as faixas etárias. A raiz l0 foi fixada em 100.000.
 
 ```{r TVF}
 # Letra e -------
@@ -1497,6 +1497,11 @@ nLxF_2010 <- nLxF[5:11]/100000
 ```
 
 
+Tanto na tábua feminina quanto na masculina,  é possível observar que os fatores de separação nkx a partir da idade x = 5 são próximos de n2 = 2,5. Ou seja, admitindo que a sobrevivência lx varia de forma linear nesses grupos, a aproximaçãoo chegaria em resultados satisfatórios, próoximos do encontrado usando os microdados. O fator de separação no primeiro grupo etário 1k0 = 0,1220 para mulheres e 1k0 = 0,1160 para os homens indica que os óbitos em menores de 1 ano em Santa Catarina, 2021, ocorrem em maioria no início do intervalo etário, entre o 1o e 2o mês de vida. Esse resultado está em consonância com aqueles encontrados em países desenvolvidos.
+A expectativa de vida  é umas das principais métricas para avaliar a saúde de uma população, captando a mortalidade ao longo de todo o curso da vida. Os resultados encontrados mostram uma alta esperança de vida ao nascer, principalmente para as mulheres (81,43 anos). Os valores são próximos dos estimados pelo GBD para 2019: 79,94 para as mulheres e 73,97 para os homens.
+
+A esperança de vida para a idade exata 60 também apresenta resultados satisfatórios para homens e mulheres, com valores 22,92 e 26,05, respectivamente. O valor estimado pela Nações Unidas (UN Population) para o Brasil em 2021, ambos os sexos,  é de 19,58. Ou seja, as estimativas obtidas neste trabalho para Santa Catarina se mostram mais otimistas que o cenário nacional.
+
 **Com base na TV calculada, grafique as funções lx e nqx para cada sexo e comente os resultados. Se lo=1, qual o significado da função lx? Interprete, neste caso, l20 e l60.**
 
 As Figuras \ref{fig:lx} e \ref{fig:nqx} abaixo ilustra as funções lx e nqx.
@@ -1517,3 +1522,6 @@ As Figuras \ref{fig:lx} e \ref{fig:nqx} abaixo ilustra as funções lx e nqx.
 		\small\textsuperscript{Elaboração Própria. Fonte dos Dados: Ministério da Saúde } 
 	\label{fig:nqx}
 \end{figure}
+
+No modelo, lx representa o número de pessoas que alcançam com vida a idade exata x de uma uma geração inicial de l0 nascimentos e, portanto,  é uma função de sobrevivência que inicia num determinado momento, com toda a população ainda viva, e permite calcular a porcentagem dessa população ainda viva em qualquer outro momento ao longo do tempo. Assim, l0 = 1 indica a geração inicial de nascimentos, que neste caso  é 1, e l20 e l60 seria o número de pessoas que alcançam com vida a idade exata 20 e 60, respectivamente. Portanto, esses valores são as probabilidades de sobreviver a idade exata 20 e 60.
+Por outro lado, nqx  é a probabilidade que uma pessoa, tendo alcançado a idade exata x, tem de morrer entre as idades x e x + n. Nota-se que as probabilidades de morte para as primeiras faixas etárias são menores do que para as últimas, já que a sobreviência seria maior entre as pessoas mais jovens. No entanto, a mortalidade infantil ainda apresenta valores expressivos, como pode ser observado no gráfico.
