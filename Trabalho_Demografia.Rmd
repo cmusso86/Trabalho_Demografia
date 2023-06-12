@@ -19,6 +19,32 @@ knitr::opts_chunk$set(echo = FALSE,
                       message = FALSE)
 ```
 
+```{r}
+# Carregando bibliotecas ---------
+setwd("C:/Users/jehhv/OneDrive/Documentos/UnB/2023/2023.1/Demografia_Ana Maria/Trabalho 1 - Natalidade_Fecundidade e Mortalidade")
+pacman::p_load(foreign, tidyverse, LexisPlotR, lubridate, devtools)
+
+devtools::install_github("danicat/read.dbc")
+# read.dbc eh um pacote especifico para importacao de dados do datasus
+# ref: https://docs.bvsalud.org/biblioref/2018/07/906543/anais_cbis_2016_artigos_completos-601-606.pdf
+
+library(read.dbc)
+library(tidyverse)
+
+# Banco de mortalidade - SIM ---------
+
+anos <- 2000:2021
+arquivos_nome <- str_c("DOSC",anos,".dbc") %>% as.list()
+#concatenando strings em uma única para formar o nome e juntar em uma lista
+
+dados_list <- map(arquivos_nome,~ read.dbc(.x))
+#funcao MAP remove a necessidade de declararmos um objeto iterador auxiliar (i) e aplica a funcao desejada em cada elemento do objeto dado
+
+dados_SIM <- dplyr::bind_rows(dados_list)
+
+saveRDS(dados_SIM,"dados_SIM.rds")
+```
+
 # Introdução
 
 O estado brasileiro de Santa Catarina tem como capital a ilha de Floranópolis e está localizado no centro da região sul do país. O estado faz fronteira ao norte com o Paraná e ao sul pelo Rio Grande do Sul. É banhado ao leste pelo Oceano Atlântico e e ao oeste faz fronteira com a Argentina. Sua área abrange 95.736,165 km² (https://www.ibge.gov.br/cidades-e-estados) e possui uma população de mais de 6 milhões de habitantes , sendo o décimo estado mais populoso do Brasil (https://ftp.ibge.gov.br/Estimativas_de_Populacao/Estimativas_2021/estimativa_dou_2021.pdf). O estado possui 295 municípios, sendo Joinville, Florianópolis, Blumenau, Criciúma e Chapecó as principais cidades.
