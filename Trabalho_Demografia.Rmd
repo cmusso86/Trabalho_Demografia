@@ -371,7 +371,7 @@ nfx %>%
 ```
 
 
-Abaixo (Figura \ref{fig:fig1}) podemos observar o gráfico dessa dinâmica. No ano de 2010 foi mais comum a ocorrência de mães adolescentes. Nos anos de 2019 e 2021 houve um aumento na reprodução no estado, com aumento nos nascimentos para todas as outras faixas-estárias maternas. 
+Abaixo (Figura \ref{fig:fig1}) podemos observar o gráfico dessa dinâmica. No ano de 2010 foi mais comum a ocorrência de mães adolescentes. Nos anos de 2019 e 2021 houve um aumento na reprodução no estado, com aumento nos nascimentos para todas as outras faixas etárias maternas. 
 
 ```{r graf-nfx}
 fig1 <- nfx %>% 
