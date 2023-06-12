@@ -384,8 +384,8 @@ ggsave(fig1, filename = "img/fig_nfx.png")
 
 \begin{figure}[H]
 	\centering
-		\includegraphics[scale = 1]{img/fig_nfx.png}
 		\caption{Taxa de Fecundidade específica para os anos de 2010, 2019, 2021, Santa Catarina.}
+		\includegraphics[scale = 1]{img/fig_nfx.png}
 	\label{fig:fig1}
 \end{figure}
 
@@ -684,8 +684,8 @@ Para permitir uma análise mais direta, a variável de idade foi dicotomizada em
 
 \begin{figure}[H]
 	\centering
-		\includegraphics[scale = 0.8]{img/mosaico1.png}
 		\caption{Associação entre duas classes de Faixa-Etária e o fato de ter cursado ou não ao menos o Ensino Médio para mães no ano de 2021 em Santa Catarina.}
+		\includegraphics[scale = 0.8]{img/mosaico1.png}
 	\label{fig:mosaico1}
 \end{figure}
 
@@ -728,8 +728,8 @@ A variável de idade foi dicotomizada da mesma forma descrita anteriormente. Nes
 
 \begin{figure}[H]
 	\centering
-		\includegraphics[scale = 0.8]{img/mosaico2.png}
 		\caption{Associação entre o tipo de parto e o fato de ter cursado ou não ao menos o Ensino Médio para mães no ano de 2021 em Santa Catarina.}
+		\includegraphics[scale = 0.8]{img/mosaico2.png}
 	\label{fig:mosaico2}
 \end{figure}
 
@@ -826,6 +826,9 @@ de 2010, 2019 e 2021.", booktabs = TRUE,
    kable_styling(latex_options="hold_position", position="center")
 ```
 
+As taxas brutas de mortalidade do estado de Santa Catarina apresentam resultados satisfatórios para os anos de 2010 e 2019. Em 2010, por exemplo, o valor estava abaixo da TBM nacional de 6,03 (IBGE, Projeção da População do Brasil - 2013). O aumento da taxa em 2019 deve-se, provavelmente, ao envelhecimento da população, fato que vem se consolidando de modo geral no país. Portanto, é importante destacar que as taxas brutas não levam em consideração a estrutura etária da população e, consequentemente, não devem ser comparadas no tempo ou entre regiões sem as devidas padronizações.
+
+Por fim, o aumento abrupto da TBM em 2021 chama bastante atenção. Além das mudanças na estrutura etária da população, a pandemia de COVID-19 é fator primordial na explicação desse fenômeno, impactando fortemente toda a estrutura e níveis da mortalidade brasileira. Segundo \citeonline{holzbach} houve um excesso de 6.315 óbitos em 2020 e 17.391 em 2021 em Santa Catarina, esses valores foram calculados comparando mortalidade observada e esperada segundo média das mortes ocorridas entre 2015 e 2019. Além disso, identificou-se que os períodos de maior excesso de mortalidade são exatamente os com mais mortes por COVID-19, o que ajuda a entender a TBM aqui encontrada.
 
 ### Taxas específicas de mortalidade por sexo e idade - nMx {-}
 
@@ -887,11 +890,11 @@ plot2021 <- nMx %>% filter(Ano=="2021") %>%
 #ggsave('./img/TEM.png', width = 188, height = 113, units = 'mm',bg="white")
 ```
 
-\begin{figure}[h!]
+\begin{figure}[H]
 	\centering
-		\includegraphics[scale = .9]{img/TEM.png}
 		\caption{Taxas específicas de mortalidade por sexo e idade em Santa Catarina, Brasil, nos
 anos de 2010, 2019 e 2021.}
+		\includegraphics[scale = .9]{img/TEM.png}
 	\label{fig:nMx}
 \end{figure}
 
@@ -918,13 +921,21 @@ tbl_nMx %>%
   mutate_if(is.numeric, ~comma(., decimal.mark = ",", big.mark = ".")) %>%
   kable(escape = F,format="latex",caption = captionNMX, booktabs = TRUE, linesep="", digits=2,
         align=c("l", "r", "r", "r", "r", "r", "r"), col.names=c("Faixa-Etária", "2010", "2019", "2021", "2010", "2019", "2021"))  %>%
-   kable_styling(latex_options="hold_position", position="center") %>% 
+   kable_styling(latex_options="HOLD_position", position="center") %>% 
   add_header_above(c(" ", "nMx feminina" = 3, "nMx masculina" = 3))
 
 ```
 
+
+É possível notar que para todos os anos as curvas seguem uma forma semelhante. Essa forma indica que a mortalidade infantil (menores de 1 ano) é maior que a mortalidade no restante da infância e juventude. Isso deve-se às vulnerabilidades intrínsicas aos menores de 1 ano, por vezes agravadas por fatores como qualidade (ou ausência) do serviço de água e esgotamento sanitário. Ademais, conforme a idade avança aumenta também a taxa de mortalidade.
+
+Outro ponto que se destaca é a diferença por sexo. De modo geral, os homens possuem maiores taxas de mortalidade, para todos os anos e faixas etárias, com exceção da faixa de 5 a 9 anos em 2019. Especialmente, entre 15 e 30 anos, a diferença entre homens e mulheres é acentuado. O motivo desse maior risco na população masculina ainda é incerto e muitas vezes especulativo, como é discutivo em \citeonline{nathanson1984sex}, entretanto, alguns pontos que ajudam a explicar essa diferença são os papéis de gênero e a estrutura social. Além disso, os homens parecem ter uma desvantagem na mortalidade por doenças cardiovasculares e neoplasias em comparação com as mulheres, por fim, hábitos pessoais de saúde parecem afetar mortalidade masculina mais que feminina \cite{nathanson1984sex}.
+
+
 \newpage
 **b) Calcule a TMI, utilizando o número médio de óbitos ocorridos entre 2019 e 2021 e o número de nascimentos de 2020. Calcule os indicadores: taxa de mortalidade neonatal, neonatal precoce, neonatal tardia, posneonatal. Agregando a informação sobre óbitos fetais para os mesmos anos, calcule a taxa de mortalidade perinatal.**
+
+Os diferentes componentes da mortalidade infantil e mortalidade perinatal estão apresentados a seguir.
 
 ```{r}
 # Letra b -------
@@ -1001,17 +1012,22 @@ tbl_mort_infantil <- data.frame("Taxa de mortalidade"=tipos,
 tbl_mort_infantil %>% 
   mutate_if(is.numeric, ~comma(., decimal.mark = ",", big.mark = ".")) %>%
   kable(format="latex",caption = "Componentes da mortalidade infantil por mil habitantes no estado de Santa Catarina, Brasil, utilizando o número médio de óbitos entre 2019 e 2021 e o número de nascimentos de 2020.", booktabs = TRUE, linesep="", digits=2,
-        align=c("l", "r"))  %>%
-   kable_styling(latex_options="hold_position", position="center")
+        align=c("l", "r"),label="tabinf")  %>%
+   kable_styling(latex_options="HOLD_position", position="center")
 ```
+
+Destaca-se a mortalidade infantil de 9,29, ou seja, a cada mil nascidos vivos no período em média ocorrem 9,29 óbitos em menores de 1 ano em Santa Catarina. Esse valor leva em conta óbitos de 2019 a 2021. De acordo com \citeonline{boletimepidem}, em 2019 a TMI para o Brasil era de 13,3, enquanto em Santa Catarina era de 9,6. Esses valores e os apresentados neste trabalho indicam que o estado de Santa Catarina tem um cenário melhor se comparado com a média nacional.
+
+Entretanto, vale ressaltar que de acordo com a meta dos Objetivos de Desenvolvimento Sustentável da ONU, o Brasil precisa, até 2030, reduzir a taxa da mortalidade infantil para no máximo 5 por mil nascidos vivos. Ou seja, ainda há um longo caminho a ser seguido no sentido de diminuição dos óbitos nessa população, e para o estado escolhido neste trabalho essa afirmação também é válida.
+
 
 \newpage
 
 **c) Compare os seus resultados com os valores obtidos pelo estudo GBD, pela Nações Unidas (UN Population) e aqueles publicados no site do Datasus (RIPSA - Indicadores e dados básicos - http://tabnet.datasus.gov.br/cgi/idb2012/matriz.htm ). Para a TMI, compare com os valores obtidos na questão 1. Comente sobre os aspectos metodológicos dessas duas formas de cálculo.**
 
-Tendo como comparativo o método apresentado para a taxa de mortalidade infantil, junto ao fator que calcula a probabilidade de sobrevivência do nascido até o mesmo completar um ano de vida, observa-se que o segundo indicador trabalha com valores absolutos, apresentados diretamente, entretanto a taxa de mortalidade infantil, se caracteriza pela média móvel dos nascimentos, com o objetivo de diminuir o impacto de um ano que possa ter um comportamento fora do normal, por acontecimentos naturais ou algum problema de coleta e seleção.
-Para as taxas calculadas pela pesquisa relacionada à mortalidade de menores de 1 ano do RIPSA, os dados apresentam queda nesse fato com o decorrer dos anos.
-Embora possa se observar essa tendencia, temos que as taxas obtidas a partir dos dados do SIM e do SINASC são menores que as apresentadas na última pesquisa do RIPSA. Mesmo que a diferença apresentada seja baixa, nunca maior do que 1 ponto percentual, um fator explicativo, pode ser a diferença entre datas, já que, as taxas obtidas no item b são de 2021 e a última taxa calculada pelo RIPSA é de 2011.
+Tendo como comparativo o método apresentado para a taxa de mortalidade infantil, junto ao fator que calcula a probabilidade de sobrevivência do nascido até o mesmo completar um ano de vida na questão 1, observa-se que o segundo indicador trabalha com valores absolutos, apresentados diretamente, entretanto a taxa de mortalidade infantil foi calculada pela média dos óbitos centralizado em 2020, com o objetivo de diminuir o impacto de um ano que possa ter um comportamento fora do normal, seja por acontecimentos naturais ou algum problema de coleta. Para as taxas calculadas pela pesquisa relacionada à mortalidade de menores de 1 ano do RIPSA, os dados apresentam queda com o decorrer dos anos.
+
+Embora possa se observar essa tendência, temos que as taxas obtidas a partir dos dados do SIM e do SINASC são menores que as apresentadas na última pesquisa do RIPSA. Mesmo que a diferença apresentada seja baixa, nunca maior do que 1 ponto percentual, um fator explicativo pode ser a diferença entre datas, já que as taxas obtidas no item b são de 2021 e a última taxa calculada pelo RIPSA é de 2011.
 
 \newpage
 **d) Compare a estrutura de mortalidade por causas entre 2010 e 2021. Utilize 20 primeiras grupos de causas segundo Grupos CID-10 (ver Tabnet - Datasus), segundo sexo para os anos selecionado. Comente os resultados. Destacar a mortalidade por Covid-19 (CID B34.2).**
@@ -1408,15 +1424,15 @@ nLxF_2010 <- nLxF[5:11]/100000
 
 \begin{figure}[H]
 	\centering
-		\includegraphics[scale = 1]{img/graf_lx.png}
 		\caption{Função de sobrevivência lx para ambos sexos em 2021, Santa Catarina.}
+		\includegraphics[scale = 1]{img/graf_lx.png}
 	\label{fig:lx}
 \end{figure}
 
 
 \begin{figure}[H]
 	\centering
-		\includegraphics[scale = 1]{img/graf_nqx.png}
 		\caption{Função nqx para ambos sexos em 2021, Santa Catarina.}
+		\includegraphics[scale = 1]{img/graf_nqx.png}
 	\label{fig:nqx}
 \end{figure}
