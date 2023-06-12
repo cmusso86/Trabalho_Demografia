@@ -4,7 +4,7 @@ subtitulo: "Santa Catarina"
 aluno1:  "Carolina Musso 18/0047850"
 aluno2: "Laura Teixeira 19/0016051"
 aluno3: "Jéssica Vasconcelos 18/0048708"
-aluno4: "Leonardo"
+aluno4: "Leonardo 21/1029030"
 orientador: "Ana Maria Nogales"
 ano: "1/2023"
 referencias: referencias.bib
@@ -22,7 +22,7 @@ knitr::opts_chunk$set(echo = FALSE,
 ```{r}
 # Carregando bibliotecas ---------
 
-pacman::p_load(foreign,tidyverse, LexisPlotR, readxl, janitor, kableExtra, scales, reshape2, cowplot, ggmosaic)
+pacman::p_load(foreign,tidyverse, LexisPlotR, readxl, janitor, kableExtra, scales, reshape2, cowplot, ggmosaic, gplots, corrplot, DescTools,RColorBrewer)
 pacman::p_load_gh("danicat/read.dbc")
 
 # Dados -------
@@ -47,9 +47,9 @@ ibge_indicadores <- read_excel("Bases/indicadores_IBGE_SC.xlsx")
 
 # Introdução
 
-O estado brasileiro de Santa Catarina tem como capital a ilha de Floranópolis e está localizado no centro da região sul do país. O estado faz fronteira ao norte com o Paraná e ao sul pelo Rio Grande do Sul. É banhado ao leste pelo Oceano Atlântico e e ao oeste faz fronteira com a Argentina. Sua área abrange 95.736,165 km² (https://www.ibge.gov.br/cidades-e-estados) e possui uma população de mais de 6 milhões de habitantes , sendo o décimo estado mais populoso do Brasil (https://ftp.ibge.gov.br/Estimativas_de_Populacao/Estimativas_2021/estimativa_dou_2021.pdf). O estado possui 295 municípios, sendo Joinville, Florianópolis, Blumenau, Criciúma e Chapecó as principais cidades.
+O estado brasileiro de Santa Catarina tem como capital a ilha de Floranópolis e está localizado no centro da região sul do país. O estado faz fronteira ao norte com o Paraná e ao sul pelo Rio Grande do Sul. É banhado ao leste pelo Oceano Atlântico e e ao oeste faz fronteira com a Argentina. Sua área abrange 95.736,165 km² e possui uma população de mais de 6 milhões de habitantes , sendo o décimo estado mais populoso do Brasil. O estado possui 295 municípios, sendo Joinville, Florianópolis, Blumenau, Criciúma e Chapecó as principais cidades \cite{IBGE}.
 
-Santa Catarina possui índices sociais muito elevados em comparação com o restante do Brasil. É o estado com a maior expectativa de vida, empatando com o Distrito Federal. Além disso, possui a menor taxa de mortalidade infantil e é o estado com menor desigualdade econômica e analfabetismo no país. Em termos econômicos, Santa Catarina possui o sexto maior Produto Interno Bruto (PIB) do Brasil e o quarto maior PIB per capita, ficando atrás apenas do Distrito Federal, São Paulo e Mato Grosso. Sua economia é diversificada e tem uma forte ênfase na industrialização. O estado é um importante polo de exportação e consumo, sendo um dos maiores contribuintes para o crescimento da economia brasileira, representando 4% do PIB nacional (https://agenciadenoticias.ibge.gov.br/agencia-sala-de-imprensa/2013-agencia-de-noticias/releases/17999-contas-regionais-2015-queda-no-pib-atinge-todas-as-unidades-da-federacao-pela-primeira-vez-na-serie).
+Santa Catarina possui índices sociais muito elevados em comparação com o restante do Brasil. É o estado com a maior expectativa de vida, empatando com o Distrito Federal. Além disso, possui a menor taxa de mortalidade infantil e é o estado com menor desigualdade econômica e analfabetismo no país. Em termos econômicos, Santa Catarina possui o sexto maior Produto Interno Bruto (PIB) do Brasil e o quarto maior PIB per capita, ficando atrás apenas do Distrito Federal, São Paulo e Mato Grosso. Sua economia é diversificada e tem uma forte ênfase na industrialização. O estado é um importante polo de exportação e consumo, sendo um dos maiores contribuintes para o crescimento da economia brasileira, representando 4% do PIB nacional \cite{IBGE2}.
 
 O tema desse trabalho é a dinâmica demográfica, com a análise de dois componentes: a natalidade/fecundidade e a mortalidade do estado de Santa Catarina. 
 
@@ -120,12 +120,13 @@ tabela <- obitos %>% mutate(idade_arrumada = case_when(str_sub(IDADE,1,1)<4 ~ 0,
 # ggsave("diaglexis_a.png", width = 188, height = 93, units = "mm")
 ```
 
-O Diagrama de Lexis apresentado a seguir auxilia a localizar visualmente os nascimentos vivos e óbitos menores de 5 anos ocorridos entre os anos de 2000 e 2021 no estado de Santa Catarina. 
+O Diagrama de Lexis apresentado  a seguir (Figura: \ref{fig:lexis}) auxilia a localizar visualmente os nascimentos vivos e óbitos menores de 5 anos ocorridos entre os anos de 2000 e 2021 no estado de Santa Catarina. 
 
 \begin{figure}[h!]
 	\centering
-	\caption{Diagrama de Lexis dos óbitos e nascimentos vivos de 2000 a 2021, Santa Catarina.}
+			\caption{Diagrama de Lexis dos óbitos e nascimentos vivos de 2000 a 2021, Santa Catarina.}
 		\includegraphics[scale = .9]{img/diaglexis_a.png}
+		\small\textsuperscript{Elaboração Própria. Fonte dos Dados:Ministério da Saúde } 
 	\label{fig:lexis}
 \end{figure}
 
@@ -133,6 +134,8 @@ Os valores destacados em vermelho indicam o total de nascimentos em cada ano obs
 
 \newpage
 **b) Supondo população fechada (inexistência de migração), calcule a probabilidade de um recém-nascido na UF ou território de escolha sobreviver à idade exata 5 para as coortes de 2000 a 2016.**
+
+A Tabela \@ref(tab:tab1) abaixo mostra os valores de probabilidade de sobrevivência calculados para os referidos anos. 
 
 ```{r}
 obt_coorte <- tabela %>% 
@@ -159,7 +162,7 @@ nqx <- (ndx$`sum(n)`)/lo
 npx <- 1-nqx
 ```
 
-```{r}
+```{r tab1}
 
 titulo <-"Probabilidade de sobrevivência de um recém-nascido à idade exata 5 para as coortes de 2000 a 2016 em Santa Catarina"
 
@@ -172,9 +175,12 @@ cbind(lo=lo$Ano_nascimento, Nasc=npx$Nascimentos) %>%
   
 ```
 \newpage
+
 **c) Considerando o mesmo pressuposto, calcule a probabilidade de sobreviver ao primeiro aniversário dos recém-nascidos no período de 2000 a 2020.**
 
-```{r}
+A Tabela \@ref(tab:tab2) abaixo mostra os valores de probabilidade de sobrevivência calculados para os referidos anos. 
+
+```{r tab2}
 obt_coorte <- tabela %>% 
   filter(TRI==0 & ano_nasc %in% c(2000,2001,2002,2003,2004,
                                   2005,2006,2007,2008,2009,
@@ -287,9 +293,9 @@ TBN <-pop_grupos %>%
 
 A TBN é uma medida da intensidade dos nacimentos em uma população. É uma das medidas mais simples de serem realizadas no que se refere a medida de nascimentos de uma população, uma vez que para seu cálculo são necessários apensas os valores de população residente e de nascimentos ocorridos em um período. É uma medida que pode ser muito influenciada pela estrutura etária de uma população bem como a razão de sexo. 
 
-Pela tabela abaixo, podemos observar que a TBN do estado se manteve em torno de 13 nascimentos para cada mil habitantes, sendo que a taxa mais baixa foi observada em 2021. 
+Pela Tabela \@ref(tab:tbn) abaixo, podemos observar que a TBN do estado se manteve em torno de 13 nascimentos para cada mil habitantes, sendo que a taxa mais baixa foi observada em 2021. 
 
-```{r}
+```{r tbn}
 
 caption1 <- "Taxa Bruta de Natalidade no estado de Santa Catarina, Brasil, nos anos de 2010, 2019 e 2021."
 
@@ -302,9 +308,9 @@ TBN %>%
 ### Taxa Fecundidade Geral (TFG) {-}
 
 A TFG ligeriamente mais refinada que o indicador anterior por acrescenta uma informação que a medida anterior não possúia, que é a relaÇão de nascimentos por mulheres em período. Entretanto, ainda há muita influência da estrutura etária, uma vez que a fecundidade feminina não é constante durante seu período fértil. 
-Ta tabela abaixo podemos observar os resultados para os anos selecionados. Nesse caso o valor mais baixo foi observado em 2010 e o mais alto em 2019, e em 2021 o valor voltou a descrescer. 
+Na Tabela \@ref(tab:tfg) abaixo podemos observar os resultados para os anos selecionados. Nesse caso o valor mais baixo foi observado em 2010 e o mais alto em 2019, e em 2021 o valor voltou a descrescer. 
 
-```{r}
+```{r tfg}
 pop_fem_fertil <- pop_grupos %>% 
   filter(Sexo=="F", 
          faixa %in% c("15-19", "20-24", "25-29",
@@ -334,10 +340,10 @@ TFG %>%
 
 A medida de taxa específica acrescenta ainda a estratificação por faixa-etária. Nesse sentido, é uma medida que permite a comparação etre populações e ao longo do tempo. 
 
-Abaixo podemos observar que para todos os anos, a idade mais prolífica foi entre 25-29 anos. Entretanto, observamos que para o ano de 2010 a fecundidade era mais equilibrada entre 20-24 e 25-29 anos, enquanto que para o ano de 2019 e 2022 houve relativamente taxas maiores em idades de 25-29 > 30 anos. 
+Abaixo (Tabela \@ref(tab:tef)) podemos observar que para todos os anos, a idade mais prolífica foi entre 25-29 anos. Entretanto, observamos que para o ano de 2010 a fecundidade era mais equilibrada entre 20-24 e 25-29 anos, enquanto que para o ano de 2019 e 2022 houve relativamente taxas maiores em idades de 25-29 > 30 anos. 
 
 
-```{r}
+```{r tef}
 pop_fem_fertil_faixa <- pop_fem_fertil %>% 
   pivot_longer(c("2010", "2019", "2021"),
                names_to = "Ano", values_to = "Pop") 
@@ -365,9 +371,9 @@ nfx %>%
 ```
 
 
-Abaixo podemos observar o gráfico dessa dinâmica. No ano de 2010 foi mais comum a ocorrência de mães adolescentes. Nos anos de 2019 e 2021 houve um aumento na reprodução no estado, com aumento nos nascimentos para todas as outras faixas-estárias maternas. 
+Abaixo (Figura \ref{fig:fig1}) podemos observar o gráfico dessa dinâmica. No ano de 2010 foi mais comum a ocorrência de mães adolescentes. Nos anos de 2019 e 2021 houve um aumento na reprodução no estado, com aumento nos nascimentos para todas as outras faixas-estárias maternas. 
 
-```{r}
+```{r graf-nfx}
 fig1 <- nfx %>% 
   pivot_longer(-faixa, names_to = "Ano", values_to = "nfx") %>% 
   #mutate(faixa=as.numeric(str_sub(faixa, 1, 2))) %>% 
@@ -391,9 +397,9 @@ ggsave(fig1, filename = "img/fig_nfx.png")
 
 ### Taxa de Fecundidade Total {-}
 
-A taxa de fecundidade total pode trazer informação sobre o potencial de crescimento de uma população. Em geral, valores acima de 2,1 indicam uma reposição positiva da população, com tendência de crescimento a longo prazo. Notamos que, pelo padrão abaixo, apesar de ter havido um aumento na reprodução nos últimos anos, esse valor se mantém abaixo do limiar considerado para reposição da população existente.
+A taxa de fecundidade total pode trazer informação sobre o potencial de crescimento de uma população. Em geral, valores acima de 2,1 indicam uma reposição positiva da população, com tendência de crescimento a longo prazo. Notamos que, pelo padrão abaixo (Tabela \@ref(tab:tft)), apesar de ter havido um aumento na reprodução nos últimos anos, esse valor se mantém abaixo do limiar considerado para reposição da população existente.
 
-```{r}
+```{r tft}
 TFT <- nfx %>% 
   pivot_longer(c("2010", "2019", "2021"),
                names_to = "Ano", values_to = "nfx") %>% 
@@ -418,11 +424,11 @@ TFT %>%
 
 ### Taxas específicas de fecundidade feminina {-}
 
-As taxas específicas de fecundidade feminina já acrescentam a informação de reposição da população com indivíduos que, por sua vez, també, tâm a capacidade de se reproduzir. A estratificação por faixa-etária permite a comparação entre populações e ao longo do tempo, e também o cálculo do indicador que será apresentado no próximo tópico. 
+As taxas específicas de fecundidade feminina já acrescentam a informação de reposição da população com indivíduos que, por sua vez, també, têm a capacidade de se reproduzir. A estratificação por faixa-etária permite a comparação entre populações e ao longo do tempo, e também o cálculo do indicador que será apresentado no próximo tópico. Abaixo podemos observar esse indicador (Tabela \@ref{tab:teff}).
 
 
 
-```{r}
+```{r teff}
 nffx <- nascimentos_trat %>% 
   filter(SEXO==2) %>% 
   group_by(Ano, faixa) %>% 
@@ -448,9 +454,9 @@ nffx %>%
 
 ### Taxa Bruta de Reprodução {-}
 
-A taxa bruta de repodução poderia ser equivalente a taxa de fecundidade total, mas dessa vez considerando apenas a populaÇão feminina.
+A taxa bruta de repodução poderia ser equivalente a taxa de fecundidade total, mas dessa vez considerando apenas a população feminina. Na Tabela \@ref(tab:tbr) abaixo podemos observar esses valores. 
 
-```{r}
+```{r tbr}
 TBR <- nffx %>% 
   pivot_longer(c("2010", "2019", "2021"),
                names_to = "Ano", values_to = "nffx") %>% 
@@ -475,8 +481,8 @@ TBR  %>%
 
 ### Taxa Líquida de Reprodução {-}
 
-Finalmente, a taxa líquida de reprodução leva em consideração o risco de mortalidade em cada faixa-etária. 
-```{r}
+Finalmente, a taxa líquida de reprodução leva em consideração o risco de mortalidade em cada faixa-etária. Notamos então (Tabela \@ref(tab:tlr)) valores líquidos ligeiramentes menores do que o apresentado na Tabela \@ref(tab:tbr) anterior. 
+```{r tlr}
 
 
 
@@ -525,10 +531,10 @@ TLR  %>%
 
 **b) Compare os seus resultados com os valores obtidos  pelo IBGE (projeções), e para o Brasil, pelo estudo GBD, pelas Nações Unidas (UN Population) e aqueles publicados no site do Datasus para 2010 (RIPSA - Indicadores e dados básicos - http://tabnet.datasus.gov.br/cgi/idb2012/matriz.htm ). Como  os indicadores de reprodução não aparecem nessas listas, a partir das TFT, calcule esses indicadores para comparação.**
 
-Podemos observar que os valores encontrados nesse trabalho são próximos aos apresentados por outras fontes. Enteranto, observam-se algumas variações. Destacamos a diferença da Taxa Bruta de Natalidade divulgada pela UN para 2010, que foi maior em relação a todos os outros indicadores publicados e em relação a esse trabalho. É esperado que os indicadores nacionais estejam mais próximos a realidade, por estarem mais próximos a fonte original de dados bem como a valores mais atualizados das projeções populacionais para o cálculo desse indicador específico. 
+Podemos observar que os valores encontrados nesse trabalho são próximos aos apresentados por outras fontes (Tabela \@ref(tab:comp)). Enteranto, observam-se algumas variações. Destacamos a diferença da Taxa Bruta de Natalidade divulgada pela UN para 2010, que foi maior em relação a todos os outros indicadores publicados e em relação a esse trabalho. É esperado que os indicadores nacionais estejam mais próximos a realidade, por estarem mais próximos a fonte original de dados bem como a valores mais atualizados das projeções populacionais para o cálculo desse indicador específico. 
 
 
-```{r}
+```{r comp}
 # - A taxa Bruta de natalidade segundo a 2010 (RIPSA - Indicadores e dados básicos 
 #- http://tabnet.datasus.gov.br/cgi/idb2012/matriz.htm )foi de 13.7 para 2010. 
 # # 
@@ -642,7 +648,7 @@ Ademais, outras varações encontradas neste trabalho em relação aos indicador
 
 **c) Comente esses resultados (inclusive os gráficos das nfx), fazendo referência a artigos já publicados sobre o assunto.**
 
-Os dados foram comentados em vias gerais a medida que foram apresentados nas questões anteriores. 
+O comportamento geral dos dados encontrados nesse trabalho foi apresentado na questão b) acima. Nós notamos que Santa Catarina está com valores de Fecundidade Total e Reprodução Líquida abaixo dos limiares considerados como de reposição da população. Essa situação dmográfica é observada no Brasil como tum todo. Entretanto, Santa Cataria parece ter apresentando uma dinâmica ligeiramente diferente do restante do Brasil: estava abaixo da média em 2010, mas apresentou aumento na fertilidade em 2019 e 2021, passando a estar acima da média do país. 
 
 **d) Para os dados do SINASC para 2021, análise a associação entre (apresente ao menos uma medida de associação):**
 
@@ -661,9 +667,28 @@ ass1 <- nascimentos %>%
   mutate(faixa=cut(idade, breaks=c(0,30, 100 ), 
                    labels=c("<30",  ">30" )),
          ensino_medio=ifelse(escol>=4, "Sim", "Não")) 
+
+ass1.1 <- nascimentos %>% 
+  mutate(ano=str_sub(DTNASC, 5,8)) %>% 
+  filter(ano=="2021") %>% 
+  mutate(idade=as.numeric(IDADEMAE),
+         escol=as.double(ESCMAE)) %>% 
+  filter(!is.na(escol),
+         escol!=9) %>% 
+  mutate(faixa=cut(idade, breaks=c(0,20, 30,40,  100), right = F, 
+                   labels=c("<20","20-29",
+                            "30-39", ">=40" )),
+         ensino_medio=factor(ifelse(escol>4, "Alta", 
+                             ifelse(escol==4, "Média", "Baixa")),
+                             levels = c("Baixa", "Média", "Alta")))
   
 tab1 <-table(ass1$faixa, ass1$ensino_medio)
-chi1 <- comma(chisq.test(tab1)$p.value, decimal.mark = ",", accuracy = 0.01)
+tab1.1 <-table(ass1.1$faixa, ass1.1$ensino_medio)
+
+chi1 <- comma(chisq.test(tab1)$p.value, decimal.mark = ",", 
+              accuracy = 0.01)
+
+
 odd1 <-comma((as.numeric(tab1[1,1])*as.numeric(tab1[2,2]))/(as.numeric(tab1[2,1])*as.numeric(tab1[1,2])), decimal.mark = ",", accuracy = 0.01) 
 
 
@@ -674,21 +699,40 @@ mosaico1 <- ggplot(data = ass1) +
   scale_fill_manual(values=c("darkcyan",
                                            "darkred"))+
   theme_classic(base_size = 14) +
-  labs(x="Possui Ens Méd.", y="Faixa-Etária")+
+  labs(y="Possui Ens Fund.", x="Faixa-Etária")+
   theme(legend.position = "none")
 
 ggsave(mosaico1, filename = "img/mosaico1.png")
 ```
 
-Para permitir uma análise mais direta, a variável de idade foi dicotomizada em mulheres com mais ou menos de 30 anos. Já a variável de escolaridade foi dicotomizada em mulheres que possuem ou não ao menos o Ensino Médio. Observações com valores faltantes foram excluídas. nesse caso, notamos que a proporção de mulheres com ensino médio é a mesma independente da idade ( \~70%). O teste de $\chi^2$ apresentou um p-valor de `r chi1`, indicando que não há evidência de associação. O *Odds Ratio* dessa relação é de `r odd1`, indicando que as chances nos dois grupos é muito próxima. Abaixo podemos ver essa relação graficamente.
+Para permitir uma análise mais direta, a variável de idade foi dicotomizada em mulheres com mais ou menos de 30 anos. Já a variável de escolaridade foi dicotomizada em mulheres que possuem ou não ao menos o Ensino Fundamental (ESCMAE>=4, que corresponde a pelo menos 8 anos de estudo, que por sua vez corresponde a, pelo menos o Ensino Fundamental completo). Observações com valores faltantes foram excluídas. Nesse caso, notamos que a proporção de mulheres com ensino fundamental é a mesma independente da idade (*ca.* 70%). O teste de $\chi^2$ apresentou um p-valor de `r chi1`, indicando que não há evidência de associação quando as variáveis são agrupadas dessa forma. Isso também pode ser observado pelo *Odds Ratio* dessa relação é de `r odd1`, indicando que as chances nos dois grupos é muito próxima. Abaixo podemos visualizar essa relação no gráfico de mosaico. Apesar de haver numericamente mais mulheres que possuem Ensino Fundamental na base de dados, a proporção de mulheres em cada faiza é bem semelhante no grupo sem Ensino Fundamental.
+
+
+
 
 \begin{figure}[H]
 	\centering
-		\caption{Associação entre duas classes de Faixa-Etária e o fato de ter cursado ou não ao menos o Ensino Médio para mães no ano de 2021 em Santa Catarina.}
+		\caption{Associação entre duas classes de Faixa-Etária e o fato de ter cursado ou não ao menos o Ensino Fundamental para mães no ano de 2021 em Santa Catarina.}
 		\includegraphics[scale = 0.8]{img/mosaico1.png}
 	\label{fig:mosaico1}
 \end{figure}
 
+Entretanto, fazendo uma análise mais detalhada, nota-se que essa relação é mais complexa. Discretizando as variáveis em Escolaridade Baixa (não tem o Ensino Fundamental completo), Escolaridade Alta (têm ao menos o Ensino Médio Completo) e Escolaridade Média (as que se encontram entre esses dois grupos) e discretizando a com mais faixa-etárias observamos a relação abaixo, em que podemos observar a frequência na tabela de contingência. Nesse caso o teste de $\chi^2$ apresenta um p-valor significativo.  
+
+```{r fig.cap="Tabela de Contigência"}
+balloonplot(tab1.1, main= "Escolaridade e Idade")
+```
+
+As caselas que mais contribuiram para um alto valor da estatística $\chi^2$ podem ser observadas no gráfico de resíduos abaixo, em que a escala de valores azuis estão abaixo do esperado e vermelhos acima do esperado. Vemos então que há bem menos mães com alta escolaridade para mulheres abaixo de 20 anos. O que é esperado, uma vez que se trata de pessoas muito jovens e que talvez não tenham tido tempo suficiente de atingir uma alta Escolaridade ou mesmo, se engravidaram na adolescência, tiveram que abandonar os estudos cedo. Por outro lado, mães com alta escolaridade se encontram no grupo de 30-39 anos, representando talvez, aquela gravidez que foi planejada, depois da conclusão da graduação. 
+
+```{r fig.cap="Resíduos para o teste de Qui-quadrado entre escolaridade da mãe e idade", out.width="70%"}
+
+
+chi2<-chisq.test(tab1.1)
+corrplot(chi2$residuals,is.cor = FALSE, method="shade", shade.col=NA, tl.col="black", tl.srt=45, addgrid.col="black", cl.pos="r", cl.align.text = "l") 
+```
+
+\newpage
 ### Tipo de parto e Escolaridade da mãe {-}
 ```{r}
 ass2 <- nascimentos %>% 
@@ -717,13 +761,13 @@ mosaico2 <- ggplot(data = ass2) +
   scale_fill_manual(values=c("darkcyan",
                                            "darkred"))+
   theme_classic(base_size = 14) +
-  labs(x="Parto", y="Possui Ens. Méd.")+
+  labs(x="Parto", y="Possui Ens. Fund.")+
   theme(legend.position = "none")
 
 ggsave(mosaico2, filename = "img/mosaico2.png")
 ```
 
-A variável de idade foi dicotomizada da mesma forma descrita anteriormente. Nesse caso, notamos que no grupo parto Natural, a proporção de mulherem sem Ensino Médio é maior. Provavelmente as mulheres sem Ensino Médio são também as mulheres que mais utilizam o serviço púplico de saúde, onde a frequência de partos naturais é maior.    O teste de $\chi^2$ apresentou um p-valor <0,001, indicando que há evidência de associação entre essas variáveis. O *Odds Ratio* dessa relação é de `r odd2`, indicando que as chances de ocorrer um parto Natural no grupo de muilheres sem Ensino Médio é 1,8 vezes maior.  
+A variável de idade foi dicotomizada da mesma forma descrita anteriormente. Nesse caso, notamos que no grupo parto Natural, a proporção de mulherem sem o Ensino Fundamental é maior. Provavelmente as mulheres sem Ensino Fundamental são também as mulheres que mais utilizam o serviço público de saúde, onde a frequência de partos naturais é maior. O teste de $\chi^2$ apresentou um p-valor <0,001, indicando que há evidência de associação entre essas variáveis. O *Odds Ratio* dessa relação é de `r odd2`, indicando que as chances de ocorrer um parto Natural no grupo de muilheres sem Ensino Médio é 1,8 vezes maior.  Apesar dessa evidência de uma associação não muito forte, indicado pelo Coeficiente V de Cramer de 0,0901 para essa tabela. 
 
 
 \begin{figure}[H]
