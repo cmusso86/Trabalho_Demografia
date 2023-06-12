@@ -43,6 +43,8 @@ O tema desse trabalho é a dinâmica demográfica, com a análise de dois compon
 
 **a) Construir o Diagrama de Lexis para os dados de nascidos vivos de 2000 a 2021 da UF escolhida (SINASC) e de óbitos menores de 5 anos (idades simples) para o mesmo período segundo ano de nascimento.**
 
+O Diagrama de Lexis apresentado a seguir auxilia a localizar visualmente os nascimentos vivos e óbitos menores de 5 anos ocorridos entre os anos de 2000 e 2021 no estado de Santa Catarina. 
+
 \begin{figure}[h!]
 	\centering
 	\caption{Diagrama de Lexis dos óbitos e nascimentos vivos de 2000 a 2021, Santa Catarina.}
@@ -50,12 +52,85 @@ O tema desse trabalho é a dinâmica demográfica, com a análise de dois compon
 	\label{fig:lexis}
 \end{figure}
 
+Os valores destacados em vermelho indicam o total de nascimentos em cada ano observado, enquanto a visão longitudinal acompanha os grupos de indivíduos ao longo do tempo, com nascimentos e óbitos a cada faixa etária. Observa-se, no geral, que a quantidade de óbitos diminui não somente ao longo dos anos, mas também a medida em que as crianças envelhecem. 
 
 **b) Supondo população fechada (inexistência de migração), calcule a probabilidade de um recém-nascido na UF ou território de escolha sobreviver à idade exata 5 para as coortes de 2000 a 2016.**
 
+```{r}
+obt_coorte <- tabela %>% 
+  filter(TRI==0 & ano_nasc %in% c(2000,2001,2002,2003,2004,
+                                  2005,2006,2007,2008,2009,
+                                  2010,2011,2012,2013,2014,
+                                  2015,2016))
+# npx = 1-nqx
+# nqx = ndx/lo
+
+obt_coorte$ano_nasc <- as.numeric(obt_coorte$ano_nasc)
+
+ndx <- obt_coorte %>% 
+  select(ano_nasc,n) %>% 
+  group_by(ano_nasc) %>% 
+  summarise(sum(n)) #numeradores de nqx
+
+lo <- nascimentos %>% 
+  filter(Ano_nascimento %in% c(2000,2001,2002,2003,2004,
+                               2005,2006,2007,2008,2009,
+                               2010,2011,2012,2013,2014,
+                               2015,2016))
+nqx <- (ndx$`sum(n)`)/lo
+npx <- 1-nqx
+```
+
+```{r}
+
+titulo <-"Tabela 1: Probabilidade de sobrevivência de um recém-nascido à idade exata 5 para as coortes de 2000 a 2016 em Santa Catarina"
+
+cbind(lo$Ano_nascimento, npx$`sum(n)`) %>% 
+  kable(format="html", caption=titulo, booktabs = T, digits=4, linesep="", align=c("c","c"),col.names=c("Ano","Probabilidade")) %>% 
+  kable_styling(latex_options = "hold_position",position="center")
+  
+```
+
 **c) Considerando o mesmo pressuposto, calcule a probabilidade de sobreviver ao primeiro aniversário dos recém-nascidos no período de 2000 a 2020.**
 
+```{r}
+obt_coorte <- tabela %>% 
+  filter(TRI==0 & ano_nasc %in% c(2000,2001,2002,2003,2004,
+                                  2005,2006,2007,2008,2009,
+                                  2010,2011,2012,2013,2014,
+                                  2015,2016,2017,2018,2019,
+                                  2020))
+
+obt_coorte$ano_nasc <- as.numeric(obt_coorte$ano_nasc)
+
+lo <- nascimentos %>% 
+  filter(Ano_nascimento %in% c(2000,2001,2002,2003,2004,
+                               2005,2006,2007,2008,2009,
+                               2010,2011,2012,2013,2014,
+                               2015,2016,2017,2018,2019,
+                               2020))
+
+ndx0 <- obt_coorte %>% 
+  filter(idade_certa == 0) %>% 
+  select(ano_nasc,n) %>% 
+  group_by(ano_nasc) %>% 
+  summarise(sum(n)) #numeradores de nqx
+
+
+nqx0 <- ndx0/lo
+npx0 <- 1-nqx0
+
+
+titulo2 <-"Tabela 2: Probabilidade de sobrevivência ao primeiro aniversário dos recém-nascidos em Santa Catarina no período de 2000 a 2020"
+
+cbind(lo$Ano_nascimento, npx0$`sum(n)`) %>% 
+  kable(format="html", caption=titulo2, booktabs = T, digits=4, linesep="", align=c("c","c"),col.names=c("Ano","Probabilidade")) %>% 
+  kable_styling(latex_options = "hold_position",position="center")
+```
+
 **d) Comente sobre os valores encontrados. Não esquecer a qualidade da informação trabalhada.**
+
+Supondo população fechada (inexistência de migração), a probabilidade de um recém-nascido em Santa Catarina sobreviver à idade exata de 5 anos para as gerações de 2000 a 2016 está em torno de 98$\%$ para todas as coortes. Resultado próximo foi observado para a probabilidade de sobreviver ao primeiro aniversário de um recém-nascido no estado, entre os anos de 2000 a 2020. Ocorre que tais resultados estão condicionados a situações como subnotificação de registros, imprecisões durante a coleta dos dados e outras possíveis limitações. 
 
 \newpage
 
