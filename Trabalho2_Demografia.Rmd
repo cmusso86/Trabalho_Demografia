@@ -53,8 +53,6 @@ O tema desse trabalho é o estudo da dinâmica e estrutura demográfica do estad
 **a) Construa as pirâmides etárias por grupos de idade para a população da UF escolhida em 1991, 2000, 2010, 2015, 2020 e 2030 (obtenha os dados no portal do Datasus para os anos censitários e projeções para os demais anos). Comente os resultados à luz da discussão sobre transição demográfica.**
 
 
-
-
 ```{r}
 fx1 <- c("Menor 1 ano", "1 ano", "2 anos", "3 anos", "4 anos")
 fx2 <- c( "5 anos", "6 anos", "7 anos", "8 anos", "9 anos")
@@ -71,20 +69,19 @@ pop_censo_trat <- pop_censos %>%
   mutate(faixa=str_replace(faixa, " a ", "-"),
          faixa=str_replace(faixa, " anos", ""),
          faixa=str_replace(faixa, "80 e mais", "> 80")) %>% 
-  select(-Idade) %>% 
-  group_by(Ano,faixa, sexo) %>% 
-  summarize(Pop=sum(Pop))
+  select(-Idade) 
 
 pop_proj_trat <- pop_proj %>% 
   mutate(faixa=cut(idade, breaks = c(-1, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80, 1000 ), labels = c("0-4","5-9","10-14","15-19","20-24" ,"25-29" ,"30-34","35-39","40-44" ,"45-49" ,"50-54" ,"55-59","60-64" ,"65-69" ,"70-74","75-79" ,"> 80"), include.lowest = T, right = F)) %>% 
   select(-idade) %>% 
-pivot_longer(-c(faixa, sexo), names_to = "Ano", values_to = "Pop") %>% 
-  group_by(Ano,faixa, sexo) %>% 
-  summarize(Pop=sum(Pop))
+pivot_longer(-c(faixa, sexo), names_to = "Ano", values_to = "Pop") 
+
 
 pop_completo <-pop_censo_trat  %>% 
   full_join(pop_proj_trat) %>% 
-  mutate(faixa=factor(faixa,levels=c("0-4","5-9","10-14","15-19","20-24" ,"25-29" ,"30-34","35-39","40-44" ,"45-49" ,"50-54" ,"55-59","60-64" ,"65-69" ,"70-74","75-79" ,"> 80")))
+  mutate(faixa=factor(faixa,levels=c("0-4","5-9","10-14","15-19","20-24" ,"25-29" ,"30-34","35-39","40-44" ,"45-49" ,"50-54" ,"55-59","60-64" ,"65-69" ,"70-74","75-79" ,"> 80"))) %>% 
+  group_by(Ano,faixa, sexo) %>% 
+  summarize(Pop=sum(Pop))
   
 ```
 
@@ -120,6 +117,72 @@ piramides[[i]] <- filtro %>%
 
 
 **b) Para todos os anos acima mencionados, calcule os indicadores de estrutura por idade (proporção de idosos (60 anos e mais), proporção de crianças (0 a 4 anos), proporção de jovens (0 a 14 anos), razão de dependência e índice de envelhecimento). Calcule a idade média e a idade mediana. Calcule e grafique a razão de sexo por grupos de idade para 2000, 2010 e 2030. Comente os resultados.**
+
+
+```{r}
+
+idoso <- c("60-64", "65-69", "70-74", "75-79", "> 80")
+
+idosos <- pop_completo %>% 
+  group_by(Ano, faixa) %>% 
+  summarise(Pop=sum(Pop)) %>% 
+  mutate(idosos=ifelse(faixa %in% idoso, 1, 0)) %>% 
+  group_by(Ano) %>% 
+  mutate(pop_tot=sum(Pop))%>% 
+  ungroup() %>% 
+  group_by(Ano, idosos) %>% 
+  summarise(pop_tot=max(pop_tot),
+            pop_idoso=sum(Pop)) %>% 
+  filter(idosos==1) %>% 
+  mutate(prop_idoso=pop_idoso/pop_tot*100) %>% 
+  select(Ano, prop_idoso)
+
+
+
+criancas <- pop_completo %>% 
+  group_by(Ano, faixa) %>% 
+  summarise(Pop=sum(Pop)) %>% 
+  mutate(crianca=ifelse(faixa %in% "0-4", 1, 0)) %>% 
+  group_by(Ano) %>% 
+  mutate(pop_tot=sum(Pop))%>% 
+  ungroup() %>% 
+  group_by(Ano, crianca) %>% 
+  summarise(pop_tot=max(pop_tot),
+            pop_crianca=sum(Pop)) %>% 
+  filter(crianca==1) %>% 
+  mutate(prop_crianca=pop_crianca/pop_tot*100) %>% 
+  select(Ano, prop_crianca)
+
+
+jovens <- pop_completo %>% 
+  group_by(Ano, faixa) %>% 
+  summarise(Pop=sum(Pop)) %>% 
+  mutate(jovens=ifelse(faixa %in% c("0-4", "5-9", "10-14"), 1, 0)) %>% 
+  group_by(Ano) %>% 
+  mutate(pop_tot=sum(Pop))%>% 
+  ungroup() %>% 
+  group_by(Ano, jovens) %>% 
+  summarise(pop_tot=max(pop_tot),
+            pop_jovens=sum(Pop)) %>% 
+  filter(jovens==1) %>% 
+  mutate(prop_jovens=pop_jovens/pop_tot*100) %>% 
+  select(Ano, prop_jovens)
+
+  
+proporcoes <- criancas %>% 
+  left_join(jovens) %>% 
+  left_join(idosos) %>% 
+  rowwise() %>% 
+  mutate(inativos=prop_jovens + prop_idoso,
+         ativos=100-inativos,
+         RD=inativos/ativos, 
+         IE=prop_idoso/prop_jovens*100)
+
+
+
+```
+
+
 
 
 **c) Avalie a qualidade da declaração de idade no Censo 2010 segundo forma de declaração (data de nascimento e idade presumida). Calcule os índices de Whipple, Myers e Bachi. Construa a pirâmide por idade simples. Comente os resultados. (utilize a planilha SINGAGE do PAS - disponível na plataforma). Obtenha os dados na Tabela 3.2.1.2 do Censo 2010 - Resultados do Universo  (https://www.ibge.gov.br/estatisticas/sociais/populacao/9662-censo-demografico-2010.html?edicao=10503&t=downloads)**
