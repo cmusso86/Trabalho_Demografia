@@ -248,11 +248,29 @@ idade_mediana %>%
 
 ```
 
-**c) Avalie a qualidade da declaração de idade no Censo 2010 segundo forma de declaração (data de nascimento e idade presumida). Calcule os índices de Whipple, Myers e Bachi. Construa a pirâmide por idade simples. Comente os resultados. (utilize a planilha SINGAGE do PAS - disponível na plataforma). Obtenha os dados na Tabela 3.2.1.2 do Censo 2010 - Resultados do Universo  (https://www.ibge.gov.br/estatisticas/sociais/populacao/9662-censo-demografico-2010.html?edicao=10503&t=downloads)**
+
+Razao de sexo
+
+Os homens morrem mais cedo.
 
 ```{r}
+pop_completo %>% 
+  pivot_wider(id_cols = c("Ano", "faixa"),
+              names_from = sexo, values_from = Pop) %>% 
+  mutate(RS=m/f*100) %>% 
+  ggplot(aes(x=factor(faixa), color=Ano, group=Ano))+
+  geom_point(aes(y=RS))+
+  geom_line(aes(y=RS))+
+  facet_wrap(~Ano)+
+  theme_bw()+
+  theme(axis.text.x = element_text(angle=90, hjust=1))+
+  labs(x="Faixa Etária", y="Homens por 100 mulheres")
 
 ```
+
+
+
+**c) Avalie a qualidade da declaração de idade no Censo 2010 segundo forma de declaração (data de nascimento e idade presumida). Calcule os índices de Whipple, Myers e Bachi. Construa a pirâmide por idade simples. Comente os resultados. (utilize a planilha SINGAGE do PAS - disponível na plataforma). Obtenha os dados na Tabela 3.2.1.2 do Censo 2010 - Resultados do Universo  (https://www.ibge.gov.br/estatisticas/sociais/populacao/9662-censo-demografico-2010.html?edicao=10503&t=downloads)**
 
 
 ## Parte 2 - Projeção de População
@@ -273,5 +291,3 @@ Metodologia para estimar populações dos municípios brasileiros
 Com base nessas informações, construa e compare as pirâmides resultantes para os anos de 2010, 2020 e 2060 para o Brasil.
 Compare os resultados da projeção para a UF escolhida realizada no item (b) e a publicada pelo IBGE
 * Para a análise dos resultados utilize indicadores de estrutura para respectivos anos (como os calculados na Parte 2 deste trabalho). Também comente  sobre os indicadores da dinâmica - taxa bruta de mortalidade, de natalidade e taxa de crescimento.
-
-
