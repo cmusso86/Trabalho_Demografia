@@ -45,16 +45,15 @@ INLCUIR INFORMACOES SOBRE A ESTRYTURA DA POPULACAO DE SC
 
 O tema desse trabalho é o estudo da dinâmica e estrutura demográfica do estado de Santa Catarina por meio de pirâmides etárias, indicadores relacionados e a projeção de sua população.
 
-# Objetivos
-
-- Avaliar a Estrutura Populacional e as informações sobre idade do estado de Santa Catarina.
-- Fazer a projeção da população desse estado. 
 
 # Desenvolvimento
 
 ## Parte 1 - Estrutura Populacional e avaliação da informação sobre idade
 
 **a) Construa as pirâmides etárias por grupos de idade para a população da UF escolhida em 1991, 2000, 2010, 2015, 2020 e 2030 (obtenha os dados no portal do Datasus para os anos censitários e projeções para os demais anos). Comente os resultados à luz da discussão sobre transição demográfica.**
+
+
+
 
 ```{r}
 fx1 <- c("Menor 1 ano", "1 ano", "2 anos", "3 anos", "4 anos")
@@ -89,19 +88,29 @@ pop_completo <-pop_censo_trat  %>%
   
 ```
 
-```{r}
+```{r fig.align='center'}
+
 piramides <- list()
+
+
 for (i in c("1991", "2000", "2010", "2015", "2020", "2030")){
   
-piramides[[i]] <-pop_completo %>% 
-  filter(Ano==i)%>% 
-  mutate(pop=Pop/1000) %>% 
-apyramid::age_pyramid(age_group = "faixa",
+ filtro <-pop_completo %>% 
+  filter(Ano==i) %>% 
+  mutate(pop=Pop/1000) 
+#  
+xlabels <- as.character(sort(unique(filtro$faixa)))
+xlabels[seq(2, length(xlabels), 2)] <- ""
+piramides[[i]] <- filtro %>% 
+  apyramid::age_pyramid(age_group = "faixa",
                       split_by = "sexo",
-                      count = "pop") +
-  theme_classic()+
-  theme(legend.position = "none")+
-  labs(y="milhares", x="")+
+                      count = "pop",
+                      show_midpoint = FALSE) +
+  theme_classic(base_size = 9)+
+ scale_x_discrete(labels = xlabels)+
+  theme(legend.position = "none", 
+       axis.text.x =element_text(angle = 45, hjust=1))+
+  labs(y="mil", x="")+
   ggtitle(i)
 }
 
@@ -134,3 +143,5 @@ Metodologia para estimar populações dos municípios brasileiros
 Com base nessas informações, construa e compare as pirâmides resultantes para os anos de 2010, 2020 e 2060 para o Brasil.
 Compare os resultados da projeção para a UF escolhida realizada no item (b) e a publicada pelo IBGE
 * Para a análise dos resultados utilize indicadores de estrutura para respectivos anos (como os calculados na Parte 2 deste trabalho). Também comente  sobre os indicadores da dinâmica - taxa bruta de mortalidade, de natalidade e taxa de crescimento.
+
+
