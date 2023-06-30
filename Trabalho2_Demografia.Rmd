@@ -1,0 +1,136 @@
+---
+titulo: "Estrutura da População e Projeções"
+subtitulo: "Santa Catarina"
+aluno1:  "Carolina Musso 18/0047850"
+aluno2: "Laura Teixeira 19/0016051"
+aluno3: "Jéssica Vasconcelos 18/0048708"
+aluno4: "Leonardo dos Reis Andrade 21/1029030"
+orientador: "Ana Maria Nogales"
+ano: "1/2023"
+referencias: referencias.bib
+output: 
+  bookdown::pdf_document2:
+    template: template.tex
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, 
+                      warning = FALSE, 
+                      message = FALSE)
+```
+
+```{r bibliotecas}
+# Carregando bibliotecas ---------
+
+pacman::p_load(foreign,tidyverse, LexisPlotR, readxl, janitor, kableExtra, scales, reshape2, cowplot, ggmosaic, gplots, corrplot, DescTools,RColorBrewer, rio, apyramid,
+               patchwork)
+pacman::p_load_gh("danicat/read.dbc")
+
+```
+
+```{r bases}
+# BASES ----
+
+pop_censos <- import("Bases/populacao_91_00_10.xlsx")
+pop_proj <- import("Bases/populacao_15_20_30.xlsx")
+```
+
+# Introdução
+
+O estado brasileiro de Santa Catarina tem como capital a ilha de Floranópolis e está localizado no centro da região sul do país. O estado faz fronteira ao norte com o Paraná e ao sul pelo Rio Grande do Sul. É banhado ao leste pelo Oceano Atlântico e e ao oeste faz fronteira com a Argentina. Sua área abrange 95.736,165 km² e possui uma população de mais de 6 milhões de habitantes, sendo o décimo estado mais populoso do Brasil. O estado possui 295 municípios, sendo Joinville, Florianópolis, Blumenau, Criciúma e Chapecó as principais cidades \cite{IBGE}.
+
+Santa Catarina possui índices sociais muito elevados em comparação com o restante do Brasil. É o estado com a maior expectativa de vida, empatando com o Distrito Federal. Além disso, possui a menor taxa de mortalidade infantil e é o estado com menor desigualdade econômica e analfabetismo no país. Em termos econômicos, Santa Catarina possui o sexto maior Produto Interno Bruto (PIB) do Brasil e o quarto maior PIB per capita, ficando atrás apenas do Distrito Federal, São Paulo e Mato Grosso. Sua economia é diversificada e tem uma forte ênfase na industrialização. O estado é um importante polo de exportação e consumo, sendo um dos maiores contribuintes para o crescimento da economia brasileira, representando 4% do PIB nacional \cite{IBGE2}.
+
+INLCUIR INFORMACOES SOBRE A ESTRYTURA DA POPULACAO DE SC
+
+O tema desse trabalho é o estudo da dinâmica e estrutura demográfica do estado de Santa Catarina por meio de pirâmides etárias, indicadores relacionados e a projeção de sua população.
+
+# Objetivos
+
+- Avaliar a Estrutura Populacional e as informações sobre idade do estado de Santa Catarina.
+- Fazer a projeção da população desse estado. 
+
+# Desenvolvimento
+
+## Parte 1 - Estrutura Populacional e avaliação da informação sobre idade
+
+**a) Construa as pirâmides etárias por grupos de idade para a população da UF escolhida em 1991, 2000, 2010, 2015, 2020 e 2030 (obtenha os dados no portal do Datasus para os anos censitários e projeções para os demais anos). Comente os resultados à luz da discussão sobre transição demográfica.**
+
+```{r}
+fx1 <- c("Menor 1 ano", "1 ano", "2 anos", "3 anos", "4 anos")
+fx2 <- c( "5 anos", "6 anos", "7 anos", "8 anos", "9 anos")
+fx3 <- c( "10 anos", "11 anos", "12 anos", "13 anos", "14 anos")
+fx4 <- c( "15 anos", "16 anos", "17 anos", "18 anos", "19 anos")
+
+pop_censo_trat <- pop_censos %>% 
+  mutate(faixa=case_when(Idade %in% fx1 ~ "0-4",
+                   Idade %in% fx2 ~ "5-9",
+                   Idade %in% fx3 ~ "10-14",
+                   Idade %in% fx4 ~ "15-19",
+                   .default = Idade)) %>% 
+  pivot_longer(-c(Idade, faixa, sexo), names_to = "Ano", values_to = "Pop") %>% 
+  mutate(faixa=str_replace(faixa, " a ", "-"),
+         faixa=str_replace(faixa, " anos", ""),
+         faixa=str_replace(faixa, "80 e mais", "> 80")) %>% 
+  select(-Idade) %>% 
+  group_by(Ano,faixa, sexo) %>% 
+  summarize(Pop=sum(Pop))
+
+pop_proj_trat <- pop_proj %>% 
+  mutate(faixa=cut(idade, breaks = c(-1, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80, 1000 ), labels = c("0-4","5-9","10-14","15-19","20-24" ,"25-29" ,"30-34","35-39","40-44" ,"45-49" ,"50-54" ,"55-59","60-64" ,"65-69" ,"70-74","75-79" ,"> 80"), include.lowest = T, right = F)) %>% 
+  select(-idade) %>% 
+pivot_longer(-c(faixa, sexo), names_to = "Ano", values_to = "Pop") %>% 
+  group_by(Ano,faixa, sexo) %>% 
+  summarize(Pop=sum(Pop))
+
+pop_completo <-pop_censo_trat  %>% 
+  full_join(pop_proj_trat) %>% 
+  mutate(faixa=factor(faixa,levels=c("0-4","5-9","10-14","15-19","20-24" ,"25-29" ,"30-34","35-39","40-44" ,"45-49" ,"50-54" ,"55-59","60-64" ,"65-69" ,"70-74","75-79" ,"> 80")))
+  
+```
+
+```{r}
+piramides <- list()
+for (i in c("1991", "2000", "2010", "2015", "2020", "2030")){
+  
+piramides[[i]] <-pop_completo %>% 
+  filter(Ano==i)%>% 
+  mutate(pop=Pop/1000) %>% 
+apyramid::age_pyramid(age_group = "faixa",
+                      split_by = "sexo",
+                      count = "pop") +
+  theme_classic()+
+  theme(legend.position = "none")+
+  labs(y="milhares", x="")+
+  ggtitle(i)
+}
+
+(piramides[[1]] + piramides[[2]]  )/(piramides[[3]] + piramides[[4]]  )/(piramides[[5]] + piramides[[6]]  )
+
+```
+
+
+**b) Para todos os anos acima mencionados, calcule os indicadores de estrutura por idade (proporção de idosos (60 anos e mais), proporção de crianças (0 a 4 anos), proporção de jovens (0 a 14 anos), razão de dependência e índice de envelhecimento). Calcule a idade média e a idade mediana. Calcule e grafique a razão de sexo por grupos de idade para 2000, 2010 e 2030. Comente os resultados.**
+
+
+**c) Avalie a qualidade da declaração de idade no Censo 2010 segundo forma de declaração (data de nascimento e idade presumida). Calcule os índices de Whipple, Myers e Bachi. Construa a pirâmide por idade simples. Comente os resultados. (utilize a planilha SINGAGE do PAS - disponível na plataforma). Obtenha os dados na Tabela 3.2.1.2 do Censo 2010 - Resultados do Universo  (https://www.ibge.gov.br/estatisticas/sociais/populacao/9662-censo-demografico-2010.html?edicao=10503&t=downloads)**
+
+
+## Parte 2 - Projeção de População
+
+**a) Com base na publicação 'Projeções da população : Brasil e unidades da federação : revisão 2018" disponível no link: https://biblioteca.ibge.gov.br/visualizacao/livros/liv101597.pdf e na publicação "ESTIMATIVAS DA POPULAÇÃO RESIDENTE PARA OS MUNICÍPIOS E PARA AS UNIDADES DA FEDERAÇÃO COM DATA DE REFERÊNCIA EM 1º DE JULHO DE 2021 " disponível no link:  https://biblioteca.ibge.gov.br/visualizacao/livros/liv101849.pdf.**
+
+**Comente sobre:**
+
+Metodologia utilizada para projetar a população do país segundo UF.
+Metodologia para estimar populações dos municípios brasileiros
+
+
+**b) Assumindo população fechada (ausência de migração), projete a população da UF escolhida de 2010 a 2020, segundo o cenário de mortalidade e fecundidade constante . Obtenha indicadores de fecundidade e mortalidade para o período 2014-2016 (nascimentos e óbitos médios do triênio e população projetada pelo IBGE para 2015) . Construa uma tábua de vida e obtenha as taxas específicas de fecundidade.**
+
+
+**c) No link https://www.ibge.gov.br/estatisticas/sociais/populacao/9109-projecao-da-populacao.html?=&t=downloads estão disponíveis as projeções da população por sexo e idade para o Brasil (2010-2060) e para as Unidades da Federação - revisão 2018, realizadas pelo IBGE.**
+
+Com base nessas informações, construa e compare as pirâmides resultantes para os anos de 2010, 2020 e 2060 para o Brasil.
+Compare os resultados da projeção para a UF escolhida realizada no item (b) e a publicada pelo IBGE
+* Para a análise dos resultados utilize indicadores de estrutura para respectivos anos (como os calculados na Parte 2 deste trabalho). Também comente  sobre os indicadores da dinâmica - taxa bruta de mortalidade, de natalidade e taxa de crescimento.
