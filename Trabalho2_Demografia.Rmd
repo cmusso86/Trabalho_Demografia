@@ -214,29 +214,50 @@ idade_media <- pop_completo %>%
   group_by(Ano) %>% 
   summarise(idade_media=round(sum(fator),1))
 
-idade_mediana <- pop_completo %>% 
+idade_mediana_aux <- pop_completo %>% 
   group_by(Ano, faixa) %>% 
   summarise(pop_faixa=sum(Pop)) %>% 
   ungroup() %>% 
   group_by(Ano) %>% 
   mutate(pop_tot=sum(pop_faixa),
          acumulado=cumsum(pop_faixa),
+         acum_rel = acumulado/pop_tot,
          metade=pop_tot/2,
-         menor=metade>=acumulado) %>% 
+         menor=metade>=acumulado,
+         f_mediana=pop_faixa/pop_tot) 
+
+idade_mediana_sup <- idade_mediana_aux %>% 
   filter(menor==F) %>% 
   group_by(Ano) %>% 
-  arrange(faixa, .by_group = T) %>% 
-  slice(1) %>% 
-  mutate(inf=as.numeric(str_sub(faixa, 1, 2)),
-         mediana=inf+2.5) %>% 
+  arrange(faixa, .by_group = T)%>% 
+  slice(1) 
+
+
+idade_mediana_inf <- idade_mediana_aux %>% 
+  filter(menor==T) %>% 
+  group_by(Ano) %>% 
+  arrange(desc(faixa), .by_group = T)%>% 
+  slice(1) 
+
+
+mediana_junto <-  idade_mediana_inf %>% 
+  bind_rows(idade_mediana_sup) %>% 
+  arrange(Ano) %>% 
+  mutate(infe=as.numeric(str_sub(faixa, 1, 2))) %>%
+  select(Ano, faixa, acum_rel, menor, f_mediana, infe) %>%
+  mutate(mediana=(infe+ ((50-lag(acum_rel*100))/(f_mediana*100))*5))
+
+
+idade_media_mediana <-mediana_junto %>% 
+  filter(menor==F) %>% 
   select(Ano, mediana) %>% 
   left_join(idade_media)
 
 
 titulo <- "Idade e média e mediana"
-idade_mediana %>% 
+idade_media_mediana %>% 
   mutate_if(is.numeric, ~comma(., decimal.mark = ",", accuracy=.1)) %>% 
-  kable(format="latex", caption=titulo, booktabs = T, 
+  kable(format="html", caption=titulo, booktabs = T, 
         linesep="", 
         align=c("c","r", "r"),
         col.names=c("Ano","Mediana (anos)", "Média (anos)")) %>% 
