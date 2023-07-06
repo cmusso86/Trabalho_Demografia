@@ -294,6 +294,31 @@ pop_completo %>%
 **c) Avalie a qualidade da declaração de idade no Censo 2010 segundo forma de declaração (data de nascimento e idade presumida). Calcule os índices de Whipple, Myers e Bachi.Construa a pirâmide por idade simples. Comente os resultados. (utilize a planilha SINGAGE do PAS - disponível na plataforma). Obtenha os dados na Tabela 3.2.1.2 do Censo 2010 - Resultados do Universo  (https://www.ibge.gov.br/estatisticas/sociais/populacao/9662-censo-demografico-2010.html?edicao=10503&t=downloads)**
 
 
+```{r}
+### Tabela com índices de Whipple, Myers e Bachi (calculado na planilha SINGAGE)
+
+quali_dados <- data.frame("Sexo"=c("Homem","Mulher","Total"),
+                          "Whipple"=c(1.02,1.02,1.02)*100,
+                          "Myers"=c(1,1.2,1.1),
+                          "Bachi"=c(0.7,0.7,0.7),
+                          "Whipple2"=c(1.25,1.22,1.24)*100,
+                          "Myers2"=c(11.7,10.7,11.2),
+                          "Bachi2"=c(7.3,6.6,6.9),
+                          "Whipple3"=c(1.03,1.02,1.03)*100,
+                          "Myers3"=c(1.1,1.2,1.2),
+                          "Bachi3"=c(0.8,0.7,0.7))
+
+quali_dados %>% 
+  mutate_if(is.numeric, ~comma(., decimal.mark = ",", big.mark = ".")) %>%
+  kable(escape = F,format="latex",caption = "Índices de Whipple, Myers e Bachi por tipo de declaração da idade", booktabs = TRUE, linesep="", digits=2,
+        align=c("l",rep("r",9)), col.names=c("Sexo",rep(c("Whipple","Myers","Bachi"),3)))  %>%
+   kable_styling(latex_options="HOLD_position", position="center") %>% 
+  add_header_above(c(" ", "Data de nascimento" = 3, "Idade presumida" = 3, "Geral" = 3))
+
+```
+
+
+
 ## Parte 2 - Projeção de População
 
 **a) Com base na publicação 'Projeções da população : Brasil e unidades da federação : revisão 2018" disponível no link: https://biblioteca.ibge.gov.br/visualizacao/livros/liv101597.pdf e na publicação "ESTIMATIVAS DA POPULAÇÃO RESIDENTE PARA OS MUNICÍPIOS E PARA AS UNIDADES DA FEDERAÇÃO COM DATA DE REFERÊNCIA EM 1º DE JULHO DE 2021 " disponível no link:  https://biblioteca.ibge.gov.br/visualizacao/livros/liv101849.pdf.**
