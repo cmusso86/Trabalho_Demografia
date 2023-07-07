@@ -317,6 +317,30 @@ quali_dados %>%
 
 ```
 
+```{r}
+### Piramide por idade simples
+
+pop_2010_censo <- import("Bases/Tabela_censo_2010_resumida.xls")
+pop_2010_censo <-  melt(pop_2010_censo,c("Idade","Total"))  
+pop_2010_censo$Idade <- factor(pop_2010_censo$Idade,
+                               levels=unique(pop_2010_censo$Idade))
+
+pop_2010_censo$value <- pop_2010_censo$value/1000
+
+
+labels_idade_simples <- c(as.character(0:99),"100+") 
+labels <- labels_idade_simples[seq(1,102,by=5)]
+breaks <- pop_2010_censo$Idade[seq(1,102,by=5)]
+
+age_pyramid(pop_2010_censo, age_group = Idade, split_by = variable,
+            count = value,show_midpoint = F) +
+  theme_classic(base_size = 10)+
+ scale_x_discrete(labels=labels,breaks=breaks)+
+  theme(
+       axis.text.x =element_text(angle = 45, hjust=1))+
+  labs(y="mil", x="",fill="")
+
+```
 
 
 ## Parte 2 - Projeção de População
