@@ -43,6 +43,10 @@ Santa Catarina possui índices sociais muito elevados em comparação com o rest
 
 INLCUIR INFORMACOES SOBRE A ESTRYTURA DA POPULACAO DE SC
 
+Santa Catarina também enfrenta um processo de envelhecimento da população, um fenômeno observado no Brasil e em muitos países ao redor do mundo. A proporção de idosos vem aumentando significativamente nas últimas décadas, devido a fatores como avanços na área da saúde, melhorias nas condições de vida e diminuição da taxa de natalidade.
+
+Esse envelhecimento populacional tem impactos em diversos aspectos da sociedade catarinense. O aumento da expectativa de vida e a diminuição da taxa de natalidade resultam em um crescimento relativo da população idosa em comparação com a população jovem. Isso traz desafios e oportunidades para o estado, incluindo questões relacionadas à saúde, previdência, políticas públicas e inclusão social.
+
 O tema desse trabalho é o estudo da dinâmica e estrutura demográfica do estado de Santa Catarina por meio de pirâmides etárias, indicadores relacionados e a projeção de sua população.
 
 
@@ -257,7 +261,7 @@ idade_media_mediana <-mediana_junto %>%
 titulo <- "Idade e média e mediana"
 idade_media_mediana %>% 
   mutate_if(is.numeric, ~comma(., decimal.mark = ",", accuracy=.1)) %>% 
-  kable(format="html", caption=titulo, booktabs = T, 
+  kable(format="latex", caption=titulo, booktabs = T, 
         linesep="", 
         align=c("c","r", "r"),
         col.names=c("Ano","Mediana (anos)", "Média (anos)")) %>% 
@@ -293,6 +297,8 @@ pop_completo %>%
 
 **c) Avalie a qualidade da declaração de idade no Censo 2010 segundo forma de declaração (data de nascimento e idade presumida). Calcule os índices de Whipple, Myers e Bachi.Construa a pirâmide por idade simples. Comente os resultados. (utilize a planilha SINGAGE do PAS - disponível na plataforma). Obtenha os dados na Tabela 3.2.1.2 do Censo 2010 - Resultados do Universo  (https://www.ibge.gov.br/estatisticas/sociais/populacao/9662-censo-demografico-2010.html?edicao=10503&t=downloads)**
 
+Na Tabela a seguir foram calculados os índices para avaliação da declaração de idade por forma de declaração: data de nascimento, idade presumida e os resultados gerais, que são a junção de todos os tipos de declaração. Além disso, os resultados estão discriminados por sexo.
+
 
 ```{r}
 ### Tabela com índices de Whipple, Myers e Bachi (calculado na planilha SINGAGE)
@@ -310,12 +316,19 @@ quali_dados <- data.frame("Sexo"=c("Homem","Mulher","Total"),
 
 quali_dados %>% 
   mutate_if(is.numeric, ~comma(., decimal.mark = ",", big.mark = ".")) %>%
-  kable(escape = F,format="latex",caption = "Índices de Whipple, Myers e Bachi por tipo de declaração da idade", booktabs = TRUE, linesep="", digits=2,
+  kable(escape = F,format="latex",caption = "Índices de Whipple, Myers e Bachi por tipo de declaração da idade, Censo 2010, Santa Catarina", booktabs = TRUE, linesep="", digits=2,
         align=c("l",rep("r",9)), col.names=c("Sexo",rep(c("Whipple","Myers","Bachi"),3)))  %>%
    kable_styling(latex_options="HOLD_position", position="center") %>% 
   add_header_above(c(" ", "Data de nascimento" = 3, "Idade presumida" = 3, "Geral" = 3))
 
 ```
+
+Nota-se que, para a declaração por meio da data de nascimento, todos os índices revelam que os dados de idade são muito precisos, em ambos os sexos. O resultado é esperado, dado que a declaração por meio da data de nascimento é menos suscetível a erros e atração por dígitos. Nesse sentido, a idade presumida é muito mais suscetível a inconsistências.
+
+De fato, o índice de Whipple expressa que os dados de idade presumida possuem atração pelos dígitos 0 e 5,  indicando que os dados são aproximados para ambos os sexos. Já os índices de Myers e Bachi medem a preferência (rejeição) por cada dígito. Novamente, para idade presumida eles indicam que os dados são imprecisos. Dessa forma, é necessário cautela ao utilizar tais dados.
+
+Por último, unindo todas as declarações de idade, observa-se que os índices possuem bons valores, indicando que não há forte preferência por algum dígito. Isso se deve ao fato de apenas 147.106 indivíduos não terem declarado sua idade por meio da data de nascimento, de um total de 6.248.436 (ou seja, apenas 2,35%). Em suma, os dados gerais de idade apresentam boa qualidade.
+
 
 ```{r}
 ### Piramide por idade simples
@@ -342,6 +355,7 @@ age_pyramid(pop_2010_censo, age_group = Idade, split_by = variable,
 
 ```
 
+A pirâmide por idade simples, com dados do Censo de 2010, para Santa Catarina não parece revelar forte atração por idades terminadas em 0 ou 5 (ou algum outro dígito em especial). Tal observação corrobora as análises feitas com base nos índices de qualidade vistos anteriormente.
 
 ## Parte 2 - Projeção de População
 
