@@ -2,8 +2,8 @@
 titulo: "Estrutura da População e Projeções"
 subtitulo: "Santa Catarina"
 aluno1:  "Carolina Musso 18/0047850"
-aluno2: "Laura Teixeira 19/0016051"
-aluno3: "Jéssica Vasconcelos 18/0048708"
+aluno2: "Jéssica Vasconcelos 18/0048708"
+aluno3: "Laura Teixeira 19/0016051"
 aluno4: "Leonardo dos Reis Andrade 21/1029030"
 orientador: "Ana Maria Nogales"
 ano: "1/2023"
@@ -24,6 +24,7 @@ knitr::opts_chunk$set(echo = FALSE,
 
 pacman::p_load(foreign,tidyverse, LexisPlotR, readxl, janitor, kableExtra, scales, reshape2, cowplot, ggmosaic, gplots, corrplot, DescTools,RColorBrewer, rio, apyramid,
                patchwork)
+
 pacman::p_load_gh("danicat/read.dbc")
 
 ```
@@ -31,8 +32,8 @@ pacman::p_load_gh("danicat/read.dbc")
 ```{r bases}
 # BASES ----
 
-pop_censos <- import("Bases/populacao_91_00_10.xlsx")
-pop_proj <- import("Bases/populacao_15_20_30.xlsx")
+pop_censos <- import("./populacao_91_00_10.xlsx")
+pop_proj <- import("./populacao_15_20_30.xlsx")
 ```
 
 # Introdução
@@ -333,7 +334,7 @@ Por último, unindo todas as declarações de idade, observa-se que os índices 
 ```{r}
 ### Piramide por idade simples
 
-pop_2010_censo <- import("Bases/Tabela_censo_2010_resumida.xls")
+pop_2010_censo <- import("./Tabela_censo_2010_resumida.xls")
 pop_2010_censo <-  melt(pop_2010_censo,c("Idade","Total"))  
 pop_2010_censo$Idade <- factor(pop_2010_censo$Idade,
                                levels=unique(pop_2010_censo$Idade))
@@ -369,9 +370,443 @@ Metodologia para estimar populações dos municípios brasileiros
 
 **b) Assumindo população fechada (ausência de migração), projete a população da UF escolhida de 2010 a 2020, segundo o cenário de mortalidade e fecundidade constante . Obtenha indicadores de fecundidade e mortalidade para o período 2014-2016 (nascimentos e óbitos médios do triênio e população projetada pelo IBGE para 2015) . Construa uma tábua de vida e obtenha as taxas específicas de fecundidade.**
 
+```{r}
+
+# PROJECOES IBGE #
+
+projecao_2015 <- read_delim("~/UnB/2023/2023.1/Demografia_Ana Maria/Trabalho 2 - Projeção/projecao_2015.csv", 
+                            delim = ";", escape_double = FALSE, trim_ws = TRUE)
+
+projecao_2020 <- read_delim("~/UnB/2023/2023.1/Demografia_Ana Maria/Trabalho 2 - Projeção/projecao_2020.csv", 
+                            delim = ";", escape_double = FALSE, locale = locale(), 
+                            trim_ws = TRUE)
+
+projecao_2030 <- read_delim("~/UnB/2023/2023.1/Demografia_Ana Maria/Trabalho 2 - Projeção/projecao_2030.csv", 
+                            delim = ";", escape_double = FALSE, trim_ws = TRUE)
+
+censo_2010 <- read_delim("~/UnB/2023/2023.1/Demografia_Ana Maria/Trabalho 2 - Projeção/censo_2010.csv", 
+                            delim = ";", escape_double = FALSE, trim_ws = TRUE)
+
+```
+
+
+```{r}
+
+#########################
+#### ARRUMANDO DADOS ####
+#########################
+
+censo_2010 <- censo_2010 %>% 
+  rename(faixa_etaria = "Faixa Etária detalhada") %>%
+  mutate(faixa_etaria = str_replace_all(faixa_etaria,"ano(s)?",""),
+         faixa_etaria = str_trim(str_replace_all(faixa_etaria,"Menor 1 ","0")),
+         faixa_etaria = str_replace_all(faixa_etaria," a ","-"),
+         faixa_etaria = str_replace_all(faixa_etaria,"  e mais","+")) %>%
+  head(-1)
+
+censo_2010 <- censo_2010 %>% 
+  slice(1:20) %>% 
+  mutate(faixa_etaria = cut(as.numeric(faixa_etaria), breaks = c(seq(from = 0, to = 20, by = 5)), 
+                            right = FALSE, include.lowest = TRUE,
+                            labels = c('0-4', '5-9', '10-14', '15-19'))) %>%
+  group_by(faixa_etaria) %>% 
+  summarise(Masculino = sum(Masculino),
+            Feminino = sum(Feminino),
+            Total = sum(Total)) %>%
+  bind_rows(censo_2010 %>% slice(21:33)) #combinando a manipulacao feita antes com o restante do banco
+
+tabua_masculina_2010 <- readxl::read_xls("C:/Users/jehhv/OneDrive/Documentos/UnB/2023/2023.1/Demografia_Ana Maria/Trabalho 2 - Projeção/tabuas_mortalidade.xls",
+                                         range = "A9:I30", sheet = "SC") %>%
+  select(Idade, nLx) %>%
+  slice(2:21) 
+
+tabua_feminina_2010 <- readxl::read_xls("C:/Users/jehhv/OneDrive/Documentos/UnB/2023/2023.1/Demografia_Ana Maria/Trabalho 2 - Projeção/tabuas_mortalidade.xls",
+                                         range = "K9:S30", sheet = "SC") %>%
+  select(Idade, nLx) %>%
+  slice(2:21) 
+
+get_nPx_n <- function(nLx_n, nLx, nPx){
+  return((nLx_n/nLx)*nPx) # prob. de sobrevivencia no intervalo x+n --> x+n+m-1
+}
+
+```
+
+
+```{r}
+
+##############################
+#### PROJEÇÃO 2010 - 2015 ####
+##############################
+
+## Masculino ##
+
+projecao_masculina_2015 <- tabua_masculina_2010 %>% 
+  select(Idade, nLx) %>%
+  mutate(Idade = str_replace_all(Idade,"80|85|90","80+")) %>%
+  slice(18:20) %>%
+  group_by(Idade) %>% summarise(nLx = sum(nLx)) %>%
+  bind_rows(tabua_masculina_2010 %>% slice(1:17) %>%
+              mutate(Idade = as.character(Idade)),.)
+
+projecao_masculina_2015 <- projecao_masculina_2015 %>%
+  mutate(Idade = str_replace_all(Idade,"0|1","0")) %>%
+  slice(1:2) %>%
+  group_by(Idade) %>% summarise(nLx = sum(nLx)) %>%
+  bind_rows(projecao_masculina_2015 %>% slice(3:18))
+
+nPx_n_masculino <- c()
+
+for (i in 1:(length(projecao_masculina_2015$Idade))-1) {
+  nPx_n_masculino[i+1] <- (projecao_masculina_2015$nLx[i+1]/projecao_masculina_2015$nLx[i])*censo_2010$Masculino[i]
+} # intervalo etário de x a x+n-1 anos completos
+
+(nPx_n_masculino[17] <- (projecao_masculina_2015$nLx[17]/projecao_masculina_2015$nLx[16])*(censo_2010$Masculino[17]+censo_2010$Masculino[16]))
+
+projecao_masculina_2015 %>%
+  mutate(nPx_n = nPx_n_masculino)
+
+## Feminino ## 
+
+projecao_feminina_2015 <- tabua_feminina_2010 %>% 
+  select(Idade, nLx) %>%
+  mutate(Idade = str_replace_all(Idade,"80|85|90","80+")) %>%
+  slice(18:20) %>%
+  group_by(Idade) %>% summarise(nLx = sum(nLx)) %>%
+  bind_rows(tabua_feminina_2010 %>% slice(1:17) %>%
+              mutate(Idade = as.character(Idade)),.)
+
+projecao_feminina_2015 <- projecao_feminina_2015 %>%
+  mutate(Idade = str_replace_all(Idade,"0|1","0")) %>%
+  slice(1:2) %>%
+  group_by(Idade) %>% summarise(nLx = sum(nLx)) %>%
+  bind_rows(projecao_feminina_2015 %>% slice(3:18))
+
+nPx_n_feminino <- c()
+
+for (i in 1:(length(projecao_feminina_2015$Idade))-1) {
+  nPx_n_feminino[i+1] <- (projecao_feminina_2015$nLx[i+1]/projecao_feminina_2015$nLx[i])*censo_2010$Feminino[i]
+}
+
+#nPx_n_feminino[17] <- (projecao_feminina_2015$nLx[17]/(projecao_feminina_2015$nLx[16]+projecao_feminina_2015$nLx[17]))*(censo_2010$Feminino[17]+censo_2010$Feminino[16])
+
+projecao_feminina_2015 %>%
+  mutate(nPx_n = nPx_n_feminino)
+
+```
+
+```{r}
+
+## Calculando numero total de nascimentos no quinquenio ##
+
+projecao_2015 <- read_delim("~/UnB/2023/2023.1/Demografia_Ana Maria/Trabalho 2 - Projeção/projecao_2015.csv", 
+                            delim = ";", escape_double = FALSE, trim_ws = TRUE)
+
+projecao_2015 <- projecao_2015 %>% 
+  rename(faixa_etaria = "Faixa Etária 1") %>%
+  mutate(faixa_etaria = str_replace_all(faixa_etaria,"ano(s)?",""),
+         faixa_etaria = str_replace_all(faixa_etaria," a ","-"),
+         faixa_etaria = str_replace_all(faixa_etaria,"  e mais","+")) %>%
+  head(-1)
+
+projecao_2015 <- projecao_2015 %>% 
+  slice(17:19) %>%
+  mutate(faixa_etaria = str_replace_all(faixa_etaria,"80-84 ","80+"),
+         faixa_etaria = str_replace_all(faixa_etaria,"85-89 ","80+"),
+         faixa_etaria = str_replace_all(faixa_etaria,"90","80")
+  ) %>%
+  group_by(faixa_etaria) %>% 
+  summarise(Masculino = sum(Masculino),
+            Feminino = sum(Feminino),
+            Total = sum(Total)) %>% 
+  bind_rows(projecao_2015 %>% slice(1:16), .)
+
+```
+
+```{r}
+
+## Taxa de fecundidade ##
+
+# 2010 - 2015 #
+
+df_2015 <- read_delim("~/UnB/2023/2023.1/Demografia_Ana Maria/Trabalho 2 - Projeção/projecao_2015.csv", 
+                                       delim = ";", escape_double = FALSE, trim_ws = TRUE)
+
+
+df_2015 <- df_2015 %>% 
+  rename(faixa_etaria = "Faixa Etária 1") %>%
+  mutate(faixa_etaria = str_replace_all(faixa_etaria,"ano(s)?",""),
+         faixa_etaria = str_replace_all(faixa_etaria," a ","-"),
+         faixa_etaria = str_replace_all(faixa_etaria,"  e mais","+"),
+         faixa_etaria = str_trim(faixa_etaria)) %>%
+  head(-1)
+
+pop_feminina_2010 <- censo_2010$Feminino[4:10] #idade fertil
+pop_feminina_2015 <- df_2015$Feminino[4:10]
+pop_media_2010_2015 <-  bind_cols(pop_feminina_2010, pop_feminina_2015)
+
+DNSC_2010 <- read.dbc("~/UnB/2023/2023.1/Demografia_Ana Maria/Trabalho 2 - Projeção/DNSC2010.dbc")
+
+idade_fem <- DNSC_2010 %>% mutate(classes_idade = cut(as.numeric(IDADEMAE),
+                                                      seq(0,100,5),
+                                                      labels = NULL,
+                                                      include.lowest = T,
+                                                      right = F)) %>%
+  select(IDADEMAE,classes_idade) %>% group_by(classes_idade) %>% 
+  summarise(n = n())
+
+fecundidade <- data.frame("GRUPO ETARIO" = c("15-19", "20-24", "25-29", "30-34", "35-39", "40-44", "45-49"),
+                          freqnascfem = idade_fem$n[2:8]) # selecionando grupos de idades no período reprodutivo
+
+f15 <- fecundidade %>% bind_cols(pop_media_2010_2015) %>%
+  rename("total_2010"="...3","total_2015"="...4") %>%
+  mutate(taxa_fecundidade = freqnascfem/total_2010,
+         media=(total_2010+total_2015)/2,
+         B_barra=taxa_fecundidade*media) 
+#taxas especificas de fecundidade entre t e t+5
+#numero medio de nascimentos anuais
+
+```
+
+```{r}
+projecao_2015_0_4_anos <- (5*sum(f15$B_barra))*projecao_feminina_2015$nLx[1]/(5*100000)
+projecao_2015_0_4_anos_masculino <- projecao_2015_0_4_anos*0.512275
+projecao_2015_0_4_anos_feminino <- projecao_2015_0_4_anos*0.487725
+
+projecao_feminina_2015 <- projecao_feminina_2015 %>%
+  mutate(nPx_n = nPx_n_feminino)
+
+projecao_feminina_2015$nPx_n[1] <- projecao_2015_0_4_anos_feminino
+
+projecao_masculina_2015 <- projecao_masculina_2015 %>%
+  mutate(nPx_n = nPx_n_masculino)
+
+projecao_masculina_2015$nPx_n[1] <- projecao_2015_0_4_anos_masculino
+
+projecao_2015_IBGE_feminino <- readxl::read_xls("./projecoes_2018_populacao_2010_2060_20200406.xls",
+                                                range = "G29:G48", sheet = "SC")
+
+projecao_2015_IBGE_masculino <- readxl::read_xls("./projecoes_2018_populacao_2010_2060_20200406.xls",
+                                                 range = "G6:G25", sheet = "SC")
+
+
+projecao_2015_IBGE_feminino <- projecao_2015_IBGE_feminino %>% 
+  rename("Feminino_IBGE"=`3426676`)
+
+projecao_2015_IBGE_feminino$Feminino_IBGE[17] <- sum(projecao_2015_IBGE_feminino$Feminino_IBGE[17],
+                                                     projecao_2015_IBGE_feminino$Feminino_IBGE[18],
+                                                     projecao_2015_IBGE_feminino$Feminino_IBGE[19]) # 80+
+
+projecao_2015_IBGE_feminino <- projecao_2015_IBGE_feminino %>% slice(1:17) #juntar com demais faixas
+
+projecao_2015_IBGE_masculino <- projecao_2015_IBGE_masculino %>% 
+  rename("Masculino_IBGE"=`3375630`)
+
+projecao_2015_IBGE_masculino$Masculino_IBGE[17] <- sum(projecao_2015_IBGE_masculino$Masculino_IBGE[17],
+                                                       projecao_2015_IBGE_masculino$Masculino_IBGE[18],
+                                                       projecao_2015_IBGE_masculino$Masculino_IBGE[19])
+
+projecao_2015_IBGE_masculino <- projecao_2015_IBGE_masculino %>% slice(1:17)
+
+projecao_feminina_2015 %>% bind_cols(censo_2010$faixa_etaria,projecao_2015_IBGE_masculino, projecao_masculina_2015, projecao_2015_IBGE_feminino) %>%
+  rename("Faixa etária"="...4") %>% select(`Faixa etária`, nPx_n...3, Feminino_IBGE, nPx_n...8, Masculino_IBGE) %>%
+  mutate(total_projecao_propria = nPx_n...3+nPx_n...8,
+         total_IBGE = Feminino_IBGE+Masculino_IBGE) %>%
+  kbl(caption="Projeção, segundo sexo. Santa Catarina - 1991, 2000, 2010, 2015, 2020 e 2030.",
+      format= "latex",
+      col.names = c("Faixa etária","Projeção Fem","Projeção IBGE fem", "Projeção Masc","Projeção IBGE masc","propria_total","propria_IBGE"),
+      align="r") %>%
+  kable_classic(full_width = F, html_font = "helvetica")
+```
+
+```{r}
+##############################
+#### PROJEÇÃO 2015 - 2020 ####
+##############################
+
+nLx_masculino_TP1 <- c(100285.699+388578.668, 483464.432, 482643.729,
+                       483943.467, 477182.758, 464598.489, 454005.005,
+                       442354.036, 430923.632,414554.745, 388840.564,
+                       354334.568, 306371.676, 247629.000, 177397.209,
+                       109011.183, 50891.787+14873.633+1021.977) 
+
+# valores retirados das tabuas de vida do trabalho 1
+
+nLx_feminino_TP1 <- c(100224.679+390328.758, 486448.771, 485406.688,
+                      484579.019, 482320.324, 478696.588, 474774.797,
+                      470094.589, 462963.732, 452199.198, 437547.092,
+                      415282.668, 385109.201, 343464.885, 287852.122,
+                      218361.179, 137413.451+61201.615+7446.397)
+
+# valores retirados das tabuas de vida do trabalho 1
+```
+
+
+```{r}
+
+df_2015 <- read_csv2("./projecao_2015.csv")
+
+df_2015 <- df_2015 %>% 
+  rename(faixa_etaria = "Faixa Etária 1") %>%
+  mutate(faixa_etaria = str_replace_all(faixa_etaria,"ano(s)?",""),
+         faixa_etaria = str_replace_all(faixa_etaria," a ","-"),
+         faixa_etaria = str_replace_all(faixa_etaria,"  e mais","+")) %>%
+  head(-1)
+
+df_2015 <- df_2015 %>% 
+  slice(17:19) %>%
+  mutate(faixa_etaria = str_replace_all(faixa_etaria,"80-84 ","80+"),
+         faixa_etaria = str_replace_all(faixa_etaria,"85-89 ","80+"),
+         faixa_etaria = str_replace_all(faixa_etaria,"90","80")
+  ) %>%
+  group_by(faixa_etaria) %>% 
+  summarise(Masculino = sum(Masculino),
+            Feminino = sum(Feminino),
+            Total = sum(Total)) %>% 
+  bind_rows(df_2015 %>% slice(1:16), .) %>%
+  mutate(faixa_etaria = str_trim(faixa_etaria))
+
+Idade <- df_2015$faixa_etaria
+
+df_2020 <- read_csv2("./projecao_2020.csv")
+
+df_2020 <- df_2020 %>% 
+  rename(faixa_etaria = "Faixa Etária 1") %>%
+  mutate(faixa_etaria = str_replace_all(faixa_etaria,"ano(s)?",""),
+         faixa_etaria = str_replace_all(faixa_etaria," a ","-"),
+         faixa_etaria = str_replace_all(faixa_etaria,"  e mais","+")) %>%
+  head(-1)
+
+df_2020 <- df_2020 %>% 
+  slice(17:19) %>%
+  mutate(faixa_etaria = str_replace_all(faixa_etaria,"80-84 ","80+"),
+         faixa_etaria = str_replace_all(faixa_etaria,"85-89 ","80+"),
+         faixa_etaria = str_replace_all(faixa_etaria,"90","80")
+  ) %>%
+  group_by(faixa_etaria) %>% 
+  summarise(Masculino = sum(Masculino),
+            Feminino = sum(Feminino),
+            Total = sum(Total)) %>% 
+  bind_rows(df_2020 %>% slice(1:16), .)
+
+pop_feminina_2015 <- df_2015$Feminino
+pop_masculina_2015 <- df_2015$Masculino
+
+pop_feminina_2015 <- df_2015$Feminino[4:10] #idade fertil
+pop_feminina_2020 <- df_2020$Feminino[4:10]
+pop_media_2020_2015 <-  bind_cols(pop_feminina_2020, pop_feminina_2015)
+
+```
+
+
+```{r}
+
+#### Natalidade
+
+DNSC_2015 <- read.dbc("./DNSC2015.dbc")
+
+idade_fem <- DNSC_2015 %>% mutate(classes_idade = cut(as.numeric(IDADEMAE),
+                                                      seq(0,100,5),
+                                                      labels = NULL,
+                                                      include.lowest = T,
+                                                      right = F)) %>%
+  select(IDADEMAE,classes_idade) %>% group_by(classes_idade) %>% summarise(n = n())
+
+fecundidade <- data.frame("GRUPO ETARIO" = c("15-19", "20-24", "25-29", "30-34", "35-39", "40-44", "45-49"),freqnascfem = idade_fem$n[2:8])
+
+f20 <- fecundidade %>% bind_cols(pop_media_2020_2015) %>%
+  rename("total_2020"="...3","total_2015"="...4") %>%
+  mutate(taxa_fecundidade = freqnascfem/total_2015,
+         media=(total_2020+total_2015)/2,
+         B_barra=taxa_fecundidade*media)
+```
+
+```{r}
+
+## Masculino ##
+
+projecao_masculina_2020 <- bind_cols(Idade, nLx_masculino_TP1) %>% 
+  rename("Idade"="...1","nLx"="...2")
+
+nPx_n_masculino_2020 <- c()
+
+for (i in 1:(length(projecao_masculina_2020$Idade))-1) {
+  nPx_n_masculino_2020[i+1] <- (projecao_masculina_2020$nLx[i+1]/projecao_masculina_2020$nLx[i])*(pop_masculina_2015[i])
+}
+
+projecao_masculina_2020 <- projecao_masculina_2020 %>%
+  mutate(nPx_n = nPx_n_masculino_2020)
+
+## Feminino ##
+
+projecao_feminina_2020 <- bind_cols(Idade, nLx_feminino_TP1) %>% 
+  rename("Idade"="...1","nLx"="...2")
+
+nPx_n_feminino_2020 <- c()
+
+for (i in 1:(length(projecao_feminina_2020$Idade))-1) {
+  nPx_n_feminino_2020[i+1] <- (projecao_feminina_2020$nLx[i+1]/projecao_feminina_2020$nLx[i])*df_2015$Feminino[i]
+}
+
+projecao_feminina_2020 <- projecao_feminina_2020 %>%
+  mutate(nPx_n = nPx_n_feminino_2020)
+
+projecao_2020_0_4_anos <- (5*sum(f20$B_barra))*nLx_feminino_TP1[1]/(5*100000)
+projecao_2020_0_4_anos_masculino <- projecao_2020_0_4_anos*0.5130885
+projecao_2020_0_4_anos_feminino <- projecao_2020_0_4_anos*0.4868601
+
+projecao_feminina_2020$nPx_n[1] <- projecao_2020_0_4_anos_feminino
+projecao_masculina_2020$nPx_n[1] <- projecao_2020_0_4_anos_masculino
+
+```
+
+```{r}
+
+# projecoes do IBGE 
+
+#feminino 
+projecao_2020_IBGE_feminino <- readxl::read_xls("./projecoes_2018_populacao_2010_2060_20200406.xls",
+                                                range = "L29:L48", sheet = "SC")
+
+projecao_2020_IBGE_masculino <- readxl::read_xls("./projecoes_2018_populacao_2010_2060_20200406.xls",
+                                                 range = "L6:L25", sheet = "SC")
+
+projecao_2020_IBGE_feminino <- projecao_2020_IBGE_feminino %>% 
+  rename("Feminino_IBGE"=`3654387`)
+
+projecao_2020_IBGE_feminino$Feminino_IBGE[17] <- sum(projecao_2020_IBGE_feminino$Feminino_IBGE[17],
+                                                     projecao_2020_IBGE_feminino$Feminino_IBGE[18],
+                                                     projecao_2020_IBGE_feminino$Feminino_IBGE[19])
+
+
+projecao_2020_IBGE_feminino <- projecao_2020_IBGE_feminino %>% slice(1:17)
+
+#masculino
+projecao_2020_IBGE_masculino <- projecao_2020_IBGE_masculino %>% 
+  rename("masculino_IBGE"=`3598115`)
+
+projecao_2020_IBGE_masculino$masculino_IBGE[17] <- sum(projecao_2020_IBGE_masculino$masculino_IBGE[17],
+                                                       projecao_2020_IBGE_masculino$masculino_IBGE[18],
+                                                       projecao_2020_IBGE_masculino$masculino_IBGE[19])
+
+
+projecao_2020_IBGE_masculino <- projecao_2020_IBGE_masculino %>% slice(1:17)
+
+projecao_feminina_2020 %>% bind_cols(Idade,projecao_2020_IBGE_feminino, projecao_masculina_2020, projecao_2020_IBGE_masculino) %>%
+  rename("Faixa etária"="...4") %>% select(`Faixa etária`, nPx_n...3, Feminino_IBGE, nPx_n...8, masculino_IBGE) %>%
+  mutate(total_projecao_proprica = nPx_n...3+nPx_n...8,
+         total_IBGE = Feminino_IBGE+masculino_IBGE) %>%
+  kbl(caption="Projeção, segundo sexo. Santa Catarina - 1991, 2000, 2010, 2015, 2020 e 2030.",
+      format= "latex",
+      col.names = c("Faixa etária","Projeção Fem","Projeção IBGE fem", "Projeção Masc","Projeção IBGE masc","propria_total","propria_IBGE"),
+      align="r") %>%
+  kable_classic(full_width = F, html_font = "helvetica")
+
+```
 
 **c) No link https://www.ibge.gov.br/estatisticas/sociais/populacao/9109-projecao-da-populacao.html?=&t=downloads estão disponíveis as projeções da população por sexo e idade para o Brasil (2010-2060) e para as Unidades da Federação - revisão 2018, realizadas pelo IBGE.**
 
 Com base nessas informações, construa e compare as pirâmides resultantes para os anos de 2010, 2020 e 2060 para o Brasil.
-Compare os resultados da projeção para a UF escolhida realizada no item (b) e a publicada pelo IBGE
+
+Compare os resultados da projeção para a UF escolhida realizada no item (b) e a publicada pelo IBGE.
+
 * Para a análise dos resultados utilize indicadores de estrutura para respectivos anos (como os calculados na Parte 2 deste trabalho). Também comente  sobre os indicadores da dinâmica - taxa bruta de mortalidade, de natalidade e taxa de crescimento.
