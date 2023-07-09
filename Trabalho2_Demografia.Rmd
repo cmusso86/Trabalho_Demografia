@@ -32,8 +32,8 @@ pacman::p_load_gh("danicat/read.dbc")
 ```{r bases}
 # BASES ----
 
-pop_censos <- import("./populacao_91_00_10.xlsx")
-pop_proj <- import("./populacao_15_20_30.xlsx")
+pop_censos <- import("Bases/populacao_91_00_10.xlsx")
+pop_proj <- import("Bases/populacao_15_20_30.xlsx")
 ```
 
 # Introdução
@@ -41,8 +41,6 @@ pop_proj <- import("./populacao_15_20_30.xlsx")
 O estado brasileiro de Santa Catarina tem como capital a ilha de Floranópolis e está localizado no centro da região sul do país. O estado faz fronteira ao norte com o Paraná e ao sul pelo Rio Grande do Sul. É banhado ao leste pelo Oceano Atlântico e e ao oeste faz fronteira com a Argentina. Sua área abrange 95.736,165 km² e possui uma população de mais de 6 milhões de habitantes, sendo o décimo estado mais populoso do Brasil. O estado possui 295 municípios, sendo Joinville, Florianópolis, Blumenau, Criciúma e Chapecó as principais cidades \cite{IBGE}.
 
 Santa Catarina possui índices sociais muito elevados em comparação com o restante do Brasil. É o estado com a maior expectativa de vida, empatando com o Distrito Federal. Além disso, possui a menor taxa de mortalidade infantil e é o estado com menor desigualdade econômica e analfabetismo no país. Em termos econômicos, Santa Catarina possui o sexto maior Produto Interno Bruto (PIB) do Brasil e o quarto maior PIB per capita, ficando atrás apenas do Distrito Federal, São Paulo e Mato Grosso. Sua economia é diversificada e tem uma forte ênfase na industrialização. O estado é um importante polo de exportação e consumo, sendo um dos maiores contribuintes para o crescimento da economia brasileira, representando 4% do PIB nacional \cite{IBGE2}.
-
-INLCUIR INFORMACOES SOBRE A ESTRYTURA DA POPULACAO DE SC
 
 Santa Catarina também enfrenta um processo de envelhecimento da população, um fenômeno observado no Brasil e em muitos países ao redor do mundo. A proporção de idosos vem aumentando significativamente nas últimas décadas, devido a fatores como avanços na área da saúde, melhorias nas condições de vida e diminuição da taxa de natalidade.
 
@@ -56,7 +54,6 @@ O tema desse trabalho é o estudo da dinâmica e estrutura demográfica do estad
 ## Parte 1 - Estrutura Populacional e avaliação da informação sobre idade
 
 **a) Construa as pirâmides etárias por grupos de idade para a população da UF escolhida em 1991, 2000, 2010, 2015, 2020 e 2030 (obtenha os dados no portal do Datasus para os anos censitários e projeções para os demais anos). Comente os resultados à luz da discussão sobre transição demográfica.**
-
 
 ```{r}
 fx1 <- c("Menor 1 ano", "1 ano", "2 anos", "3 anos", "4 anos")
@@ -73,20 +70,21 @@ pop_censo_trat <- pop_censos %>%
   pivot_longer(-c(Idade, faixa, sexo), names_to = "Ano", values_to = "Pop") %>% 
   mutate(faixa=str_replace(faixa, " a ", "-"),
          faixa=str_replace(faixa, " anos", ""),
-         faixa=str_replace(faixa, "80 e mais", "80-")) %>% 
+         faixa=str_replace(faixa, "80 e mais", "80-"))%>% 
   select(-Idade) 
 
 pop_proj_trat <- pop_proj %>% 
   mutate(faixa=cut(idade, breaks = c(-1, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80, 1000 ), labels = c("0-4","5-9","10-14","15-19","20-24" ,"25-29" ,"30-34","35-39","40-44" ,"45-49" ,"50-54" ,"55-59","60-64" ,"65-69" ,"70-74","75-79" ,"80-"), include.lowest = T, right = F)) %>% 
-  select(-idade) %>% 
-pivot_longer(-c(faixa, sexo), names_to = "Ano", values_to = "Pop") 
+ # select(-idade) %>% 
+pivot_longer(-c(faixa, sexo, idade), names_to = "Ano", values_to = "Pop") 
 
 
 pop_completo <-pop_censo_trat  %>% 
   full_join(pop_proj_trat) %>% 
   mutate(faixa=factor(faixa,levels=c("0-4","5-9","10-14","15-19","20-24" ,"25-29" ,"30-34","35-39","40-44" ,"45-49" ,"50-54" ,"55-59","60-64" ,"65-69" ,"70-74","75-79" ,"80-"))) %>% 
   group_by(Ano,faixa, sexo) %>% 
-  summarize(Pop=sum(Pop))
+  summarize(Pop=sum(Pop)) %>% 
+  mutate(sexo=factor(sexo, levels=c("m", "f")))
   
 ```
 
@@ -108,10 +106,11 @@ piramides[[i]] <- filtro %>%
                       split_by = "sexo",
                       count = "pop",
                       show_midpoint = FALSE) +
+ # scale_fill_manual("Sexo", values=c( "#003366", "#00822E"))+
   theme_classic(base_size = 9)+
  scale_x_discrete(labels = xlabels)+
-  theme(legend.position = "none", 
-       axis.text.x =element_text(angle = 45, hjust=1))+
+theme(legend.position = "none", 
+     axis.text.x =element_text(angle = 45, hjust=1))+
   labs(y="mil", x="")+
   ggtitle(i)
 }
@@ -120,9 +119,7 @@ piramides[[i]] <- filtro %>%
 
 ```
 
-
 **b) Para todos os anos acima mencionados, calcule os indicadores de estrutura por idade (proporção de idosos (60 anos e mais), proporção de crianças (0 a 4 anos), proporção de jovens (0 a 14 anos), razão de dependência e índice de envelhecimento). Calcule a idade média e a idade mediana. Calcule e grafique a razão de sexo por grupos de idade para 2000, 2010 e 2030. Comente os resultados.**
-
 
 ```{r}
 
@@ -198,9 +195,7 @@ proporcoes  %>%
 
 ```
 
-
-Para os dados agrupados foi utilizado o ponto médio de cada classe de idade, sendo que para a classe de >80 foi utilizado o valor de 82,5 anos. A mediana foi calculada escolhedno o ponto médio da classe a partir da qual se acumulou 50% da populaçao daquele ano. 
-
+Para os dados agrupados foi utilizado o ponto médio de cada classe de idade, sendo que para a classe de >80 foi utilizado o valor de 85 anos. A mediana foi calculada escolhedno o ponto médio da classe a partir da qual se acumulou 50% da populaçao daquele ano. 
 
 ```{r}
 # medianas ----
@@ -274,7 +269,6 @@ idade_media_mediana %>%
 
 ```
 
-
 Razao de sexo
 
 Os homens morrem mais cedo.
@@ -295,11 +289,9 @@ pop_completo %>%
 ```
 
 
-
 **c) Avalie a qualidade da declaração de idade no Censo 2010 segundo forma de declaração (data de nascimento e idade presumida). Calcule os índices de Whipple, Myers e Bachi.Construa a pirâmide por idade simples. Comente os resultados. (utilize a planilha SINGAGE do PAS - disponível na plataforma). Obtenha os dados na Tabela 3.2.1.2 do Censo 2010 - Resultados do Universo  (https://www.ibge.gov.br/estatisticas/sociais/populacao/9662-censo-demografico-2010.html?edicao=10503&t=downloads)**
 
 Na Tabela a seguir foram calculados os índices para avaliação da declaração de idade por forma de declaração: data de nascimento, idade presumida e os resultados gerais, que são a junção de todos os tipos de declaração. Além disso, os resultados estão discriminados por sexo.
-
 
 ```{r}
 ### Tabela com índices de Whipple, Myers e Bachi (calculado na planilha SINGAGE)
@@ -330,11 +322,10 @@ De fato, o índice de Whipple expressa que os dados de idade presumida possuem a
 
 Por último, unindo todas as declarações de idade, observa-se que os índices possuem bons valores, indicando que não há forte preferência por algum dígito. Isso se deve ao fato de apenas 147.106 indivíduos não terem declarado sua idade por meio da data de nascimento, de um total de 6.248.436 (ou seja, apenas 2,35%). Em suma, os dados gerais de idade apresentam boa qualidade.
 
-
 ```{r}
 ### Piramide por idade simples
 
-pop_2010_censo <- import("./Tabela_censo_2010_resumida.xls")
+pop_2010_censo <- import("Bases/Tabela_censo_2010_resumida.xls")
 pop_2010_censo <-  melt(pop_2010_censo,c("Idade","Total"))  
 pop_2010_censo$Idade <- factor(pop_2010_censo$Idade,
                                levels=unique(pop_2010_censo$Idade))
@@ -348,6 +339,7 @@ breaks <- pop_2010_censo$Idade[seq(1,102,by=5)]
 
 age_pyramid(pop_2010_censo, age_group = Idade, split_by = variable,
             count = value,show_midpoint = F) +
+  #scale_fill_manual("Sexo", values=c( "#003366", "#00822E"))+
   theme_classic(base_size = 10)+
  scale_x_discrete(labels=labels,breaks=breaks)+
   theme(
@@ -374,17 +366,17 @@ Metodologia para estimar populações dos municípios brasileiros
 
 # PROJECOES IBGE #
 
-projecao_2015 <- read_delim("~/UnB/2023/2023.1/Demografia_Ana Maria/Trabalho 2 - Projeção/projecao_2015.csv", 
+projecao_2015 <- read_delim("Bases/projecao_2015.csv", 
                             delim = ";", escape_double = FALSE, trim_ws = TRUE)
 
-projecao_2020 <- read_delim("~/UnB/2023/2023.1/Demografia_Ana Maria/Trabalho 2 - Projeção/projecao_2020.csv", 
+projecao_2020 <- read_delim("Bases/projecao_2020.csv", 
                             delim = ";", escape_double = FALSE, locale = locale(), 
                             trim_ws = TRUE)
 
-projecao_2030 <- read_delim("~/UnB/2023/2023.1/Demografia_Ana Maria/Trabalho 2 - Projeção/projecao_2030.csv", 
+projecao_2030 <- read_delim("Bases/projecao_2030.csv", 
                             delim = ";", escape_double = FALSE, trim_ws = TRUE)
 
-censo_2010 <- read_delim("~/UnB/2023/2023.1/Demografia_Ana Maria/Trabalho 2 - Projeção/censo_2010.csv", 
+censo_2010 <- read_delim("Bases/censo_2010.csv", 
                             delim = ";", escape_double = FALSE, trim_ws = TRUE)
 
 ```
@@ -415,12 +407,12 @@ censo_2010 <- censo_2010 %>%
             Total = sum(Total)) %>%
   bind_rows(censo_2010 %>% slice(21:33)) #combinando a manipulacao feita antes com o restante do banco
 
-tabua_masculina_2010 <- readxl::read_xls("C:/Users/jehhv/OneDrive/Documentos/UnB/2023/2023.1/Demografia_Ana Maria/Trabalho 2 - Projeção/tabuas_mortalidade.xls",
+tabua_masculina_2010 <- readxl::read_xls("Bases/tabuas_mortalidade.xls",
                                          range = "A9:I30", sheet = "SC") %>%
   select(Idade, nLx) %>%
   slice(2:21) 
 
-tabua_feminina_2010 <- readxl::read_xls("C:/Users/jehhv/OneDrive/Documentos/UnB/2023/2023.1/Demografia_Ana Maria/Trabalho 2 - Projeção/tabuas_mortalidade.xls",
+tabua_feminina_2010 <- readxl::read_xls("Bases/tabuas_mortalidade.xls",
                                          range = "K9:S30", sheet = "SC") %>%
   select(Idade, nLx) %>%
   slice(2:21) 
@@ -460,10 +452,15 @@ for (i in 1:(length(projecao_masculina_2015$Idade))-1) {
   nPx_n_masculino[i+1] <- (projecao_masculina_2015$nLx[i+1]/projecao_masculina_2015$nLx[i])*censo_2010$Masculino[i]
 } # intervalo etário de x a x+n-1 anos completos
 
-(nPx_n_masculino[17] <- (projecao_masculina_2015$nLx[17]/projecao_masculina_2015$nLx[16])*(censo_2010$Masculino[17]+censo_2010$Masculino[16]))
+nPx_n_masculino[17] <- (projecao_masculina_2015$nLx[17]/projecao_masculina_2015$nLx[16])*(censo_2010$Masculino[17]+censo_2010$Masculino[16])
 
 projecao_masculina_2015 %>%
-  mutate(nPx_n = nPx_n_masculino)
+  mutate(nPx_n = nPx_n_masculino)%>% 
+  kable(caption="Tábua de vida Masculina",
+      format= "latex",escape = F, booktabs = TRUE, linesep="",
+      col.names = c("Idade","nLx","nPx"),
+      align="r") %>%
+  kable_classic(full_width = F)
 
 ## Feminino ## 
 
@@ -490,15 +487,22 @@ for (i in 1:(length(projecao_feminina_2015$Idade))-1) {
 #nPx_n_feminino[17] <- (projecao_feminina_2015$nLx[17]/(projecao_feminina_2015$nLx[16]+projecao_feminina_2015$nLx[17]))*(censo_2010$Feminino[17]+censo_2010$Feminino[16])
 
 projecao_feminina_2015 %>%
-  mutate(nPx_n = nPx_n_feminino)
+  mutate(nPx_n = nPx_n_feminino) %>% 
+  kable(caption="Tábua de vida Feminina",
+      format= "latex",escape = F, booktabs = TRUE, linesep="",
+      col.names = c("Idade","nLx","nPx"),
+      align="r") %>%
+  kable_classic(full_width = F)
 
 ```
+
+
 
 ```{r}
 
 ## Calculando numero total de nascimentos no quinquenio ##
 
-projecao_2015 <- read_delim("~/UnB/2023/2023.1/Demografia_Ana Maria/Trabalho 2 - Projeção/projecao_2015.csv", 
+projecao_2015 <- read_delim("Bases/projecao_2015.csv", 
                             delim = ";", escape_double = FALSE, trim_ws = TRUE)
 
 projecao_2015 <- projecao_2015 %>% 
@@ -528,7 +532,7 @@ projecao_2015 <- projecao_2015 %>%
 
 # 2010 - 2015 #
 
-df_2015 <- read_delim("~/UnB/2023/2023.1/Demografia_Ana Maria/Trabalho 2 - Projeção/projecao_2015.csv", 
+df_2015 <- read_delim("Bases/projecao_2015.csv", 
                                        delim = ";", escape_double = FALSE, trim_ws = TRUE)
 
 
@@ -544,7 +548,7 @@ pop_feminina_2010 <- censo_2010$Feminino[4:10] #idade fertil
 pop_feminina_2015 <- df_2015$Feminino[4:10]
 pop_media_2010_2015 <-  bind_cols(pop_feminina_2010, pop_feminina_2015)
 
-DNSC_2010 <- read.dbc("~/UnB/2023/2023.1/Demografia_Ana Maria/Trabalho 2 - Projeção/DNSC2010.dbc")
+DNSC_2010 <- read.dbc("Bases/DNSC2010.dbc")
 
 idade_fem <- DNSC_2010 %>% mutate(classes_idade = cut(as.numeric(IDADEMAE),
                                                       seq(0,100,5),
@@ -582,10 +586,10 @@ projecao_masculina_2015 <- projecao_masculina_2015 %>%
 
 projecao_masculina_2015$nPx_n[1] <- projecao_2015_0_4_anos_masculino
 
-projecao_2015_IBGE_feminino <- readxl::read_xls("./projecoes_2018_populacao_2010_2060_20200406.xls",
+projecao_2015_IBGE_feminino <- readxl::read_xls("Bases/projecoes_2018_populacao_2010_2060_20200406.xls",
                                                 range = "G29:G48", sheet = "SC")
 
-projecao_2015_IBGE_masculino <- readxl::read_xls("./projecoes_2018_populacao_2010_2060_20200406.xls",
+projecao_2015_IBGE_masculino <- readxl::read_xls("Bases/projecoes_2018_populacao_2010_2060_20200406.xls",
                                                  range = "G6:G25", sheet = "SC")
 
 
@@ -611,11 +615,13 @@ projecao_feminina_2015 %>% bind_cols(censo_2010$faixa_etaria,projecao_2015_IBGE_
   rename("Faixa etária"="...4") %>% select(`Faixa etária`, nPx_n...3, Feminino_IBGE, nPx_n...8, Masculino_IBGE) %>%
   mutate(total_projecao_propria = nPx_n...3+nPx_n...8,
          total_IBGE = Feminino_IBGE+Masculino_IBGE) %>%
-  kbl(caption="Projeção, segundo sexo. Santa Catarina - 1991, 2000, 2010, 2015, 2020 e 2030.",
-      format= "latex",
+      kable(caption="Projeção, segundo sexo. Santa Catarina - 1991, 2000, 2010, 2015, 2020 e 2030.",
+      format= "latex", booktabs = TRUE, linesep="",
       col.names = c("Faixa etária","Projeção Fem","Projeção IBGE fem", "Projeção Masc","Projeção IBGE masc","propria_total","propria_IBGE"),
       align="r") %>%
-  kable_classic(full_width = F, html_font = "helvetica")
+  column_spec(2:6, width = "5em") %>% 
+  footnote(general=c("Elaboração própria", "Censo 1991, 2000, 2010 (DataSus)", "Projeções 2015, 2020 e 2030 (IBGE)"),  footnote_as_chunk=F, general_title ="", fixed_small_size = T) %>% 
+  kable_classic(full_width = F)
 ```
 
 ```{r}
@@ -643,7 +649,7 @@ nLx_feminino_TP1 <- c(100224.679+390328.758, 486448.771, 485406.688,
 
 ```{r}
 
-df_2015 <- read_csv2("./projecao_2015.csv")
+df_2015 <- read_csv2("Bases/projecao_2015.csv")
 
 df_2015 <- df_2015 %>% 
   rename(faixa_etaria = "Faixa Etária 1") %>%
@@ -667,7 +673,7 @@ df_2015 <- df_2015 %>%
 
 Idade <- df_2015$faixa_etaria
 
-df_2020 <- read_csv2("./projecao_2020.csv")
+df_2020 <- read_csv2("Bases/projecao_2020.csv")
 
 df_2020 <- df_2020 %>% 
   rename(faixa_etaria = "Faixa Etária 1") %>%
@@ -702,7 +708,7 @@ pop_media_2020_2015 <-  bind_cols(pop_feminina_2020, pop_feminina_2015)
 
 #### Natalidade
 
-DNSC_2015 <- read.dbc("./DNSC2015.dbc")
+DNSC_2015 <- read.dbc("Bases/DNSC2015.dbc")
 
 idade_fem <- DNSC_2015 %>% mutate(classes_idade = cut(as.numeric(IDADEMAE),
                                                       seq(0,100,5),
@@ -764,10 +770,10 @@ projecao_masculina_2020$nPx_n[1] <- projecao_2020_0_4_anos_masculino
 # projecoes do IBGE 
 
 #feminino 
-projecao_2020_IBGE_feminino <- readxl::read_xls("./projecoes_2018_populacao_2010_2060_20200406.xls",
+projecao_2020_IBGE_feminino <- readxl::read_xls("Bases/projecoes_2018_populacao_2010_2060_20200406.xls",
                                                 range = "L29:L48", sheet = "SC")
 
-projecao_2020_IBGE_masculino <- readxl::read_xls("./projecoes_2018_populacao_2010_2060_20200406.xls",
+projecao_2020_IBGE_masculino <- readxl::read_xls("Bases/projecoes_2018_populacao_2010_2060_20200406.xls",
                                                  range = "L6:L25", sheet = "SC")
 
 projecao_2020_IBGE_feminino <- projecao_2020_IBGE_feminino %>% 
@@ -809,4 +815,5 @@ Com base nessas informações, construa e compare as pirâmides resultantes para
 
 Compare os resultados da projeção para a UF escolhida realizada no item (b) e a publicada pelo IBGE.
 
-* Para a análise dos resultados utilize indicadores de estrutura para respectivos anos (como os calculados na Parte 2 deste trabalho). Também comente  sobre os indicadores da dinâmica - taxa bruta de mortalidade, de natalidade e taxa de crescimento.
+\*Para a análise dos resultados utilize indicadores de estrutura para respectivos anos (como os calculados na Parte 2 deste trabalho). Também comente  sobre os indicadores da dinâmica: taxa bruta de mortalidade, de natalidade e taxa de crescimento.
+
