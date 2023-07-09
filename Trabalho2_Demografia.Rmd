@@ -22,7 +22,7 @@ knitr::opts_chunk$set(echo = FALSE,
 ```{r bibliotecas}
 # Carregando bibliotecas ---------
 
-pacman::p_load(foreign,tidyverse, LexisPlotR, readxl, janitor, kableExtra, scales, reshape2, cowplot, ggmosaic, gplots, corrplot, DescTools,RColorBrewer, rio, apyramid,
+pacman::p_load(foreign,tidyverse, LexisPlotR, readxl, janitor, kableExtra, scales, reshape2, cowplot, ggmosaic, gplots, corrplot, DescTools,RColorBrewer, rio, apyramid, magrittr,
                patchwork)
 
 pacman::p_load_gh("danicat/read.dbc")
@@ -957,7 +957,51 @@ plot_piramide_2060 <- projec_total %>% filter(variable=="2060") %>%
 	\centering
 			\caption{Pirâmides etárias, Brasil, 2010, 2020 e 2060.}
 		\includegraphics[scale = .9]{img/painel_2_c.png}
-		\small\textsuperscript{Elaboração Própria. Fonte dos Dados: IBGE - Projeções revisão de 2018} 
+		\small\textsuperscript{Elaboração Própria. Fonte dos Dados: IBGE - Projeções da população, revisão de 2018} 
 	\label{fig:painel2c}
 \end{figure}
+
+A evolução das pirâmides etárias revelam as fases da transição demográfica pela qual o país está passando. Na pirâmide etária de 2010, era possível observar uma base larga, caracterizada por uma alta proporção de crianças e jovens. Essa configuração era resultado da alta taxa de fecundidade que o Brasil apresentava nas décadas anteriores.
+
+Já na projeção de 2020, há uma diminuição gradual na proporção de crianças e jovens, indicando uma queda na taxa de natalidade. A parte central da pirâmide, representando adultos em idade produtiva, foi ampliada, refletindo um processo de envelhecimento populacional. Além disso, a parcela de idosos aumentou em comparação com a década anterior. Essa mudança é resultado de vaŕios fatores, entre eles é possível citar a redução da fecundidade e avanços na área da saúde.
+
+As projeções para 2060 sugerem uma transformação ainda mais pronunciada na pirâmide etária brasileira. A base da pirâmide se torna mais estreita, refletindo uma taxa de natalidade baixa ou até mesmo abaixo do nível de reposição. A proporção de jovens será substancialmente menor em comparação com as décadas anteriores. Por outro lado, a faixa etária acima dos 60 anos apresentará um aumento expressivo, indicando um processo acelerado de envelhecimento populacional. A expectativa de vida mais longa e o declínio na taxa de mortalidade são fatores que contribuem para esse cenário.
+
+Tais mudanças nas pirâmides etárias têm implicações significativas para a sociedade. O envelhecimento da população coloca desafios adicionais para o sistema de seguridade social, como a previdência e a saúde, uma vez que há menos pessoas em idade ativa para sustentar a população idosa. Além disso, a redução na fecundidade tem implicações no mercado de trabalho e na dinâmica social do país.
+
+```{r}
+# Colocando os indicadores do IBGE em tabelas
+# disponivel em projecoes_2018_indicadores.xls
+
+# Indicadores da dinâmica populacional
+tbl_dinam_pop <- data.frame("Ano"=c("2010","2020","2060"),
+                            "TCG (%)"=c("-","0,77","-0,31"),
+                            "TBN (por mil hab.)" = c("15,08","13,99","9,29"),
+                            "TBM (por mil hab.)" = c("6,36","6,56","12,51"),
+                            check.names = F)
+
+tbl_dinam_pop %>%
+  kable(format="latex",caption = "Indicadores da dinâmica populacional para o Brasil, anos de 2010, 2020 e 2060.", booktabs = T, linesep="",
+        align=c('l','r','r','r'))  %>%
+   kable_styling(latex_options=c("HOLD_position"), position="center") %>% 
+  footnote("\\\\tiny{Elaboração própria. \n Dados: IBGE - Projeções da população, revisão de 2018}",  escape=F,  footnote_as_chunk=T, general_title ="")
+```
+
+```{r}
+# Indicadores de estrutura da populacao
+# disponivel em projecoes_2018_indicadores.xls
+# Razão de dependência, Índice de envelhecimento e Idade mediana
+
+tbl_estrutura <- data.frame("Ano"=c("2010","2020","2060"),
+                            "Idade mediana"=c("29,20","33,40","45,62"),
+                            "Índice de envelhecimento (%)" = c("29,55","46,89","173,47"),
+                            "Razão de dependência total (%)" = c("47,09","44,29","67,23"),
+                            check.names = F)
+
+tbl_estrutura %>%
+  kable(format="latex",caption = "Indicadores de estrutura populacional para o Brasil, anos de 2010, 2020 e 2060.", booktabs = T, linesep="",
+        align=c('l','r','r','r'))  %>%
+   kable_styling(latex_options=c("HOLD_position","scale_down"), position="center") %>% 
+  footnote("\\\\tiny{Elaboração própria. \n Dados: IBGE - Projeções da população, revisão de 2018}",  escape=F,  footnote_as_chunk=T, general_title ="")
+```
 
