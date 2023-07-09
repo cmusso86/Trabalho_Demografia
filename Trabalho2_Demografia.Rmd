@@ -337,16 +337,27 @@ labels_idade_simples <- c(as.character(0:99),"100+")
 labels <- labels_idade_simples[seq(1,102,by=5)]
 breaks <- pop_2010_censo$Idade[seq(1,102,by=5)]
 
-age_pyramid(pop_2010_censo, age_group = Idade, split_by = variable,
-            count = value,show_midpoint = F) +
+#age_pyramid(pop_2010_censo, age_group = Idade, split_by = variable,
+            #count = value,show_midpoint = F) +
   #scale_fill_manual("Sexo", values=c( "#003366", "#00822E"))+
-  theme_classic(base_size = 10)+
- scale_x_discrete(labels=labels,breaks=breaks)+
-  theme(
-       axis.text.x =element_text(angle = 45, hjust=1))+
-  labs(y="mil", x="",fill="")
+  #theme_classic(base_size = 10)+
+ #scale_x_discrete(labels=labels,breaks=breaks)+
+  #theme(
+  #    axis.text.x =element_text(angle = 45, hjust=1))+
+  #labs(y="mil", x="",fill="")
+
+
+#ggsave("img/piramide_idade_simples.png",width = 158, height = 93, units="mm", bg="white")
 
 ```
+
+\begin{figure}[h!]
+	\centering
+			\caption{Pirâmide por idade simples, 2010, Santa Catarina.}
+		\includegraphics[scale = .9]{img/piramide_idade_simples.png}
+		\small\textsuperscript{Elaboração Própria. Fonte dos Dados: IBGE - Censo 2010} 
+	\label{fig:piram_idade_simples}
+\end{figure}
 
 A pirâmide por idade simples, com dados do Censo de 2010, para Santa Catarina não parece revelar forte atração por idades terminadas em 0 ou 5 (ou algum outro dígito em especial). Tal observação corrobora as análises feitas com base nos índices de qualidade vistos anteriormente.
 
@@ -466,6 +477,7 @@ nPx_n_masculino[17] <- (projecao_masculina_2015$nLx[17]/projecao_masculina_2015$
 
 projecao_masculina_2015 %>%
   mutate(nPx_n = nPx_n_masculino)%>% 
+  mutate_if(is.numeric, ~comma(., decimal.mark = ",", big.mark = ".")) %>%
   kable(caption="Tábua de vida Masculina",
       format= "latex",escape = F, booktabs = TRUE, linesep="",
       col.names = c("Idade","nLx","nPx"),
@@ -498,6 +510,7 @@ for (i in 1:(length(projecao_feminina_2015$Idade))-1) {
 
 projecao_feminina_2015 %>%
   mutate(nPx_n = nPx_n_feminino) %>% 
+  mutate_if(is.numeric, ~comma(., decimal.mark = ",", big.mark = ".")) %>%
   kable(caption="Tábua de vida Feminina",
       format= "latex",escape = F, booktabs = TRUE, linesep="",
       col.names = c("Idade","nLx","nPx"),
@@ -558,7 +571,7 @@ pop_feminina_2010 <- censo_2010$Feminino[4:10] #idade fertil
 pop_feminina_2015 <- df_2015$Feminino[4:10]
 pop_media_2010_2015 <-  bind_cols(pop_feminina_2010, pop_feminina_2015)
 
-DNSC_2010 <- read.dbc("Bases/DNSC2010.dbc")
+DNSC_2010 <- read.dbc("Bases/DNSC2010.DBC")
 
 idade_fem <- DNSC_2010 %>% mutate(classes_idade = cut(as.numeric(IDADEMAE),
                                                       seq(0,100,5),
@@ -625,11 +638,13 @@ projecao_feminina_2015 %>% bind_cols(censo_2010$faixa_etaria,projecao_2015_IBGE_
   rename("Faixa etária"="...4") %>% select(`Faixa etária`, nPx_n...3, Feminino_IBGE, nPx_n...8, Masculino_IBGE) %>%
   mutate(total_projecao_propria = nPx_n...3+nPx_n...8,
          total_IBGE = Feminino_IBGE+Masculino_IBGE) %>%
+      mutate_if(is.numeric, ~comma(., decimal.mark = ",", big.mark = ".")) %>%
       kable(caption="Projeção, segundo sexo. Santa Catarina - 1991, 2000, 2010, 2015, 2020 e 2030.",
       format= "latex", booktabs = TRUE, linesep="",
-      col.names = c("Faixa etária","Projeção Fem","Projeção IBGE fem", "Projeção Masc","Projeção IBGE masc","propria_total","propria_IBGE"),
+      col.names = c("Faixa etária","Projeção Fem.","Projeção IBGE Fem.", "Projeção Masc.","Projeção IBGE Masc.","Própria total","IBGE total"),
       align="r") %>%
-  column_spec(2:6, width = "5em") %>% 
+  #column_spec(2:6, width = "5em") %>%
+  kable_styling(latex_options=c("HOLD_position","scale_down"), position="center") %>% 
   footnote(general=c("Elaboração própria", "Censo 1991, 2000, 2010 (DataSus)", "Projeções 2015, 2020 e 2030 (IBGE)"),  footnote_as_chunk=F, general_title ="", fixed_small_size = T) %>% 
   kable_classic(full_width = F)
 ```
@@ -819,10 +834,9 @@ projecao_feminina_2020 %>% bind_cols(Idade,projecao_2020_IBGE_feminino, projecao
 
 ```
 
-% Please add the following required packages to your document preamble:
-% \usepackage{multirow}
 \begin{table}[H]
 \caption{Projeção da população de 2015 em Santa Catarina, por sexo.}
+\centering
 \begin{tabular}{cllllll}
 \hline
 \multirow{2}{*}{\textbf{\begin{tabular}[c]{@{}c@{}}Faixa \\ etária\end{tabular}}} & \multicolumn{2}{c}{\textbf{Feminina}}                                                     & \multicolumn{2}{c}{\textbf{Masculina}}                                                    & \multicolumn{2}{c}{\textbf{Total}}                                                        \\ \cline{2-7} 
@@ -843,17 +857,17 @@ projecao_feminina_2020 %>% bind_cols(Idade,projecao_2020_IBGE_feminino, projecao
 65-69                                                                             & 110376                                                                           & 113403 & 97043                                                                            & 99818  & 207419                                                                           & 213221 \\
 70-74                                                                             & 76838                                                                            & 79059  & 63107                                                                            & 65090  & 139946                                                                           & 144149 \\
 75-79                                                                             & 55948                                                                            & 57682  & 41399                                                                            & 42765  & 97348                                                                            & 100447 \\
-80+                                                                               & 59051                                                                            & 69594  & 36538                                                                            & 40678  & 95590                                                                            & 110272
+80+                                                                               & 59051                                                                            & 69594  & 36538                                                                            & 40678  & 95590                                                                            & 110272 \\
+\hline
 \end{tabular}
 \small\textsuperscript{Elaboração Própria. Fonte dos Dados: Ministério da Saúde }
 \end{table}
 
 
 
-% Please add the following required packages to your document preamble:
-% \usepackage{multirow}
 \begin{table}[H]
 \caption{Projeção da população de 2020 em Santa Catarina, por sexo.}
+\centering
 \begin{tabular}{ccccccc}
 \hline
 \multirow{2}{*}{\textbf{\begin{tabular}[c]{@{}c@{}}Faixa \\ etária\end{tabular}}} & \multicolumn{2}{c}{\textbf{Feminina}}                                 & \multicolumn{2}{c}{\textbf{Masculina}}                                & \multicolumn{2}{c}{\textbf{Total}}                                    \\ \cline{2-7} 
@@ -874,7 +888,8 @@ projecao_feminina_2020 %>% bind_cols(Idade,projecao_2020_IBGE_feminino, projecao
 65-69                                                                             & 130916                                                       & 146058 & 111329                                                       & 128792 & 242246                                                       & 274850 \\
 70-74                                                                             & 91814                                                        & 106080 & 69460                                                        & 88467  & 161275                                                       & 194547 \\
 75-79                                                                             & 57652                                                        & 70570  & 38463                                                        & 53602  & 96116                                                        & 124172 \\
-80+                                                                               & 52094                                                        & 92517  & 24729                                                        & 54903  & 76824                                                        & 147420
+80+                                                                               & 52094                                                        & 92517  & 24729                                                        & 54903  & 76824                                                        & 147420 \\
+\hline
 \end{tabular}
 \small\textsuperscript{Elaboração Própria. Fonte dos Dados: Ministério da Saúde }
 \end{table}
@@ -887,4 +902,62 @@ Com base nessas informações, construa e compare as pirâmides resultantes para
 Compare os resultados da projeção para a UF escolhida realizada no item (b) e a publicada pelo IBGE.
 
 \*Para a análise dos resultados utilize indicadores de estrutura para respectivos anos (como os calculados na Parte 2 deste trabalho). Também comente  sobre os indicadores da dinâmica: taxa bruta de mortalidade, de natalidade e taxa de crescimento.
+
+
+```{r}
+projec_homens <-  readxl::read_xls("Bases/projecoes_2018_anos_selecionados.xls",sheet="BRASIL-Homens")
+projec_mulheres <- readxl::read_xls("Bases/projecoes_2018_anos_selecionados.xls",sheet="BRASIL-Mulheres")
+
+projec_homens$Sexo <- "Masculino"
+projec_mulheres$Sexo <- "Feminino"
+
+projec_homens <- melt(projec_homens,c("GRUPO ETÁRIO","Sexo"))
+projec_mulheres <-  melt(projec_mulheres,c("GRUPO ETÁRIO","Sexo"))
+
+projec_total <- rbind(projec_homens,projec_mulheres)
+projec_total$`GRUPO ETÁRIO` <- factor(projec_total$`GRUPO ETÁRIO`,
+                                      levels=unique(projec_total$`GRUPO ETÁRIO`))
+projec_total$Sexo <- factor(projec_total$Sexo,levels=c("Masculino","Feminino"))
+projec_total$pop_milhao <- projec_total$value/1000000
+
+# Construindo as piramides para o Brasil 2010, 2020 e 2060
+plot_piramide_2010 <- projec_total %>% filter(variable=="2010") %>%
+                      apyramid::age_pyramid(.,age_group="GRUPO ETÁRIO",
+                                            split_by="Sexo",
+                                            count="pop_milhao",show_midpoint = F) +
+                      theme_classic(base_size = 10)+
+                      theme(axis.text.x =element_text(angle = 45, hjust=1))+
+                      labs(y="milhões", x="",title="2010")
+
+plot_piramide_2020 <- projec_total %>% filter(variable=="2020") %>%
+                      apyramid::age_pyramid(.,age_group="GRUPO ETÁRIO",
+                                            split_by="Sexo",
+                                            count="pop_milhao",show_midpoint = F) +
+                      theme_classic(base_size = 10)+
+                      theme(axis.text.x =element_text(angle = 45, hjust=1))+
+                      labs(y="milhões", x="",title="2020")
+
+plot_piramide_2060 <- projec_total %>% filter(variable=="2060") %>%
+                      apyramid::age_pyramid(.,age_group="GRUPO ETÁRIO",
+                                            split_by="Sexo",
+                                            count="pop_milhao",show_midpoint = F) +
+                      theme_classic(base_size = 10)+
+                      theme(axis.text.x =element_text(angle = 45, hjust=1))+
+                      labs(y="milhões", x="",title="2060")
+
+# Montando painel com as 3 piramides
+
+#cowplot::plot_grid(plot_piramide_2010,plot_piramide_2020,
+#                   plot_piramide_2060,nrow=2)
+
+#ggsave("img/painel_2_c.png",width = 178, height = 143, units = "mm", bg="white")
+```
+
+\begin{figure}[h!]
+	\centering
+			\caption{Pirâmides etárias, Brasil, 2010, 2020 e 2060.}
+		\includegraphics[scale = .9]{img/painel_2_c.png}
+		\small\textsuperscript{Elaboração Própria. Fonte dos Dados: IBGE - Projeções revisão de 2018} 
+	\label{fig:painel2c}
+\end{figure}
 
