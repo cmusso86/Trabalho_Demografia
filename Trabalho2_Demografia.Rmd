@@ -40,7 +40,7 @@ pop_proj <- import("Bases/populacao_15_20_30.xlsx")
 
 # Introdução
 
-O estado brasileiro de Santa Catarina tem como capital a ilha de Floranópolis e está localizado no centro da região sul do país. O estado faz fronteira ao norte com o Paraná e ao sul pelo Rio Grande do Sul. É banhado ao leste pelo Oceano Atlântico e e ao oeste faz fronteira com a Argentina. Sua área abrange 95.736,165 km² e possui uma população de mais de 6 milhões de habitantes, sendo o décimo estado mais populoso do Brasil. O estado possui 295 municípios, sendo Joinville, Florianópolis, Blumenau, Criciúma e Chapecó as principais cidades \cite{IBGE}.
+O estado brasileiro de Santa Catarina tem como capital a ilha de Floranópolis e está localizado no centro da região sul do país. O estado faz fronteira ao norte com o Paraná e ao sul pelo Rio Grande do Sul. É banhado ao leste pelo Oceano Atlântico e ao oeste faz fronteira com a Argentina. Sua área abrange 95.736,165 km² e possui uma população de mais de 6 milhões de habitantes, sendo o décimo estado mais populoso do Brasil. O estado possui 295 municípios, sendo Joinville, Florianópolis, Blumenau, Criciúma e Chapecó as principais cidades \cite{IBGE}.
 
 Santa Catarina possui índices sociais muito elevados em comparação com o restante do Brasil. É o estado com a maior expectativa de vida, empatando com o Distrito Federal. Além disso, possui a menor taxa de mortalidade infantil e é o estado com menor desigualdade econômica e analfabetismo no país. Em termos econômicos, Santa Catarina possui o sexto maior Produto Interno Bruto (PIB) do Brasil e o quarto maior PIB per capita, ficando atrás apenas do Distrito Federal, São Paulo e Mato Grosso. Sua economia é diversificada e tem uma forte ênfase na industrialização. O estado é um importante polo de exportação e consumo, sendo um dos maiores contribuintes para o crescimento da economia brasileira, representando 4% do PIB nacional \cite{IBGE2}. 
 
@@ -142,12 +142,12 @@ ggsave(graf1, filename="img/Graf1.png")
 \end{figure}
 
 
-Com o avanço das fases da transição demográfica (diminuição tanto da mortalidade quando natalidade) a pirâmide vai mudando de forma.  Nota-se que a partir dos anos 2000 (Figura \ref{fig:piramides1}). a base da pirâmide começa a estreitar, indicando uma diminuição nas taxas de natalidade. Conjuntamente,  o topo da pirâmide se alarga, com o envelhecimento da população devido à diminuição da mortalidade. Nota-se que principalmente nos anos de 2015 e 2020, as faixas etárias correspondendo à populaçào economicamente ativa são mais proeminentes, evidenciando o bônus demográfico nesse período, e diminuição da razão de dependência.
+Com o avanço das fases da transição demográfica (diminuição tanto da mortalidade quanto da natalidade) a pirâmide vai mudando de forma.  Nota-se que a partir dos anos 2000 (Figura \ref{fig:piramides1}) a base da pirâmide começa a estreitar, indicando uma diminuição nas taxas de natalidade. Conjuntamente, o topo da pirâmide se alarga, com o envelhecimento da população devido à diminuição da mortalidade. Nota-se que principalmente nos anos de 2015 e 2020, as faixas etárias correspondendo à população economicamente ativa são mais proeminentes, evidenciando o bônus demográfico nesse período, e diminuição da razão de dependência.
 
 
 **b) Para todos os anos acima mencionados, calcule os indicadores de estrutura por idade (proporção de idosos (60 anos e mais), proporção de crianças (0 a 4 anos), proporção de jovens (0 a 14 anos), razão de dependência e índice de envelhecimento). Calcule a idade média e a idade mediana. Calcule e grafique a razão de sexo por grupos de idade para 2000, 2010 e 2030. Comente os resultados.**
 
-Podemos observar na Tabela \@ref(tab:proporcoes)   como a proporção de jovens diminui a cada ano, atingindo valores de 18% enquanto a porporção de idosos aumenta, até aingir 20% em 2030. Com o aumento a população ativa, a razão de dependence diminui de 2000 até 2015, e volta a aumentar a partir de 2020, com o evelecimento da população, e passa-se a ter mais idosos do que jovens a partir de 2030.
+Podemos observar na Tabela \@ref(tab:proporcoes)   como a proporção de jovens diminui a cada ano, atingindo valores de 18% enquanto a proporção de idosos aumenta, até atingir 20% em 2030. Com o aumento da população ativa, a razão de dependência diminui de 2000 até 2015, e volta a aumentar a partir de 2020, com o envelhecimento da população, e passa-se a ter mais idosos do que jovens a partir de 2030.
 
 ```{r}
 
@@ -233,7 +233,7 @@ Tab1 %>%
 
 ```
 
-Para os dados agrupados foi utilizado o ponto médio de cada classe de idade, sendo que para a classe de $80^+$ foi utilizado o valor de 89,38 anos, baseado na expectativa de vida dessa classe pela tábua de vida do IBGE para 2015. A mediana foi calculada segundo a fórmula para dados agrupados. A média e mediaba podem ser observadas na Tabela \@ref(tab:media), onde vemos o aumento das medidas de centralidade, sendo que a média, influenciada pelos pontos mais extremos se mantém sempre acima da mediana. 
+Para o cálculo de idade média nos dados agrupados foi utilizado o ponto médio de cada classe de idade, sendo que para a classe de $80^+$ foi utilizado o valor de 89,38 anos, baseado na expectativa de vida dessa classe pela tábua de vida do IBGE para 2015. A mediana foi calculada segundo a fórmula para dados agrupados. A média e mediana podem ser observadas na Tabela \@ref(tab:media), onde vemos o aumento expressivo das idades, sendo que a média, influenciada pelos pontos mais extremos se mantém sempre acima da mediana. 
 
 ```{r}
 # medianas ----
@@ -317,7 +317,7 @@ kable(format="latex", caption=titulo, booktabs = T,
 ```
 
 
-Pelo gráficos da Figura \@ref(fig:razao) vemos que a razão de sexo ao nascer é maior, sendo os homens mais frequentes, e esse limiar se mantém mais ou menos constante até aproximandamente os 20-30 anos, quando o sexo feminino passa a prevalescer.  Isso se dá, como também vemos nas pirâmides, por conta da maior mortalidade para o sexo masculino. Entre 1991 e 2010, essa maior prevalência de mulheres nas idades mais avançadas parece se acentuar, enquanto de 2015 até 2030 a curva da razão de sexos não apresenta fortes mudanças.
+Pelo gráficos da Figura \@ref(fig:razao) vemos que a razão de sexo para as primeiras faixas etárias é maior, sendo a população masculina mais frequente, e esse limiar se mantém mais ou menos constante até aproximandamente os 20-30 anos, quando o sexo feminino passa a prevalescer.  Isso se dá, como também vemos nas pirâmides, por conta da maior mortalidade para o sexo masculino. Entre 1991 e 2010, essa maior prevalência de mulheres nas idades mais avançadas parece se acentuar, enquanto de 2015 até 2030 a curva da razão de sexos não apresenta fortes mudanças.
 
 ```{r, razao, fig.cap="Razão de sexo por grupos de idade para os anos selecionados"}
 pop_completo %>% 
@@ -375,7 +375,7 @@ Nota-se que, para a declaração por meio da data de nascimento, todos os índic
 
 De fato, o índice de Whipple expressa que os dados de idade presumida possuem atração pelos dígitos 0 e 5,  indicando que os dados são aproximados para ambos os sexos. Já os índices de Myers e Bachi medem a preferência (rejeição) por cada dígito. Novamente, para idade presumida eles indicam que os dados são imprecisos. Dessa forma, é necessário cautela ao utilizar tais dados.
 
-Por último, unindo todas as declarações de idade, observa-se que os índices possuem bons valores, indicando que não há forte preferência por algum dígito. Isso se deve ao fato de apenas 147.106 indivíduos não terem declarado sua idade por meio da data de nascimento, de um total de 6.248.436 (ou seja, apenas 2,35%). Em suma, os dados gerais de idade apresentam boa qualidade.
+Por último, unindo todas as declarações de idade, observa-se que os índices possuem bons valores, indicando que não há forte preferência por algum dígito. Isso se deve ao fato de apenas 147.106 indivíduos não terem declarado sua idade por meio da data de nascimento no Censo 2010, de um total de 6.248.436 (ou seja, apenas 2,35%). Em suma, os dados gerais de idade apresentam boa qualidade.
 
 ```{r}
 ### Piramide por idade simples
@@ -415,7 +415,7 @@ breaks <- pop_2010_censo$Idade[seq(1,102,by=5)]
 	\label{fig:piram_idade_simples}
 \end{figure}
 
-A pirâmide por idade simples, com dados do Censo de 2010, para Santa Catarina não parece revelar forte atração por idades terminadas em 0 ou 5 (ou algum outro dígito em especial). Tal observação corrobora as análises feitas com base nos índices de qualidade vistos anteriormente.
+A pirâmide por idade simples (Figura 3), com dados do Censo de 2010, para Santa Catarina não parece revelar forte atração por idades terminadas em 0 ou 5 (ou algum outro dígito em especial). Tal observação corrobora as análises feitas com base nos índices de qualidade vistos anteriormente.
 
 ## Parte 2 - Projeção de População
 
@@ -434,6 +434,10 @@ Em sua teoria, o método é recomendado quando as áreas menores estão apresent
 \newpage
 
 **b) Assumindo população fechada (ausência de migração), projete a população da UF escolhida de 2010 a 2020, segundo o cenário de mortalidade e fecundidade constante . Obtenha indicadores de fecundidade e mortalidade para o período 2014-2016 (nascimentos e óbitos médios do triênio e população projetada pelo IBGE para 2015) . Construa uma tábua de vida e obtenha as taxas específicas de fecundidade.**
+
+Na Tabela \@ref(tab:projec1) estão apresentadas as projeções populacionais para 2015, enquanto na Tabela \@ref(tab:projec2) estão os resultados para 2020. As projeções realizadas pelo IBGE para a UF (revisão de 2018) também estão presentes nas Tabelas \@ref(tab:projec1) e \@ref(tab:projec2), a título de comparação com os resultados obtidos.
+
+A projeção realizada levou em conta os fatores de separação ${}_nk_x$ calculados no Trabalho 1, por meio dos microdados de mortalidade. As taxas específicas de fecundidade e mortalidade foram calculadas com a média do triênio 2014-2016, levando em consideração a população centrada em 2015. As TEFs consideradas estão presentes na Tabela \@ref(tab:fecundidade). Os valores de número de anos-pessoa vividos ${}_nL_x$ calculados na tábua estão presentes na Tabela \@ref(tab:tabuas).
 
 ```{r}
 
@@ -539,17 +543,17 @@ nPx_n_masculino[17] <- (projecao_masculina_2015$nLx[17]/
                           projecao_masculina_2015$nLx[16])*
   (censo_2010$Masculino[17]+censo_2010$Masculino[16])
 
-projecao_masculina_2015 %>%
-  mutate(nPx_n = nPx_n_masculino)%>% 
-  mutate_if(is.numeric, ~comma(., decimal.mark = ",", 
-                               big.mark = ".")) %>%
-  kable(caption="Tábua de vida Masculina",
-      format= "latex",escape = F, booktabs = TRUE, linesep="",
-      col.names = c("Idade","nLx","nPx"),
-      align="r") %>%
-  kable_styling(latex_options=c("HOLD_position"),
-                 position="center") %>% 
-  kable_classic(full_width = F)
+#projecao_masculina_2015 %>%
+#  mutate(nPx_n = nPx_n_masculino)%>% 
+#  mutate_if(is.numeric, ~comma(., decimal.mark = ",", 
+#                               big.mark = ".")) %>%
+#  kable(caption="Tábua de vida Masculina",
+#      format= "latex",escape = F, booktabs = TRUE, linesep="",
+#      col.names = c("Idade","nLx","nPx"),
+#      align="r") %>%
+#  kable_styling(latex_options=c("HOLD_position"),
+#                 position="center") %>% 
+#  kable_classic(full_width = F)
 
 ## Feminino ## 
 
@@ -580,23 +584,26 @@ for (i in 1:(length(projecao_feminina_2015$Idade))-1) {
 #projecao_feminina_2015$nLx[17]))*(censo_2010$Feminino[17]+
 #censo_2010$Feminino[16])
 
-
-
 ```
 
-```{r}
-projecao_feminina_2015 %>%
-  mutate(nPx_n = nPx_n_feminino) %>% 
+```{r, tabuas}
+# Tabua de vida
+tabuas_geral <- cbind(projecao_masculina_2015,projecao_feminina_2015)
+tabuas_geral[,3] <- NULL
+names(tabuas_geral) <- c("Idade","nLx Masculina","nLx Feminina")
+
+tabuas_geral %>%
   mutate_if(is.numeric, ~comma(., decimal.mark = ",", 
                                big.mark = ".")) %>%
-  kable(caption="Tábua de vida Feminina",
+  kable(caption="Tábua de vida resumida segundo sexo com média de três anos centrada em 2015 - Santa Catarina",
       format= "latex",escape = F, booktabs = TRUE, 
       linesep="",
-      col.names = c("Idade","nLx","nPx"),
-      align="r") %>%
+      align=c('l','r','r')) %>%
   kable_styling(latex_options=c("HOLD_position"),
                  position="center") %>% 
-  kable_classic(full_width = F)
+  kable_classic(full_width = F) %>%
+  footnote("\\\\tiny{Elaboração própria. \nFonte dos Dados: Ministério da Saúde}",
+             escape=F, footnote_as_chunk=T, general_title ="")
 ```
 
 
@@ -964,17 +971,18 @@ tab2Jes<-projecao_feminina_2020 %>%
 ```
 
 ```{r}
-### Taxas específicas de fecundidade -----
+### Taxas especificas de fecundidade
 populacao <- read_excel("Bases/populacao_Sc.xls")
 
 pop_grupos <- populacao %>% 
   select(IDADE, Sexo, "2015") %>% 
   mutate(IDADE=str_replace(IDADE, "\\+", "")) %>% 
-  mutate(IDADE=as.numeric(IDADE)) %>% 
-  mutate(faixa=cut(IDADE, breaks=c(-1, 1, 5, 10, 15, 20,
-                                   25, 30, 35, 40, 45, 50, 
-                                   55, 60, 65, 70, 75, 80, 
-                                   85,90,  200), 
+  mutate(IDADE=as.numeric(IDADE)) %>%
+  mutate(faixa=cut(IDADE,
+                   breaks=c(-1, 1, 5, 10, 15, 20,
+                            25, 30, 35, 40, 45, 50, 
+                            55, 60, 65, 70, 75, 80, 
+                            85,90,  200), 
                    labels=c("<1", "1-4", "5-9", "10-14", "15-19",
                             "20-24", "25-29", "30-34", "35-39", 
                             "40-44", "45-49", "50-54", "55-59",
@@ -986,36 +994,41 @@ pop_grupos <- populacao %>%
   summarise(Pop=sum(Pop)) %>% 
   pivot_wider(id_cols=c(Sexo, faixa), 
               names_from = Ano, values_from = Pop) 
+```
 
-
+```{r}
 arquivos_nasc <- str_c("Bases/", 
                        list.files(path="Bases/", pattern="^TP2"))
 
 nascimentos <-  map_dfr(arquivos_nasc,~ read.dbc(.x)) %>% 
   mutate_all(~as.character(.))
+```
 
+```{r}
 nascimentos_trat <- nascimentos %>% 
   select(IDADEMAE, DTNASC, SEXO, DTNASCMAE) %>% 
   mutate(DTNASC=dmy(DTNASC),
          DTNASCMAE=dmy(DTNASCMAE),
-         IDADEMAE=as.numeric(IDADEMAE)) %>% 
+         IDADEMAE=as.numeric(IDADEMAE)) %>%
   mutate(Ano=as.character(year(DTNASC)),
-         faixa=cut(IDADEMAE, breaks=c(-1, 1, 5, 10, 15, 20,
-                                      25, 30, 35, 40, 45, 50, 
-                                      55, 60, 65, 70, 75, 80, 
-                                      85,90,  200), 
+         faixa=cut(IDADEMAE,
+                   breaks=c(-1, 1, 5, 10, 15, 20,
+                            25, 30, 35, 40, 45, 50, 
+                            55, 60, 65, 70, 75, 80, 
+                            85,90,  200), 
                    labels=c("<1", "1-4", "5-9", "10-14", "15-19",
                             "20-24", "25-29", "30-34", "35-39", 
                             "40-44", "45-49", "50-54", "55-59",
                             "60-64", "65-69", "70-74", "75-79", 
                             "80-84", "85-89", ">90"), right=F))
+```
 
-
+```{r}
 pop_fem_fertil <- pop_grupos %>% 
   filter(Sexo=="F", 
          faixa %in% c("15-19", "20-24", "25-29",
                       "30-34", "35-39", "40-44",
-                      "45-49")) 
+                      "45-49"))
 
 pop_fem_fertil_faixa <- pop_fem_fertil %>% 
   pivot_longer(c("2015"),
@@ -1028,7 +1041,10 @@ nascimentos_medio <- nascimentos_trat %>%
   summarise(nasc_medio=mean(nasc))
 
 nascimentos_medio$Ano <- "2015"
+```
 
+
+```{r, fecundidade}
 nfx <- nascimentos_medio %>% 
   right_join(pop_fem_fertil_faixa) %>% 
   mutate(nfx = round(nasc_medio/Pop*1000,2)) %>% 
@@ -1036,29 +1052,27 @@ nfx <- nascimentos_medio %>%
   pivot_wider(id_cols = faixa, 
               names_from = Ano, 
               values_from = nfx) 
-```
-
-```{r, fecundidade}
 nfx %>%
   mutate_if(is.numeric, ~comma(., decimal.mark = ",", 
                                big.mark = ".", accuracy=.01)) %>%
-  kableExtra::kbl(.,align=c('c','c'),booktabs = T,format= "latex",
+  kableExtra::kbl(.,align=c('c','c'),booktabs = T,
+                  format= "latex",
                   caption = 'Taxas específicas de fecundidade com média de três anos centrada
-em 2015 - Santa Catarina',col.names=c("Faixa etária","nfx (mil hab.)") ) %>% 
-  kableExtra::kable_classic(full_width=FALSE,latex_options = "HOLD_position") %>%
-    footnote("\\\\tiny{Elaboração própria. \nFonte dos Dados: Ministério da Saúde}",  escape=F, 
-           footnote_as_chunk=T, general_title ="")
+em 2015 - Santa Catarina',
+col.names=c("Faixa etária","nfx (mil hab.)") ) %>% 
+  kableExtra::kable_classic(full_width=FALSE,
+                            latex_options = "HOLD_position") %>%
+    footnote("\\\\tiny{Elaboração própria. \nFonte dos Dados: Ministério da Saúde}",
+             escape=F, footnote_as_chunk=T, general_title ="")
 ```
-
-
-Na Tabela \@ref(tab:projec1) estão apresentadas as projeções populacionais para 2015, enquanto na Tabela \@ref(tab:projec2) estão os resultados para 2020. As projeções realizadas pelo IBGE para a UF (revisão de 2018) também estão presentes nas Tabelas \@ref(tab:projec1) e \@ref(tab:projec2), a título de comparação com os resultados obtidos.
-
-A projeção realizada levou em conta os fatores de separação ${}_nk_x$ calculados no Trabalho 1, por meio dos microdados de mortalidade. As taxas específicas de fecundidade e mortalidade foram calculadas com a média do triênio 2014-2016, levando em consideração a população centrada em 2015. As TEFs consideradas estão presentes na Tabela \@ref(tab:fecundidade).
 
 É possível observar que os projeções feitas neste trabalho não se distanciaram muito das projeções do IBGE. Entretanto, em todas as faixas etárias, tanto em 2015 quanto 2020, a população projetada pelo IBGE foi maior do que a obtida na elaboração própria. Tal divergência deve-se, provavelmente, ao fato de que a projeção própria não levou em consideração os fluxos migratórios.
 
 Sabidamente, Santa Catarina é um estado se formou com forte influência da migração internacional, especialmente com a formação das antigas colônias alemãs. Atualmente, o estado apresenta bons indicadores de qualidade de vida e um potencial de atração de migrantes. Nesse sentido, os indicadores da projeção do IBGE - revisão de 2018 - estimaram para 2020 um saldo migratório positivo para Santa Catarina, com 28.013 imigrantes provenientes da migração interna. Além disso, o estado também foi destino de emigrantes haitianos, em especial a partir de 2010, como pode ser visto em \citeonline{magalhaes2017imigraccao}. Desse modo, fica claro que supor ausência de migração para as projeções resultou em um impacto importante nos resultados.
 
+Também chama a atenção a diferença observada por sexo. Conforme verificado na etapa anterior deste trabalho, em geral, os homens possuem maiores taxas de mortalidade no estado em comparação com as mulheres. De certo modo, esse comportamento se reflete nas projeções, sobretudo quando  observa-se que, até a faixa dos 35 a 39 anos, eles constituem a maioria da população e, a partir dos 40 anos, tendem a diminuir em quantidade. A diferença é ainda mais visível por meio das pirâmides etárias da Figura \@ref(fig:piramides1) e fica ainda mais evidente com o avançar da idade. Na projeção de 2015 para a faixa dos 75 a 79 anos, por exemplo, a população masculina chega a ser 26% menor que a feminina. 
+
+Como apontado anteriormente, o motivo dessa redução na população masculino - o que se converte em  maior risco - ainda é incerto e muitas vezes especulativo, como é discutido em \citeonline{nathanson1984sex}.  Entretanto, alguns pontos que ajudam a explicar essa diferença são os papéis de gênero e a estrutura social. Além disso, os homens parecem ter uma desvantagem na mortalidade por doenças cardiovasculares e neoplasias em comparação com as mulheres. Por fim, hábitos pessoais de saúde parecem afetar mortalidade masculina mais que feminina \cite{nathanson1984sex}.
 
 
 \begin{table}[H]
@@ -1123,6 +1137,7 @@ Sabidamente, Santa Catarina é um estado se formou com forte influência da migr
 \small\textsuperscript{Elaboração Própria. Fonte dos Dados: Ministério da Saúde }
 \end{table}
 
+\newpage
 
 **c) No link estão disponíveis as projeções da população por sexo e idade para o Brasil (2010-2060) e para as Unidades da Federação - revisão 2018, realizadas pelo IBGE. Com base nessas informações, construa e compare as pirâmides resultantes para os anos de 2010, 2020 e 2060 para o Brasil.**
 
@@ -1193,7 +1208,7 @@ plot_piramide_2060 <- projec_total %>% filter(variable=="2060") %>%
 
 As pirâmides etárias para o Brasil, anos de 2010, 2020 e 2060 estão presentes na Figura \@ref(fig:painel2c). A evolução das pirâmides etárias revelam as fases da transição demográfica pela qual o país está passando. Na pirâmide etária de 2010, era possível observar uma base larga, caracterizada por uma alta proporção de crianças e jovens. Essa configuração era resultado da alta taxa de fecundidade que o Brasil apresentava nas décadas anteriores.
 
-Já na projeção de 2020, há uma diminuição gradual na proporção de crianças e jovens, indicando uma queda na taxa de natalidade. A parte central da pirâmide, representando adultos em idade produtiva, foi ampliada, refletindo um processo de envelhecimento populacional. Além disso, a parcela de idosos aumentou em comparação com a década anterior. Essa mudança é resultado de vaŕios fatores, entre eles é possível citar a redução da fecundidade e avanços na área da saúde.
+Já na projeção de 2020, há uma diminuição gradual na proporção de crianças e jovens, indicando uma queda na taxa de natalidade. A parte central da pirâmide, representando adultos em idade produtiva, foi ampliada, refletindo um processo de envelhecimento populacional. Além disso, a parcela de idosos aumentou em comparação com a década anterior. Essa mudança é resultado de vários fatores, entre eles é possível citar a redução da fecundidade e avanços na área da saúde.
 
 As projeções para 2060 sugerem uma transformação ainda mais pronunciada na pirâmide etária brasileira. A base da pirâmide se torna mais estreita, refletindo uma taxa de natalidade baixa ou até mesmo abaixo do nível de reposição. A proporção de jovens será substancialmente menor em comparação com as décadas anteriores. Por outro lado, a faixa etária acima dos 60 anos apresentará um aumento expressivo, indicando um processo acelerado de envelhecimento populacional. A expectativa de vida mais longa e o declínio na taxa de mortalidade são fatores que contribuem para esse cenário.
 
@@ -1255,9 +1270,9 @@ Tais mudanças na estrutura etária têm implicações significativas para a soc
 
 \newpage
 
-# Apêndice
+# Anexo
 
-Código utilizado na análise.
+O código desta análise pode ser acessado neste link do [GitHub](https://github.com/cmusso86/Trabalho_Demografia/blob/master/Trabalho2_Demografia.Rmd).
 
 ```{r ref.label=knitr::all_labels(), echo=FALSE, eval=FALSE}
 ```
