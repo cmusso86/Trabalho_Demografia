@@ -100,7 +100,7 @@ pop_completo <-pop_censo_trat  %>%
   
 ```
 
-```{r fig.align='center'}
+```{r }
 
 piramides <- list()
 
@@ -113,8 +113,8 @@ for (i in c("1991", "2000", "2010", "2015", "2020", "2030")){
 #  
 xlabels <- as.character(sort(unique(filtro$faixa)))
 xlabels[seq(2, length(xlabels), 2)] <- ""
-piramides[[i]] <- filtro %>% 
-  apyramid::age_pyramid(age_group = "faixa",
+ piramides[[i]]<-  filtro %>% 
+apyramid::age_pyramid(age_group = "faixa",
                       split_by = "sexo",
                       count = "pop",
                       show_midpoint = FALSE) +
@@ -127,12 +127,26 @@ theme(legend.position = "none",
   ggtitle(i)
 }
 
-(piramides[[1]] + piramides[[2]]  )/
+graf1 <- (piramides[[1]] + piramides[[2]]  )/
   (piramides[[3]] + piramides[[4]]  )/(piramides[[5]] + piramides[[6]]  )
 
+ggsave(graf1, filename="img/Graf1.png")
 ```
 
+\begin{figure}[H]
+    \centering
+    \caption{Pirâmides etárias para os anos analisados. Cor verde representa o sexo masculino. Fonte dos dados: Minstério da saúde }
+    \includegraphics{img/Graf1.png}
+    \label{fig:piramides1}
+\end{figure}
+
+
+Com o avanço das fases da transição demográfica (diminuição tanto da mortalidade quando natalidade) a pirâmide vai mudando de forma.  Nota-se que a partir dos anos 2000 (Figura \ref{fig:piramides1}). a base da pirâmide começa a estreitar, indicando uma diminuição nas taxas de natalidade. Conjuntamente,  o topo da pirâmide se alarga, com o envelhecimento da população devido à diminuição da mortalidade. Nota-se que principalmente nos anos de 2015 e 2020, as faixas etárias correspondendo à populaçào economicamente ativa são mais proeminentes, evidenciando o bônus demográfico nesse período, e diminiução da razão de dependência.
+
+
 **b) Para todos os anos acima mencionados, calcule os indicadores de estrutura por idade (proporção de idosos (60 anos e mais), proporção de crianças (0 a 4 anos), proporção de jovens (0 a 14 anos), razão de dependência e índice de envelhecimento). Calcule a idade média e a idade mediana. Calcule e grafique a razão de sexo por grupos de idade para 2000, 2010 e 2030. Comente os resultados.**
+
+Podemos observar na Tabela \@ref(tab:proporcoes)   como a proporção de jovens diminui a cada ano, atingindo valores de 18% enquanto a porporção de idosos aumenta, até aingir 20% em 2030. Com o aumento a população ativa, a razão de dependence diminui de 2000 até 2015, e volta a aumentar a partir de 2020, com o evelecimento da população, e passa-se a ter mais idosos do que jovens a partir de 2030.
 
 ```{r}
 
@@ -195,9 +209,16 @@ proporcoes <- criancas %>%
 
 titulo <- "Proporções e Indicadores"
 
-proporcoes  %>% 
+Tab1 <- proporcoes  %>% 
   select(Ano, prop_crianca, prop_jovens, prop_idoso, RD, IE) %>% 
-  mutate_if(is.numeric, ~comma(., decimal.mark = ",", accuracy=.01)) %>% 
+   mutate_if(is.numeric, ~comma(., decimal.mark = ",", accuracy=.01)) 
+
+```
+
+
+
+```{r, proporcoes}
+Tab1 %>% 
   kable(format="latex", caption=titulo, booktabs = T, 
         linesep="", 
         align=c("c",rep("r",5)),
@@ -206,15 +227,12 @@ proporcoes  %>%
   kable_styling(latex_options = "hold_position", position="center", 
                 full_width = F)%>%  
    column_spec(2:6, width = "6em") %>% 
-  footnote(general=c("Elaboração própria", 
-                     "Censo 1991, 2000, 2010 (DataSus)", 
-                     "Projeções 2015, 2020 e 2030 (IBGE)"),  
-           escape=T,  footnote_as_chunk=F, general_title ="", 
-           fixed_small_size = T) 
+  footnote("\\\\tiny{Elaboração própria. \n Dados: Censo 1991, 2000, 2010 (DataSus) Projeções 2015, 2020 e 2030 (IBGE)}",  escape=F,  
+           footnote_as_chunk=T, general_title ="")
 
 ```
 
-Para os dados agrupados foi utilizado o ponto médio de cada classe de idade, sendo que para a classe de >80 foi utilizado o valor de 85 anos. A mediana foi calculada escolhedno o ponto médio da classe a partir da qual se acumulou 50% da populaçao daquele ano. 
+Para os dados agrupados foi utilizado o ponto médio de cada classe de idade, sendo que para a classe de >80 foi utilizado o valor de 89,38 anos, baseado na expectativa de vida dessa classe pela tábua de vida do IBGE para 2015. A mediana foi calculada segundo a fórmula para dados agrupados. A média e mediaba podem ser observadas na Tabela \@ref(tab:media), onde vemos o aumento das medidas de centralidade, sendo que a média, influenciada pelos pontos mais extremos se mantém sempre acima da mediana. 
 
 ```{r}
 # medianas ----
@@ -230,7 +248,7 @@ idade_media <- pop_completo %>%
   mutate_at(c("infer", "sup"), ~as.numeric(. )) %>% 
   mutate(ponto_medio=as.numeric(infer+2.5),
          ponto_medio=as.numeric(ifelse(faixa=="80-", 
-                                       (ponto_medio+2.5), 
+                                       (ponto_medio+6.88), 
                                        ponto_medio)),
          fator = ponto_medio * prop )%>%
   group_by(Ano) %>% 
@@ -277,32 +295,30 @@ idade_media_mediana <-mediana_junto %>%
 
 
 titulo <- "Idade e média e mediana"
-idade_media_mediana %>% 
-  mutate_if(is.numeric, ~comma(., decimal.mark = ",", accuracy=.1)) %>% 
-  kable(format="latex", caption=titulo, booktabs = T, 
+Tab2 <- idade_media_mediana %>% 
+  mutate_if(is.numeric, ~comma(., decimal.mark = ",", accuracy=.1))  
+
+
+```
+
+```{r media}
+Tab2 %>% 
+kable(format="latex", caption=titulo, booktabs = T, 
         linesep="", 
         align=c("c","r", "r"),
         col.names=c("Ano","Mediana (anos)", "Média (anos)")) %>% 
   kable_styling(latex_options = "hold_position", position="center", 
                 full_width = F) %>%  
    column_spec(1:3, width = "5em") %>% 
-  footnote(general=c("Elaboração própria",
-                     "Censo 1991, 2000, 2010 (DataSus)", 
-                     "Projeções 2015, 2020 e 2030 (IBGE)"),  
-           escape=T,  footnote_as_chunk=F, general_title ="", 
-           fixed_small_size = T) 
-
-
+  footnote("\\\\tiny{Elaboração própria. \n Dados: Censo (MS:91-00) e Projeções (IBGE:15-30)}",  escape=F,  
+           footnote_as_chunk=T, general_title ="")
 
 ```
 
 
+Pelo gráficos da Figuras \@ref(fig:razao) que Os homens morrem mais cedo.
 
-Razao de sexo
-
-Os homens morrem mais cedo.
-
-```{r}
+```{r, razao, fig.cap="razão"}
 pop_completo %>% 
   pivot_wider(id_cols = c("Ano", "faixa"),
               names_from = sexo, values_from = Pop) %>% 
