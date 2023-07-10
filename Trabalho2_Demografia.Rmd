@@ -316,7 +316,7 @@ kable(format="latex", caption=titulo, booktabs = T,
 ```
 
 
-Pelo gráficos da Figuras \@ref(fig:razao) que Os homens morrem mais cedo.
+Pelo gráficos da Figuras \@ref(fig:razao) vemos que a razão de sexo ao nascer é maior, sendo os homens mais frequentes, e esse limiar se mantém mai sou menos constate até aproximandamente os 20-30 anos, quando o sexo feminino passa a prevalescer.  Isso se dá, como também vemos nas pirâmides que a mortalidade é maior para o sexo masculino. 
 
 ```{r, razao, fig.cap="razão"}
 pop_completo %>% 
@@ -327,7 +327,7 @@ pop_completo %>%
   geom_point(aes(y=RS))+
   geom_line(aes(y=RS))+
   facet_wrap(~Ano)+
-  theme_bw()+
+  theme_bw(base_size = 10)+
   theme(axis.text.x = element_text(angle=90, hjust=1))+
   labs(x="Faixa Etária", y="Homens por 100 mulheres")
 
