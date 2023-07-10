@@ -135,13 +135,14 @@ ggsave(graf1, filename="img/Graf1.png")
 
 \begin{figure}[H]
     \centering
-    \caption{Pirâmides etárias para os anos analisados. Cor verde representa o sexo masculino. Fonte dos dados: Minstério da saúde }
+    \caption{Pirâmides etárias para os anos analisados. Cor verde representa o sexo masculino}
     \includegraphics{img/Graf1.png}
+    \small\textsuperscript{Elaboração Própria. Fonte dos Dados: Minstério da saúde} 
     \label{fig:piramides1}
 \end{figure}
 
 
-Com o avanço das fases da transição demográfica (diminuição tanto da mortalidade quando natalidade) a pirâmide vai mudando de forma.  Nota-se que a partir dos anos 2000 (Figura \ref{fig:piramides1}). a base da pirâmide começa a estreitar, indicando uma diminuição nas taxas de natalidade. Conjuntamente,  o topo da pirâmide se alarga, com o envelhecimento da população devido à diminuição da mortalidade. Nota-se que principalmente nos anos de 2015 e 2020, as faixas etárias correspondendo à populaçào economicamente ativa são mais proeminentes, evidenciando o bônus demográfico nesse período, e diminiução da razão de dependência.
+Com o avanço das fases da transição demográfica (diminuição tanto da mortalidade quando natalidade) a pirâmide vai mudando de forma.  Nota-se que a partir dos anos 2000 (Figura \ref{fig:piramides1}). a base da pirâmide começa a estreitar, indicando uma diminuição nas taxas de natalidade. Conjuntamente,  o topo da pirâmide se alarga, com o envelhecimento da população devido à diminuição da mortalidade. Nota-se que principalmente nos anos de 2015 e 2020, as faixas etárias correspondendo à populaçào economicamente ativa são mais proeminentes, evidenciando o bônus demográfico nesse período, e diminuição da razão de dependência.
 
 
 **b) Para todos os anos acima mencionados, calcule os indicadores de estrutura por idade (proporção de idosos (60 anos e mais), proporção de crianças (0 a 4 anos), proporção de jovens (0 a 14 anos), razão de dependência e índice de envelhecimento). Calcule a idade média e a idade mediana. Calcule e grafique a razão de sexo por grupos de idade para 2000, 2010 e 2030. Comente os resultados.**
@@ -207,7 +208,7 @@ proporcoes <- criancas %>%
          RD=inativos/ativos, 
          IE=prop_idoso/prop_jovens*100)
 
-titulo <- "Proporções e Indicadores"
+titulo <- "Proporções e indicadores de estrutura por idade, Santa Catarina"
 
 Tab1 <- proporcoes  %>% 
   select(Ano, prop_crianca, prop_jovens, prop_idoso, RD, IE) %>% 
@@ -224,7 +225,7 @@ Tab1 %>%
         align=c("c",rep("r",5)),
         col.names=c("Ano","Crianças (%)", "Jovens (%)", "Idosos (%)", 
                     "Razão de Dependência", "Índice de Envelhecimento")) %>% 
-  kable_styling(latex_options = "hold_position", position="center", 
+  kable_styling(latex_options = "HOLD_position", position="center", 
                 full_width = F)%>%  
    column_spec(2:6, width = "6em") %>% 
   footnote("\\\\tiny{Elaboração própria. \n Dados: Censo 1991, 2000, 2010 (DataSus) Projeções 2015, 2020 e 2030 (IBGE)}",  escape=F,  
@@ -232,7 +233,7 @@ Tab1 %>%
 
 ```
 
-Para os dados agrupados foi utilizado o ponto médio de cada classe de idade, sendo que para a classe de >80 foi utilizado o valor de 89,38 anos, baseado na expectativa de vida dessa classe pela tábua de vida do IBGE para 2015. A mediana foi calculada segundo a fórmula para dados agrupados. A média e mediaba podem ser observadas na Tabela \@ref(tab:media), onde vemos o aumento das medidas de centralidade, sendo que a média, influenciada pelos pontos mais extremos se mantém sempre acima da mediana. 
+Para os dados agrupados foi utilizado o ponto médio de cada classe de idade, sendo que para a classe de $80^+$ foi utilizado o valor de 89,38 anos, baseado na expectativa de vida dessa classe pela tábua de vida do IBGE para 2015. A mediana foi calculada segundo a fórmula para dados agrupados. A média e mediaba podem ser observadas na Tabela \@ref(tab:media), onde vemos o aumento das medidas de centralidade, sendo que a média, influenciada pelos pontos mais extremos se mantém sempre acima da mediana. 
 
 ```{r}
 # medianas ----
@@ -294,7 +295,7 @@ idade_media_mediana <-mediana_junto %>%
   left_join(idade_media)
 
 
-titulo <- "Idade e média e mediana"
+titulo <- "Idade média e mediana para os anos selecionados, Santa Catarina"
 Tab2 <- idade_media_mediana %>% 
   mutate_if(is.numeric, ~comma(., decimal.mark = ",", accuracy=.1))  
 
@@ -307,7 +308,7 @@ kable(format="latex", caption=titulo, booktabs = T,
         linesep="", 
         align=c("c","r", "r"),
         col.names=c("Ano","Mediana (anos)", "Média (anos)")) %>% 
-  kable_styling(latex_options = "hold_position", position="center", 
+  kable_styling(latex_options = "HOLD_position", position="center", 
                 full_width = F) %>%  
    column_spec(1:3, width = "5em") %>% 
   footnote("\\\\tiny{Elaboração própria. \n Dados: Censo (MS:91-00) e Projeções (IBGE:15-30)}",  escape=F,  
@@ -316,9 +317,9 @@ kable(format="latex", caption=titulo, booktabs = T,
 ```
 
 
-Pelo gráficos da Figuras \@ref(fig:razao) vemos que a razão de sexo ao nascer é maior, sendo os homens mais frequentes, e esse limiar se mantém mai sou menos constate até aproximandamente os 20-30 anos, quando o sexo feminino passa a prevalescer.  Isso se dá, como também vemos nas pirâmides que a mortalidade é maior para o sexo masculino. 
+Pelo gráficos da Figura \@ref(fig:razao) vemos que a razão de sexo ao nascer é maior, sendo os homens mais frequentes, e esse limiar se mantém mais ou menos constante até aproximandamente os 20-30 anos, quando o sexo feminino passa a prevalescer.  Isso se dá, como também vemos nas pirâmides, por conta da maior mortalidade para o sexo masculino. Entre 1991 e 2010, essa maior prevalência de mulheres nas idades mais avançadas parece se acentuar, enquanto de 2015 até 2030 a curva da razão de sexos não apresenta fortes mudanças.
 
-```{r, razao, fig.cap="razão"}
+```{r, razao, fig.cap="Razão de sexo por grupos de idade para os anos selecionados"}
 pop_completo %>% 
   pivot_wider(id_cols = c("Ano", "faixa"),
               names_from = sexo, values_from = Pop) %>% 
@@ -334,11 +335,11 @@ pop_completo %>%
 ```
 
 
-**c) Avalie a qualidade da declaração de idade no Censo 2010 segundo forma de declaração (data de nascimento e idade presumida). Calcule os índices de Whipple, Myers e Bachi.Construa a pirâmide por idade simples. Comente os resultados. (utilize a planilha SINGAGE do PAS - disponível na plataforma). Obtenha os dados na Tabela 3.2.1.2 do Censo 2010 - Resultados do Universo  (https://www.ibge.gov.br/estatisticas/sociais/populacao/9662-censo-demografico-2010.html?edicao=10503&t=downloads)**
+**c) Avalie a qualidade da declaração de idade no Censo 2010 segundo forma de declaração (data de nascimento e idade presumida). Calcule os índices de Whipple, Myers e Bachi. Construa a pirâmide por idade simples. Comente os resultados.**
 
-Na Tabela a seguir foram calculados os índices para avaliação da declaração de idade por forma de declaração: data de nascimento, idade presumida e os resultados gerais, que são a junção de todos os tipos de declaração. Além disso, os resultados estão discriminados por sexo.
+Na Tabela \@ref(tab:whipple) a seguir foram calculados os índices para avaliação da declaração de idade por forma de declaração: data de nascimento, idade presumida e os resultados gerais, que são a junção de todos os tipos de declaração. Além disso, os resultados estão discriminados por sexo.
 
-```{r}
+```{r, whipple}
 ### Tabela com índices de Whipple, Myers e Bachi 
 ##(calculado na planilha SINGAGE)
 
@@ -406,7 +407,7 @@ breaks <- pop_2010_censo$Idade[seq(1,102,by=5)]
 
 ```
 
-\begin{figure}[h!]
+\begin{figure}[H]
 	\centering
 			\caption{Pirâmide por idade simples, 2010, Santa Catarina.}
 		\includegraphics[scale = .9]{img/piramide_idade_simples.png}
@@ -418,12 +419,7 @@ A pirâmide por idade simples, com dados do Censo de 2010, para Santa Catarina n
 
 ## Parte 2 - Projeção de População
 
-**a) Com base na publicação 'Projeções da população : Brasil e unidades da federação : revisão 2018" disponível no link: https://biblioteca.ibge.gov.br/visualizacao/livros/liv101597.pdf e na publicação "ESTIMATIVAS DA POPULAÇÃO RESIDENTE PARA OS MUNICÍPIOS E PARA AS UNIDADES DA FEDERAÇÃO COM DATA DE REFERÊNCIA EM 1º DE JULHO DE 2021 " disponível no link:  https://biblioteca.ibge.gov.br/visualizacao/livros/liv101849.pdf.**
-
-**Comente sobre:**
-
-Metodologia utilizada para projetar a população do país segundo UF.
-Metodologia para estimar populações dos municípios brasileiros
+**a) Com base na publicação "Projeções da população : Brasil e unidades da federação : revisão 2018" e na publicação "ESTIMATIVAS DA POPULAÇÃO RESIDENTE PARA OS MUNICÍPIOS E PARA AS UNIDADES DA FEDERAÇÃO COM DATA DE REFERÊNCIA EM 1º DE JULHO DE 2021" comente sobre: Metodologia utilizada para projetar a população do país segundo UF e metodologia para estimar populações dos municípios brasileiros.**
 
 Estimar e projetar a população de uma nação é de suma importância para que os governos possam ter balizadores para a criação, descontinuação, melhorias e gestão de políticas visando assistir a população que nele reside. A seguir, serão apresentados alguns métodos de estimação da população que são utilizados para essas projeções no Brasil.
 
@@ -433,10 +429,9 @@ A razão ocorre principalmente pela variabilidade aleatória que pode ocorrer em
 
 Já o método utilizado para estimar populações de municípios se chama Método AiBi, aplicado por Madeira e Simões pela primeira vez no Brasil. Nele, pode-se observar as tendências de crescimento populacional dos municípios, entre dois censos demográficos consecutivos, em relação à tendência de crescimento de uma área geográfica de área maior. Portanto, ele considera que as populações dos domínios menores adotam uma função linear da população de um domínio maior. A desvantagem desse método se dá por não haver barreiras para participações relativas. Assim, podemos ter populações negativas. Contudo, não é recomendado utilizá-lo para projeções populacionais com prospectivas muito extensas. O recomendado para utilização desse método é que o período projetado utilize informações de tempo do mesmo tamanho da passada. 
 
-\newpage 
-
 Em sua teoria, o método é recomendado quando as áreas menores estão apresentando indícios de declínio populacional ou crescimento pequeno, assim como quando o padrão de crescimento populacional nas pequenas áreas não é o mesmo da área maior. O seu uso para projeções dos municípios é compreendido já que, em períodos curtos, o método, na maioria dos casos, aparenta ter todas as ferramentas necessárias para fazer essa estimação com certo grau de precisão. Outro fator é que as projeções de população para cada Unidade da Federação do Brasil são disponibilizadas pelo IBGE por meio do método das componentes demográficas ajuda na projeção dos municípios que se utilizam dessas áreas maiores para então chegar nas informações das áreas.
 
+\newpage
 
 **b) Assumindo população fechada (ausência de migração), projete a população da UF escolhida de 2010 a 2020, segundo o cenário de mortalidade e fecundidade constante . Obtenha indicadores de fecundidade e mortalidade para o período 2014-2016 (nascimentos e óbitos médios do triênio e população projetada pelo IBGE para 2015) . Construa uma tábua de vida e obtenha as taxas específicas de fecundidade.**
 
@@ -552,6 +547,8 @@ projecao_masculina_2015 %>%
       format= "latex",escape = F, booktabs = TRUE, linesep="",
       col.names = c("Idade","nLx","nPx"),
       align="r") %>%
+  kable_styling(latex_options=c("HOLD_position"),
+                 position="center") %>% 
   kable_classic(full_width = F)
 
 ## Feminino ## 
@@ -597,6 +594,8 @@ projecao_feminina_2015 %>%
       linesep="",
       col.names = c("Idade","nLx","nPx"),
       align="r") %>%
+  kable_styling(latex_options=c("HOLD_position"),
+                 position="center") %>% 
   kable_classic(full_width = F)
 ```
 
@@ -964,32 +963,131 @@ tab2Jes<-projecao_feminina_2020 %>%
 
 ```
 
+```{r}
+### Taxas específicas de fecundidade -----
+populacao <- read_excel("Bases/populacao_Sc.xls")
+
+pop_grupos <- populacao %>% 
+  select(IDADE, Sexo, "2015") %>% 
+  mutate(IDADE=str_replace(IDADE, "\\+", "")) %>% 
+  mutate(IDADE=as.numeric(IDADE)) %>% 
+  mutate(faixa=cut(IDADE, breaks=c(-1, 1, 5, 10, 15, 20,
+                                   25, 30, 35, 40, 45, 50, 
+                                   55, 60, 65, 70, 75, 80, 
+                                   85,90,  200), 
+                   labels=c("<1", "1-4", "5-9", "10-14", "15-19",
+                            "20-24", "25-29", "30-34", "35-39", 
+                            "40-44", "45-49", "50-54", "55-59",
+                            "60-64", "65-69", "70-74", "75-79", 
+                            "80-84", "85-89", ">90"), right=F)) %>% 
+  pivot_longer(cols=c("2015"), names_to = "Ano", 
+               values_to = "Pop") %>% 
+  group_by(Ano, Sexo, faixa) %>% 
+  summarise(Pop=sum(Pop)) %>% 
+  pivot_wider(id_cols=c(Sexo, faixa), 
+              names_from = Ano, values_from = Pop) 
+
+
+arquivos_nasc <- str_c("Bases/", 
+                       list.files(path="Bases/", pattern="^TP2"))
+
+nascimentos <-  map_dfr(arquivos_nasc,~ read.dbc(.x)) %>% 
+  mutate_all(~as.character(.))
+
+nascimentos_trat <- nascimentos %>% 
+  select(IDADEMAE, DTNASC, SEXO, DTNASCMAE) %>% 
+  mutate(DTNASC=dmy(DTNASC),
+         DTNASCMAE=dmy(DTNASCMAE),
+         IDADEMAE=as.numeric(IDADEMAE)) %>% 
+  mutate(Ano=as.character(year(DTNASC)),
+         faixa=cut(IDADEMAE, breaks=c(-1, 1, 5, 10, 15, 20,
+                                      25, 30, 35, 40, 45, 50, 
+                                      55, 60, 65, 70, 75, 80, 
+                                      85,90,  200), 
+                   labels=c("<1", "1-4", "5-9", "10-14", "15-19",
+                            "20-24", "25-29", "30-34", "35-39", 
+                            "40-44", "45-49", "50-54", "55-59",
+                            "60-64", "65-69", "70-74", "75-79", 
+                            "80-84", "85-89", ">90"), right=F))
+
+
+pop_fem_fertil <- pop_grupos %>% 
+  filter(Sexo=="F", 
+         faixa %in% c("15-19", "20-24", "25-29",
+                      "30-34", "35-39", "40-44",
+                      "45-49")) 
+
+pop_fem_fertil_faixa <- pop_fem_fertil %>% 
+  pivot_longer(c("2015"),
+               names_to = "Ano", values_to = "Pop") 
+
+nascimentos_medio <- nascimentos_trat %>% 
+  group_by(faixa,Ano) %>% 
+  count(name = "nasc") %>% 
+  group_by(faixa) %>%
+  summarise(nasc_medio=mean(nasc))
+
+nascimentos_medio$Ano <- "2015"
+
+nfx <- nascimentos_medio %>% 
+  right_join(pop_fem_fertil_faixa) %>% 
+  mutate(nfx = round(nasc_medio/Pop*1000,2)) %>% 
+  select(Ano, faixa, nfx) %>% 
+  pivot_wider(id_cols = faixa, 
+              names_from = Ano, 
+              values_from = nfx) 
+```
+
+```{r, fecundidade}
+nfx %>%
+  mutate_if(is.numeric, ~comma(., decimal.mark = ",", 
+                               big.mark = ".", accuracy=.01)) %>%
+  kableExtra::kbl(.,align=c('c','c'),booktabs = T,format= "latex",
+                  caption = 'Taxas específicas de fecundidade com média de três anos centrada
+em 2015 - Santa Catarina',col.names=c("Faixa etária","nfx (mil hab.)") ) %>% 
+  kableExtra::kable_classic(full_width=FALSE,latex_options = "HOLD_position") %>%
+    footnote("\\\\tiny{Elaboração própria. \nFonte dos Dados: Ministério da Saúde}",  escape=F, 
+           footnote_as_chunk=T, general_title ="")
+```
+
+
+Na Tabela \@ref(tab:projec1) estão apresentadas as projeções populacionais para 2015, enquanto na Tabela \@ref(tab:projec2) estão os resultados para 2020. As projeções realizadas pelo IBGE para a UF (revisão de 2018) também estão presentes nas Tabelas \@ref(tab:projec1) e \@ref(tab:projec2), a título de comparação com os resultados obtidos.
+
+A projeção realizada levou em conta os fatores de separação ${}_nk_x$ calculados no Trabalho 1, por meio dos microdados de mortalidade. As taxas específicas de fecundidade e mortalidade foram calculadas com a média do triênio 2014-2016, levando em consideração a população centrada em 2015. As TEFs consideradas estão presentes na Tabela \@ref(tab:fecundidade).
+
+É possível observar que os projeções feitas neste trabalho não se distanciaram muito das projeções do IBGE. Entretanto, em todas as faixas etárias, tanto em 2015 quanto 2020, a população projetada pelo IBGE foi maior do que a obtida na elaboração própria. Tal divergência deve-se, provavelmente, ao fato de que a projeção própria não levou em consideração os fluxos migratórios.
+
+Sabidamente, Santa Catarina é um estado se formou com forte influência da migração internacional, especialmente com a formação das antigas colônias alemãs. Atualmente, o estado apresenta bons indicadores de qualidade de vida e um potencial de atração de migrantes. Nesse sentido, os indicadores da projeção do IBGE - revisão de 2018 - estimaram para 2020 um saldo migratório positivo para Santa Catarina, com 28.013 imigrantes provenientes da migração interna. Além disso, o estado também foi destino de emigrantes haitianos, em especial a partir de 2010, como pode ser visto em \citeonline{magalhaes2017imigraccao}. Desse modo, fica claro que supor ausência de migração para as projeções resultou em um impacto importante nos resultados.
+
+
+
 \begin{table}[H]
 \caption{Projeção da população de 2015 em Santa Catarina, por sexo.}
 \centering
-\begin{tabular}{cllllll}
+\begin{tabular}{crrrrrr}
 \hline
 \multirow{2}{*}{\textbf{\begin{tabular}[c]{@{}c@{}}Faixa \\ etária\end{tabular}}} & \multicolumn{2}{c}{\textbf{Feminina}}                                                     & \multicolumn{2}{c}{\textbf{Masculina}}                                                    & \multicolumn{2}{c}{\textbf{Total}}                                                        \\ \cline{2-7} 
                                                                                   & \multicolumn{1}{c}{\begin{tabular}[c]{@{}c@{}}Elaboração\\ Própria\end{tabular}} & IBGE   & \multicolumn{1}{c}{\begin{tabular}[c]{@{}c@{}}Elaboração\\ Própria\end{tabular}} & IBGE   & \multicolumn{1}{c}{\begin{tabular}[c]{@{}c@{}}Elaboração\\ Própria\end{tabular}} & IBGE   \\ \hline
-0-4                                                                               & 207856                                                                           & 222987 & 218319                                                                           & 233457 & 426175                                                                           & 456444 \\
-5-9                                                                               & 198553                                                                           & 213404 & 206533                                                                           & 223007 & 405086                                                                           & 436411 \\
-10-14                                                                             & 213640                                                                           & 224751 & 222705                                                                           & 234590 & 436345                                                                           & 459341 \\
-15-19                                                                             & 254483                                                                           & 264423 & 264017                                                                           & 274105 & 518500                                                                           & 538528 \\
-20-24                                                                             & 268447                                                                           & 282124 & 274237                                                                           & 290336 & 542684                                                                           & 572460 \\
-25-29                                                                             & 277635                                                                           & 293208 & 285056                                                                           & 304204 & 562692                                                                           & 597412 \\
-30-34                                                                             & 279369                                                                           & 292493 & 283829                                                                           & 299193 & 563199                                                                           & 591686 \\
-35-39                                                                             & 253646                                                                           & 263406 & 253531                                                                           & 264436 & 507177                                                                           & 527842 \\
-40-44                                                                             & 235022                                                                           & 243117 & 231025                                                                           & 239427 & 466048                                                                           & 482544 \\
-45-49                                                                             & 231848                                                                           & 239021 & 225342                                                                           & 232702 & 457190                                                                           & 471723 \\
-50-54                                                                             & 221582                                                                           & 227882 & 210203                                                                           & 216388 & 431786                                                                           & 444270 \\
-55-59                                                                             & 183198                                                                           & 188473 & 171697                                                                           & 176683 & 354896                                                                           & 365156 \\
-60-64                                                                             & 147631                                                                           & 151649 & 134994                                                                           & 138751 & 282626                                                                           & 290400 \\
-65-69                                                                             & 110376                                                                           & 113403 & 97043                                                                            & 99818  & 207419                                                                           & 213221 \\
-70-74                                                                             & 76838                                                                            & 79059  & 63107                                                                            & 65090  & 139946                                                                           & 144149 \\
-75-79                                                                             & 55948                                                                            & 57682  & 41399                                                                            & 42765  & 97348                                                                            & 100447 \\
-80+                                                                               & 59051                                                                            & 69594  & 36538                                                                            & 40678  & 95590                                                                            & 110272 \\
+0-4                                                                               & 207.856                                                                           & 222.987 & 218.319                                                                           & 233.457 & 426.175                                                                           & 456.444 \\
+5-9                                                                               & 198.553                                                                           & 213.404 & 206.533                                                                           & 223.007 & 405.086                                                                           & 436.411 \\
+10-14                                                                             & 213.640                                                                           & 224.751 & 222.705                                                                           & 234.590 & 436.345                                                                           & 459.341 \\
+15-19                                                                             & 254.483                                                                           & 264.423 & 264.017                                                                           & 274.105 & 518.500                                                                           & 538.528 \\
+20-24                                                                             & 268.447                                                                           & 282.124 & 274.237                                                                           & 290.336 & 542.684                                                                           & 572.460 \\
+25-29                                                                             & 277.635                                                                           & 293.208 & 285.056                                                                           & 304.204 & 562.692                                                                           & 597.412 \\
+30-34                                                                             & 279.369                                                                           & 292.493 & 283.829                                                                           & 299.193 & 563.199                                                                           & 591.686 \\
+35-39                                                                             & 253.646                                                                           & 263.406 & 253.531                                                                           & 264.436 & 507.177                                                                           & 527.842 \\
+40-44                                                                             & 235.022                                                                           & 243.117 & 231.025                                                                           & 239.427 & 466.048                                                                           & 482.544 \\
+45-49                                                                             & 231.848                                                                           & 239.021 & 225.342                                                                           & 232.702 & 457.190                                                                           & 471.723 \\
+50-54                                                                             & 221.582                                                                           & 227.882 & 210.203                                                                           & 216.388 & 431.786                                                                           & 444.270 \\
+55-59                                                                             & 183.198                                                                           & 188.473 & 171.697                                                                           & 176.683 & 354.896                                                                           & 365.156 \\
+60-64                                                                             & 147.631                                                                           & 151.649 & 134.994                                                                           & 138.751 & 282.626                                                                           & 290.400 \\
+65-69                                                                             & 110.376                                                                           & 113.403 & 97.043                                                                            & 99.818  & 207.419                                                                           & 213.221 \\
+70-74                                                                             & 76.838                                                                            & 79.059  & 63.107                                                                            & 65.090  & 139.946                                                                           & 144.149 \\
+75-79                                                                             & 55.948                                                                            & 57.682  & 41.399                                                                            & 42.765  & 97.348                                                                            & 100.447 \\
+80+                                                                               & 59.051                                                                            & 69.594  & 36.538                                                                            & 40.678  & 95.590                                                                            & 110.272 \\
 \hline
 \end{tabular}
+\label{tab:projec1}
 \small\textsuperscript{Elaboração Própria. Fonte dos Dados: Ministério da Saúde }
 \end{table}
 
@@ -998,40 +1096,35 @@ tab2Jes<-projecao_feminina_2020 %>%
 \begin{table}[H]
 \caption{Projeção da população de 2020 em Santa Catarina, por sexo.}
 \centering
-\begin{tabular}{ccccccc}
+\begin{tabular}{crrrrrr}
 \hline
 \multirow{2}{*}{\textbf{\begin{tabular}[c]{@{}c@{}}Faixa \\ etária\end{tabular}}} & \multicolumn{2}{c}{\textbf{Feminina}}                                 & \multicolumn{2}{c}{\textbf{Masculina}}                                & \multicolumn{2}{c}{\textbf{Total}}                                    \\ \cline{2-7} 
                                                                                   & \begin{tabular}[c]{@{}c@{}}Elaboração\\ Própria\end{tabular} & IBGE   & \begin{tabular}[c]{@{}c@{}}Elaboração\\ Própria\end{tabular} & IBGE   & \begin{tabular}[c]{@{}c@{}}Elaboração\\ Própria\end{tabular} & IBGE   \\ \hline
-0-4                                                                               & 233970                                                       & 237651 & 246575                                                       & 248937 & 480545                                                       & 486588 \\
-5-9                                                                               & 212693                                                       & 227142 & 222143                                                       & 237316 & 434837                                                       & 464458 \\
-10-14                                                                             & 225994                                                       & 218251 & 236078                                                       & 227603 & 462073                                                       & 445854 \\
-15-19                                                                             & 244846                                                       & 230601 & 256363                                                       & 240036 & 501210                                                       & 470637 \\
-20-24                                                                             & 269448                                                       & 273363 & 279749                                                       & 284044 & 549197                                                       & 557407 \\
-25-29                                                                             & 286316                                                       & 292575 & 297387                                                       & 302668 & 583704                                                       & 595243 \\
-30-34                                                                             & 286655                                                       & 301175 & 299142                                                       & 312898 & 585798                                                       & 614073 \\
-35-39                                                                             & 284202                                                       & 297353 & 293769                                                       & 303540 & 577972                                                       & 600893 \\
-40-44                                                                             & 248928                                                       & 266593 & 253986                                                       & 266167 & 502915                                                       & 532760 \\
-45-49                                                                             & 230044                                                       & 244853 & 230665                                                       & 239380 & 460709                                                       & 484233 \\
-50-54                                                                             & 223899                                                       & 238948 & 218517                                                       & 229980 & 442416                                                       & 468928 \\
-55-59                                                                             & 210544                                                       & 225919 & 199514                                                       & 210889 & 410058                                                       & 463808 \\
-60-64                                                                             & 169373                                                       & 184738 & 153072                                                       & 168893 & 322445                                                       & 353631 \\
-65-69                                                                             & 130916                                                       & 146058 & 111329                                                       & 128792 & 242246                                                       & 274850 \\
-70-74                                                                             & 91814                                                        & 106080 & 69460                                                        & 88467  & 161275                                                       & 194547 \\
-75-79                                                                             & 57652                                                        & 70570  & 38463                                                        & 53602  & 96116                                                        & 124172 \\
-80+                                                                               & 52094                                                        & 92517  & 24729                                                        & 54903  & 76824                                                        & 147420 \\
+0-4                                                                               & 233.970                                                       & 237.651 & 246.575                                                       & 248.937 & 480.545                                                       & 486.588 \\
+5-9                                                                               & 212.693                                                       & 227.142 & 222.143                                                       & 237.316 & 434.837                                                       & 464.458 \\
+10-14                                                                             & 225.994                                                       & 218.251 & 236.078                                                       & 227.603 & 462.073                                                       & 445.854 \\
+15-19                                                                             & 244.846                                                       & 230.601 & 256.363                                                       & 240.036 & 501.210                                                       & 470.637 \\
+20-24                                                                             & 269.448                                                       & 273.363 & 279.749                                                       & 284.044 & 549.197                                                       & 557.407 \\
+25-29                                                                             & 286.316                                                       & 292.575 & 297.387                                                       & 302.668 & 583.704                                                       & 595.243 \\
+30-34                                                                             & 286.655                                                       & 301.175 & 299.142                                                       & 312.898 & 585.798                                                       & 614.073 \\
+35-39                                                                             & 284.202                                                       & 297.353 & 293.769                                                       & 303.540 & 577.972                                                       & 600.893 \\
+40-44                                                                             & 248.928                                                       & 266.593 & 253.986                                                       & 266.167 & 502.915                                                       & 532.760 \\
+45-49                                                                             & 230.044                                                       & 244.853 & 230.665                                                       & 239.380 & 460.709                                                       & 484.233 \\
+50-54                                                                             & 223.899                                                       & 238.948 & 218.517                                                       & 229.980 & 442.416                                                       & 468.928 \\
+55-59                                                                             & 210.544                                                       & 225.919 & 199.514                                                       & 210.889 & 410.058                                                       & 463.808 \\
+60-64                                                                             & 169.373                                                       & 184.738 & 153.072                                                       & 168.893 & 322.445                                                       & 353.631 \\
+65-69                                                                             & 130.916                                                       & 146.058 & 111.329                                                       & 128.792 & 242.246                                                       & 274.850 \\
+70-74                                                                             & 91.814                                                        & 106.080 & 69.460                                                        & 88.467  & 161.275                                                       & 194.547 \\
+75-79                                                                             & 57.652                                                        & 70.570  & 38.463                                                        & 53.602  & 96.116                                                        & 124.172 \\
+80+                                                                               & 52.094                                                        & 92.517  & 24.729                                                        & 54.903  & 76.824                                                        & 147.420 \\
 \hline
 \end{tabular}
+\label{tab:projec2}
 \small\textsuperscript{Elaboração Própria. Fonte dos Dados: Ministério da Saúde }
 \end{table}
 
 
-**c) No link https://www.ibge.gov.br/estatisticas/sociais/populacao/9109-projecao-da-populacao.html?=&t=downloads estão disponíveis as projeções da população por sexo e idade para o Brasil (2010-2060) e para as Unidades da Federação - revisão 2018, realizadas pelo IBGE.**
-
-Com base nessas informações, construa e compare as pirâmides resultantes para os anos de 2010, 2020 e 2060 para o Brasil.
-
-Compare os resultados da projeção para a UF escolhida realizada no item (b) e a publicada pelo IBGE.
-
-\*Para a análise dos resultados utilize indicadores de estrutura para respectivos anos (como os calculados na Parte 2 deste trabalho). Também comente  sobre os indicadores da dinâmica: taxa bruta de mortalidade, de natalidade e taxa de crescimento.
+**c) No link estão disponíveis as projeções da população por sexo e idade para o Brasil (2010-2060) e para as Unidades da Federação - revisão 2018, realizadas pelo IBGE. Com base nessas informações, construa e compare as pirâmides resultantes para os anos de 2010, 2020 e 2060 para o Brasil.**
 
 
 ```{r}
@@ -1089,23 +1182,24 @@ plot_piramide_2060 <- projec_total %>% filter(variable=="2060") %>%
 #units = "mm", bg="white")
 ```
 
+
 \begin{figure}[h!]
 	\centering
-			\caption{Pirâmides etárias, Brasil, 2010, 2020 e 2060.}
+			\caption{Pirâmides etárias, Brasil, 2010, 2020 e 2060}
 		\includegraphics[scale = .9]{img/painel_2_c.png}
 		\small\textsuperscript{Elaboração Própria. Fonte dos Dados: IBGE - Projeções da população, revisão de 2018} 
 	\label{fig:painel2c}
 \end{figure}
 
-A evolução das pirâmides etárias revelam as fases da transição demográfica pela qual o país está passando. Na pirâmide etária de 2010, era possível observar uma base larga, caracterizada por uma alta proporção de crianças e jovens. Essa configuração era resultado da alta taxa de fecundidade que o Brasil apresentava nas décadas anteriores.
+As pirâmides etárias para o Brasil, anos de 2010, 2020 e 2060 estão presentes na Figura \@ref(fig:painel2c). A evolução das pirâmides etárias revelam as fases da transição demográfica pela qual o país está passando. Na pirâmide etária de 2010, era possível observar uma base larga, caracterizada por uma alta proporção de crianças e jovens. Essa configuração era resultado da alta taxa de fecundidade que o Brasil apresentava nas décadas anteriores.
 
 Já na projeção de 2020, há uma diminuição gradual na proporção de crianças e jovens, indicando uma queda na taxa de natalidade. A parte central da pirâmide, representando adultos em idade produtiva, foi ampliada, refletindo um processo de envelhecimento populacional. Além disso, a parcela de idosos aumentou em comparação com a década anterior. Essa mudança é resultado de vaŕios fatores, entre eles é possível citar a redução da fecundidade e avanços na área da saúde.
 
 As projeções para 2060 sugerem uma transformação ainda mais pronunciada na pirâmide etária brasileira. A base da pirâmide se torna mais estreita, refletindo uma taxa de natalidade baixa ou até mesmo abaixo do nível de reposição. A proporção de jovens será substancialmente menor em comparação com as décadas anteriores. Por outro lado, a faixa etária acima dos 60 anos apresentará um aumento expressivo, indicando um processo acelerado de envelhecimento populacional. A expectativa de vida mais longa e o declínio na taxa de mortalidade são fatores que contribuem para esse cenário.
 
-Tais mudanças nas pirâmides etárias têm implicações significativas para a sociedade. O envelhecimento da população coloca desafios adicionais para o sistema de seguridade social, como a previdência e a saúde, uma vez que há menos pessoas em idade ativa para sustentar a população idosa. Além disso, a redução na fecundidade tem implicações no mercado de trabalho e na dinâmica social do país.
+Alguns indicadores da dinâmica populacional estão apresentados na Tabela \@ref(tab:dinamica). Também foram selecionados alguns indicadores da estrutura populacional, disponíveis na Tabela \@ref(tab:estrutura).
 
-```{r}
+```{r, dinamica}
 # Colocando os indicadores do IBGE em tabelas
 # disponivel em projecoes_2018_indicadores.xls
 
@@ -1119,7 +1213,7 @@ tbl_dinam_pop <- data.frame("Ano"=c("2010","2020","2060"),
 tbl_dinam_pop %>%
   kable(format="latex",
         caption = "Indicadores da dinâmica populacional para o Brasil, 
-        anos de 2010, 2020 e 2060.", booktabs = T, linesep="",
+        anos de 2010, 2020 e 2060", booktabs = T, linesep="",
         align=c('l','r','r','r'))  %>%
    kable_styling(latex_options=c("HOLD_position"),
                  position="center") %>% 
@@ -1128,7 +1222,7 @@ tbl_dinam_pop %>%
            footnote_as_chunk=T, general_title ="")
 ```
 
-```{r}
+```{r, estrutura}
 # Indicadores de estrutura da populacao
 # disponivel em projecoes_2018_indicadores.xls
 # Razão de dependência, Índice de envelhecimento e Idade mediana
@@ -1141,14 +1235,23 @@ tbl_estrutura <- data.frame("Ano"=c("2010","2020","2060"),
 
 tbl_estrutura %>%
   kable(format="latex",caption = "Indicadores de estrutura populacional 
-        para o Brasil, anos de 2010, 2020 e 2060.", booktabs = T, linesep="",
+        para o Brasil, anos de 2010, 2020 e 2060", booktabs = T, linesep="",
         align=c('l','r','r','r'))  %>%
    kable_styling(latex_options=c("HOLD_position","scale_down"), 
-                 position="center") %>% 
+                 position="center", full_width = F) %>% 
   footnote("\\\\tiny{Elaboração própria. \n Dados: IBGE - Projeções da 
            população, revisão de 2018}",  escape=F,  
            footnote_as_chunk=T, general_title ="")
 ```
+
+
+Os indicadores apresentados reforçam as tendências vistas por meio das pirâmides. Assim, destaca-se uma contínua queda na Taxa Bruta de Natalidade (TBN), chegando a 9,29 nascimentos por mil habitantes em 2060. Esse valor é reflexo da diminuição das taxas de fecundidade e da própria mudança na dinâmica da fecundidade, como o adiamento da maternidade. Já a Taxa Bruta de Mortalidade (TBM) cresce ao passar dos anos, e como um dos reflexos, em 2060 a Taxa de Crescimento Geométrico chega a ser negativa (-0,31).
+
+O aumento da idade mediana para 45,62 em 2060 evidencia o processo de envelhecimento, assim como o aumento expressivo do índice de envelhecimento. Por fim, a razão de dependência total (jovens e idosos) passa por uma pequena queda de 2010 para 2020, seguida de um aumento considerável em 2060, o que evidencia o fim da janela de oportunidades.
+
+
+Tais mudanças na estrutura etária têm implicações significativas para a sociedade. O envelhecimento da população coloca desafios adicionais para o sistema de seguridade social, como a previdência e a saúde, uma vez que há menos pessoas em idade ativa para sustentar a população idosa. Além disso, a redução na fecundidade tem implicações no mercado de trabalho e na dinâmica social do país.
+
 
 \newpage
 
@@ -1156,5 +1259,5 @@ tbl_estrutura %>%
 
 Código utilizado na análise.
 
-```{r ref.label=knitr::all_labels(), echo=TRUE, eval=FALSE}
+```{r ref.label=knitr::all_labels(), echo=FALSE, eval=FALSE}
 ```
